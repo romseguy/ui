@@ -1,0 +1,21 @@
+query place($title: String) {
+  myPlaces {
+    id
+    place {
+      id
+      title
+    }
+    role {
+      id
+    }
+  }
+  place(title: $title) {
+    id
+    city
+    department
+    users {
+      id
+      username
+    }
+  }
+}

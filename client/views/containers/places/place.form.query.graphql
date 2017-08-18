@@ -1,0 +1,20 @@
+query placeForm($title: String!) {
+  myPlaces {
+    id
+    place {
+      id
+    }
+  }
+  place(title: $title) {
+    id
+    city
+    department
+    latitude
+    longitude
+    title
+  }
+  places {
+    id
+    title
+  }
+}

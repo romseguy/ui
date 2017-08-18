@@ -1,0 +1,5 @@
+mutation createPlace($place: CreatePlaceAttrs!) {
+  createPlace(place: $place) {
+    id
+  }
+}

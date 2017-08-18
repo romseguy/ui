@@ -1,0 +1,18 @@
+query me {
+  myPlaces {
+    id
+    place {
+      id
+      title
+    }
+    role {
+      id
+    }
+    x
+    y
+  }
+  currentUser {
+    id
+    username
+  }
+}

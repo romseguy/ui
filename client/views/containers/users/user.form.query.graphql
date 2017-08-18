@@ -1,0 +1,16 @@
+query userForm($userId: ID!) {
+  myUsers {
+    id
+    user {
+      id
+    }
+  }
+  user(userId: $userId) {
+    id
+    username
+  }
+  users {
+    id
+    username
+  }
+}
