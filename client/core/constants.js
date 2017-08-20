@@ -1,10 +1,10 @@
-export const centres = {
+export const centreTypes = {
   DEPARTMENT: 'DEPARTMENT',
   LOCATION: 'LOCATION',
-  MONAD: 'MONAD'
+  PERSON: 'PERSON'
 }
 
-export const roles = {
+export const roleTypes = {
   GUARDIAN: 1,
   FOLLOWER: 2
 }

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
 import { Origin } from 'redux-tooltip'
 
-import { centres } from 'core/constants'
+import { centreTypes } from 'core/constants'
 import { getMeCentre } from 'core/me'
 
 import { atoms as atomImages } from 'views/assets/img'
@@ -76,7 +76,7 @@ const mapStateToProps = (state, props) => {
     height: 50
   }, {
     name: t('map:new_person'),
-    type: atomTypes.MONAD,
+    type: atomTypes.PERSON,
     image: atomImages.yellow,
     imageSelected: atomImages.yellow_selected,
     backgroundColor: 'transparent',

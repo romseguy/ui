@@ -1,7 +1,7 @@
 export const atomTypes = {
   DEPARTMENT: 'DEPARTMENT',
   LOCATION: 'LOCATION',
-  MONAD: 'MONAD'
+  PERSON: 'PERSON'
 }
 
 export const atomTypeToName = {
@@ -15,7 +15,7 @@ export const atomTypeToName = {
     if (prefix) return `un ${name}`
     return name
   },
-  [atomTypes.MONAD]: ({prefix} = {}) => {
+  [atomTypes.PERSON]: ({prefix} = {}) => {
     const name = 'personne'
     if (prefix) return `une ${name}`
     return name

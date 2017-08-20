@@ -30,7 +30,7 @@ const i18nOptions = {
   },
 
   // have a common namespace used around the full app
-  ns: ['common', 'errors', 'accounts', 'map'],
+  ns: ['common', 'errors', 'form', 'accounts', 'map'],
   defaultNS: 'common',
 
   backend: {

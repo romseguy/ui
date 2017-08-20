@@ -1,10 +1,10 @@
 import { set, push, update } from 'zaphod/compat'
-import { centres } from 'core/constants'
+import { centreTypes } from 'core/constants'
 import { meActions } from './me.actions'
 
 
 export const MeState = {
-  centre: centres.DEPARTMENT
+  centre: centreTypes.DEPARTMENT
 }
 
 export function meReducer(state = MeState, {payload, type}) {

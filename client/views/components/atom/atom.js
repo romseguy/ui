@@ -8,7 +8,7 @@ import { atomTypes } from 'views/utils/atoms'
 const map = {
   [atomTypes.DEPARTMENT]: atomImages.black,
   [atomTypes.LOCATION]: atomImages.green,
-  [atomTypes.MONAD]: atomImages.yellow
+  [atomTypes.PERSON]: atomImages.yellow
 }
 
 function Atom({image, type, height, width}) {

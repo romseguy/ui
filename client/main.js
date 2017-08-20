@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'development') {
   window.store = store
   window.s = () => store.getState()
   window.ss = window.$$LogSagas
-  window.log = false
+  window.log = true
   //const {whyDidYouUpdate} = require('why-did-you-update')
   //whyDidYouUpdate(React, {include: /.*map.*/i})
   //whyDidYouUpdate(React)

@@ -7,7 +7,7 @@ import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
-import { roles } from 'core/constants'
+import { roleTypes } from 'core/constants'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'

@@ -54,8 +54,7 @@ class MainPanel extends Component {
       routeType,
       routes,
       setNodes,
-      userLocation,
-      onMapClick,
+      userLocation
     } = this.props
 
     const {
@@ -98,7 +97,9 @@ class MainPanel extends Component {
         {[
           routerActions.ME,
           routerActions.ME_PLACES_ADD,
-          routerActions.ME_PLACE_EDIT
+          routerActions.ME_PLACE_EDIT,
+          routerActions.ME_USERS_ADD,
+          routerActions.ME_USER_EDIT
         ].includes(routeType) && (
           <Me
             canvasHeight={canvasHeight}

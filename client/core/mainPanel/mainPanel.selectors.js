@@ -5,8 +5,12 @@ function getMainPanel(state) {
   return state.mainPanel
 }
 
-export function getCanvas(state) {
+function getCanvas(state) {
   return getMainPanel(state).canvas
+}
+
+function getSidePanel(state) {
+  return getMainPanel(state).sidePanel
 }
 
 export function getCanvasNodes(state) {
@@ -38,10 +42,6 @@ export function getSelectedNodeId(state) {
 
 export function getNextNodeId(state) {
   return getCanvasNodes(state).length
-}
-
-export function getSidePanel(state) {
-  return getMainPanel(state).sidePanel
 }
 
 export function isSidePanelOpen(state) {

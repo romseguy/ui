@@ -7,7 +7,7 @@ import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
-import { roles } from 'core/constants'
+import { roleTypes } from 'core/constants'
 import { getCanvasNodes } from 'core/mainPanel'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
@@ -37,7 +37,7 @@ const handlers = {
       case 'select':
         const userPlace = {
           placeId: Number(placeId),
-          roleId: roles.GUARDIAN,
+          roleId: roleTypes.GUARDIAN,
           x,
           y
         }
@@ -135,7 +135,7 @@ const mapStateToProps = state => {
     centre,
     formValues: state.form.PlaceForm ? state.form.PlaceForm.values : {},
     userLocation,
-    name,
+    placeName: name,
     nodes,
     routeType,
     title
@@ -154,7 +154,7 @@ const placeFormQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        title: props.name || ''
+        title: props.placeName || ''
       }
     }
   },

@@ -15,7 +15,7 @@ export const personToNode = (id, person) => {
     // identifiers
     id,
     idServer: Number(person.id),
-    type: atomTypes.MONAD,
+    type: atomTypes.PERSON,
 
     // state
     name: username,

@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
 
-import { roles } from 'core/constants'
+import { roleTypes } from 'core/constants'
 import { mainPanelActions, getCanvasNodes, getSelectedNodeId } from 'core/mainPanel'
 import { routerActions, getRouteType } from 'core/router'
 
@@ -126,7 +126,7 @@ class Me extends Component {
     if (node.type === atomTypes.LOCATION) {
       mePlaceEditRoute(node.name)
     }
-    else if (node.type === atomTypes.MONAD) {
+    else if (node.type === atomTypes.PERSON) {
       meUserEditRoute(node.name)
     }
     else if (symbolTypes[node.type]) {
@@ -275,7 +275,7 @@ class Me extends Component {
     if (type === atomTypes.LOCATION) {
       mePlacesAddRoute()
     }
-    else if (type === atomTypes.MONAD) {
+    else if (type === atomTypes.PERSON) {
       meUsersAddRoute()
     }
     else if (symbolTypes[type]) {
@@ -355,7 +355,7 @@ const meQueryConfig = {
           return placeToNode(
             id,
             {...place, x, y},
-            Number(role.id) === roles.GUARDIAN
+            Number(role.id) === roleTypes.GUARDIAN
           )
         })
       } else {

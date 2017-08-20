@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { translate } from 'react-i18next'
 
-import { roles } from 'core/constants'
+import { roleTypes } from 'core/constants'
 import { mainPanelActions, getCanvasNodes, getSelectedNodeId } from 'core/mainPanel'
 import { getPayload } from 'core/router'
 
@@ -118,7 +118,7 @@ class Place extends Component {
     if (node.type === atomTypes.LOCATION) {
       mePlaceEditRoute(node.name)
     }
-    else if (node.type === atomTypes.MONAD) {
+    else if (node.type === atomTypes.PERSON) {
       meUserEditRoute(node.name)
     }
     else if (symbolTypes[node.type]) {
@@ -222,7 +222,7 @@ class Place extends Component {
             placeViewRoute(clickedNode.name)
           }
         }
-        else if (clickedNode.type === atomTypes.MONAD) {
+        else if (clickedNode.type === atomTypes.PERSON) {
           // todo: route to USER_VIEW
         }
         break
@@ -286,7 +286,7 @@ class Place extends Component {
     if (type === atomTypes.LOCATION) {
       mePlacesAddRoute()
     }
-    else if (type === atomTypes.MONAD) {
+    else if (type === atomTypes.PERSON) {
       meUsersAddRoute()
     }
     else if (symbolTypes[type]) {
@@ -373,13 +373,13 @@ const placeQueryConfig = {
 
     if (!loading) {
       const userPlace = myPlaces.find(myPlace => myPlace.place.id === place.id)
-      mine = userPlace && userPlace.role.id === roles.GUARDIAN
+      mine = userPlace && userPlace.role.id === roleTypes.GUARDIAN
 
       if (!nodes.length) {
         nodes = place.users.map((person, i) => personToNode(i, person))
       } else {
         nodes = nodes.map((node, i) => {
-          const user = place.users.find(person => node.type === atomTypes.MONAD && person.id === node.idServer)
+          const user = place.users.find(person => node.type === atomTypes.PERSON && person.id === node.idServer)
 
           if (user) {
             return {

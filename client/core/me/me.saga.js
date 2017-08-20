@@ -1,6 +1,6 @@
 import { call, fork, put, select, take, takeEvery } from 'redux-saga/effects'
 import { set } from 'zaphod/compat'
-import { centres } from 'core/constants'
+import { centreTypes } from 'core/constants'
 import { meActions } from './me.actions'
 
 export function* meSaga() {
@@ -13,13 +13,13 @@ export function* meSaga() {
     function* setCentreSaga({payload}) {
       const {centre, params} = payload
 
-      if (centre === centres.MONAD) {
-        //yield call(setMonadCentreSaga, params)
+      if (centre === centreTypes.PERSON) {
+        //yield call(setPersonCentreSaga, params)
       }
-      else if (centre === centres.DEPARTMENT) {
+      else if (centre === centreTypes.DEPARTMENT) {
         //yield call(setDepartmentCentreSaga)
       }
-      else if (centre === centres.LOCATION) {
+      else if (centre === centreTypes.LOCATION) {
         //yield call(setLocationCentreSaga)
       }
     }

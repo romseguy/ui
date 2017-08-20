@@ -43,7 +43,7 @@ function MapNodeAnchorTooltips() {
 function MapNodeHeaderTooltips({name, type}) {
   const atomTypeToName = {
     [atomTypes.LOCATION]: {label: 'du lieu', width: 240},
-    [atomTypes.MONAD]: {label: 'de la personne', width: 210}
+    [atomTypes.PERSON]: {label: 'de la personne', width: 210}
   }
   const {label, width} = atomTypeToName[type]
 

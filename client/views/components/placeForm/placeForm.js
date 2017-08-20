@@ -10,7 +10,7 @@ import PlaceFormSelector from './placeFormSelector'
 
 
 class PlaceForm extends Component {
-  state = {isLoading: true}
+  state = {isLoading: process.env.NODE_ENV !== 'development'}
 
   componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed}) {
     if (isScriptLoaded && !this.props.isScriptLoaded) { // load finished
@@ -29,19 +29,19 @@ class PlaceForm extends Component {
 
   render() {
     const {
-      formValues,
-      userLocation,
-      mustCreate,
       disconnectedPlaces,
+      formValues,
+      isLoading,
+      mustCreate,
       routeType,
       routeTypes,
       t,
+      userLocation,
       handleSubmit,
       onSuggestSelect
     } = this.props
-    const {action} = formValues
 
-    if (this.state.isLoading || this.props.isLoading) {
+    if (this.state.isLoading || isLoading) {
       return <Loader active inline="centered"/>
     }
 

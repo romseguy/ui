@@ -7,12 +7,13 @@ import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
-import { roles } from 'core/constants'
+import { roleTypes } from 'core/constants'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'
 
 import { meQuery } from 'views/containers/me'
+
 import { Container } from 'views/components/layout'
 import UserForm, { UserFormHeader } from 'views/components/userForm'
 
@@ -29,7 +30,7 @@ const handlers = {
     } = formValues
 
     if (action === 'select') {
-      props.doCreateUserUser({userId: selected, roleId: roles.GUARDIAN}).then(data => {
+      props.doCreateUserUser({userId: selected, roleId: roleTypes.GUARDIAN}).then(data => {
         props.meRoute()
       })
     } else {
@@ -43,20 +44,9 @@ const handlers = {
       }
       props.doCreateUser({user})
     }
-  },
-  onSuggestSelect: props => suggest => {
-    const {short_name: city} = suggest.gmaps.address_components.find(address_component => {
-      return address_component.types.includes('locality')
-    })
-
-    const {short_name: department} = suggest.gmaps.address_components.find(address_component => {
-      return address_component.types.includes('administrative_area_level_2')
-    })
-
-    props.change('UserForm', 'city', city)
-    props.change('UserForm', 'department', department)
   }
 }
+
 function UserFormContainer(props) {
   const {
     // state
@@ -72,8 +62,7 @@ function UserFormContainer(props) {
     mustCreate,
     // actions
     t,
-    onSubmit,
-    onSuggestSelect
+    onSubmit
   } = props
 
   return (
@@ -95,7 +84,6 @@ function UserFormContainer(props) {
         routeTypes={routerActions}
         t={t}
         onSubmit={onSubmit}
-        onSuggestSelect={onSuggestSelect}
       />
     </Container>
   )

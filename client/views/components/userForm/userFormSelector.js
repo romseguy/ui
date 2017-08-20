@@ -21,7 +21,7 @@ function RadioGroup(props) {
       <UIForm.Field>
         <Radio
           checked={input.value === 'create'}
-          label={t('form:place.create')}
+          label={t('map:user.create')}
           name={input.name}
           onChange={onChange('create')}
         />
@@ -29,7 +29,7 @@ function RadioGroup(props) {
       <UIForm.Field>
         <Radio
           checked={input.value === 'select'}
-          label={t('form:place.select')}
+          label={t('map:user.select')}
           name={input.name}
           onChange={onChange('select')}
         />
@@ -38,8 +38,8 @@ function RadioGroup(props) {
   )
 }
 
-function PlaceFormSelector(props) {
-  const {disconnectedPlaces, formValues, t} = props
+function UserFormSelector(props) {
+  const {disconnectedUsers, formValues, t} = props
   const {action} = formValues
 
   return (
@@ -57,18 +57,18 @@ function PlaceFormSelector(props) {
       {action === 'select' && (
         <Row>
           <Col mobile={16} tablet={16} computer={5}>
-            <label>{t('form:place.place_name')}</label>
+            <label>Nom du lieu :</label>
           </Col>
           <Col mobile={16} tablet={16} computer={11}>
             <Field
-              name="placeId"
+              name="userId"
               component={Select}
-              placeholder={t('form:place.select')}
-              options={Array.isArray(disconnectedPlaces) ? disconnectedPlaces.map(place => {
+              placeholder={t('form:user.select')}
+              options={Array.isArray(disconnectedUsers) ? disconnectedUsers.map(user => {
                 const option = {
-                  key: place.id,
-                  value: place.id,
-                  text: place.title
+                  key: user.id,
+                  value: user.id,
+                  text: user.title
                 }
 
                 return option
@@ -81,4 +81,4 @@ function PlaceFormSelector(props) {
   )
 }
 
-export default PlaceFormSelector
+export default UserFormSelector

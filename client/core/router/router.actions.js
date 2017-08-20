@@ -1,6 +1,3 @@
-import { centres } from 'core/constants'
-
-
 export const routerActions = {
   AUTH: 'AUTH',
 
@@ -20,6 +17,7 @@ export const routerActions = {
   ME_USER_EDIT: 'ME_USER_EDIT',
 
   ME_SYMBOLS_ADD: 'ME_SYMBOLS_ADD',
+  ME_SYMBOL_EDIT: 'ME_SYMBOL_VIEW',
   ME_SYMBOL_VIEW: 'ME_SYMBOL_VIEW',
 
   NOT_FOUND: 'NOT_FOUND',
@@ -63,6 +61,7 @@ export const routerActions = {
     type: routerActions.ME,
     payload: params
   }),
+  
   mePlacesAddRoute: (centre) => ({
     type: routerActions.ME_PLACES_ADD,
     payload: {
@@ -82,6 +81,7 @@ export const routerActions = {
       centre
     }
   }),
+  
   meSymbolsAddRoute: (name, centre) => ({
     type: routerActions.ME_SYMBOLS_ADD,
     payload: {
@@ -91,6 +91,35 @@ export const routerActions = {
   }),
   meSymbolViewRoute: (name, centre) => ({
     type: routerActions.ME_SYMBOL_VIEW,
+    payload: {
+      name,
+      centre
+    }
+  }),
+  meSymbolEditRoute: (name, centre) => ({
+    type: routerActions.ME_SYMBOL_EDIT,
+    payload: {
+      name,
+      centre
+    }
+  }),
+
+  meUsersAddRoute: (name, centre) => ({
+    type: routerActions.ME_USERS_ADD,
+    payload: {
+      name,
+      centre
+    }
+  }),
+  meUserViewRoute: (name, centre) => ({
+    type: routerActions.ME_USER_VIEW,
+    payload: {
+      name,
+      centre
+    }
+  }),
+  meUserEditRoute: (name, centre) => ({
+    type: routerActions.ME_USER_EDIT,
     payload: {
       name,
       centre
