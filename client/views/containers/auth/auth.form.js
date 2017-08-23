@@ -95,10 +95,6 @@ class AuthFormContainer extends Component {
 }
 
 
-//=====================================
-//  CONNECT
-//-------------------------------------
-
 const mapStateToProps = state => {
   return {
     clientErrors: getFormSyncErrors('AuthForm')(state)
@@ -110,9 +106,6 @@ const mapDispatchToProps = {
   setModal: modalActions.setModal
 }
 
-//=====================================
-//  GRAPHQL
-//-------------------------------------
 
 const loginMutationConfig = {
   props({ownProps, mutate}) {

@@ -61,11 +61,11 @@ function AtomsToolbox({atoms, isOpen, onClose}) {
 
 
 const mapStateToProps = (state, props) => {
-  const { t } = props
+  const {t} = props
   const centre = getMeCentre(state)
 
   const atoms = [{
-    name: t('map:new_place'),
+    name: t('map:places.new'),
     type: atomTypes.LOCATION,
     image: atomImages.green,
     imageSelected: atomImages.green_selected,
@@ -75,7 +75,7 @@ const mapStateToProps = (state, props) => {
     width: 50,
     height: 50
   }, {
-    name: t('map:new_person'),
+    name: t('map:persons.new'),
     type: atomTypes.PERSON,
     image: atomImages.yellow,
     imageSelected: atomImages.yellow_selected,

@@ -6,6 +6,8 @@ import { atomTypes } from 'views/utils/atoms'
 import { atoms } from 'views/assets/img'
 
 
+const noop = () => {}
+
 export const personToNode = (id, person) => {
   const {
     username
@@ -72,12 +74,12 @@ export const placeToNode = (id, place, mine = false) => {
   }
 }
 
-export const addNode = (nodes, callback) => (node) => {
+export const addNode = (nodes, callback = noop) => (node) => {
   const updated = nodes.concat([node])
   callback(updated)
 }
 
-export const deleteSelectedNode = (nodes, callback) => () => {
+export const deleteSelectedNode = (nodes, callback = noop) => () => {
   let n = null
 
   const updated = nodes.filter((node) => {
@@ -90,7 +92,7 @@ export const deleteSelectedNode = (nodes, callback) => () => {
   return n
 }
 
-export const deselectAllNodes = (nodes, callback) => () => {
+export const deselectAllNodes = (nodes, callback = noop) => () => {
   let update = false
   const updated = nodes.map((node) => {
     if (node.selected) {
@@ -101,13 +103,14 @@ export const deselectAllNodes = (nodes, callback) => () => {
   if (update) {
     callback(updated)
   }
+  return updated
 }
 
-export const deselectNode = (nodes, callback) => (id) => {
-  toggleNode(nodes, callback)(id, false)
+export const deselectNode = (nodes, callback = noop) => (id) => {
+  toggleNode(nodes, callback = noop)(id, false)
 }
 
-export const hoverNode = (nodes, callback) => (id, hovered) => {
+export const hoverNode = (nodes, callback = noop) => (id, hovered) => {
   let update = true
   const updated = nodes.map(node => {
     if (id !== node.id) {
@@ -124,18 +127,18 @@ export const hoverNode = (nodes, callback) => (id, hovered) => {
     callback(updated)
   }
 }
-export const moveNode = (nodes, callback) => (id, x, y) => {
+export const moveNode = (nodes, callback = noop) => (id, x, y) => {
   const merged = upd(nodes[id], {$merge: {x: x, y: y}})
   const updated = upd(nodes, {$splice: [[id, 1, merged]]})
   callback(updated)
 }
 
-export const selectNode = (nodes, callback) => (id) => {
-  toggleNode(nodes, callback)(id, true)
+export const selectNode = (nodes, callback = noop) => (id) => {
+  toggleNode(nodes, callback = noop)(id, true)
 }
 
 
-export const toggleNode = (nodes, callback) => (id, bool) => {
+export const toggleNode = (nodes, callback = noop) => (id, bool) => {
   let update = true
   const updated = nodes.map(node => {
     if (id !== node.id) {

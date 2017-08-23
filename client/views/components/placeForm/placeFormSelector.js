@@ -57,7 +57,7 @@ function PlaceFormSelector(props) {
       {action === 'select' && (
         <Row>
           <Col mobile={16} tablet={16} computer={5}>
-            <label>{t('form:place.place_name')}</label>
+            <label>{t('form:place.name')}</label>
           </Col>
           <Col mobile={16} tablet={16} computer={11}>
             <Field

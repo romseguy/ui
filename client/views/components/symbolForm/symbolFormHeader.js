@@ -12,7 +12,6 @@ function SymbolFormHeader({routeType, routeTypes, t, title}) {
   let label = ''
 
   if (
-    routeType === routeTypes.SYMBOL_EDIT ||
     routeType === routeTypes.ME_SYMBOL_EDIT
   ) {
     label = title === null ? t('loading') : `Modifier ${title}`
@@ -20,7 +19,7 @@ function SymbolFormHeader({routeType, routeTypes, t, title}) {
   else if (
     routeType === routeTypes.ME_SYMBOLS_ADD
   ) {
-    label = `Connecter un Lieu à Mon Présent`
+    label = t('form:symbol.header_add')
   }
 
   return (

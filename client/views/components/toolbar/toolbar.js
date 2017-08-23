@@ -91,7 +91,7 @@ function Toolbar(props) {
             disabled={deleteDisabled}
             id="trash"
             margin="0.4rem 0 0 0.4rem"
-            title={t('map:symbol_delete_selected')}
+            title={t('map:symbols.delete_selected')}
             onClick={(e) => handleActionClick(e, onDeleteClick, deleteDisabled)}
           />
 
@@ -99,7 +99,7 @@ function Toolbar(props) {
             disabled={editDisabled}
             id="compose"
             margin="0.4rem 0 0 0.4rem"
-            title={t('map:symbol_edit_selected')}
+            title={t('map:symbols.edit_selected')}
             onClick={(e) => handleActionClick(e, onEditClick, editDisabled)}
           />
         </Segment>

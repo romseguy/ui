@@ -1,5 +1,5 @@
 import { createLogger } from 'redux-logger'
-
+import { mainPanelActions } from 'core/mainPanel'
 
 export const loggerMiddleware = createLogger({
   collapsed: true,
@@ -10,13 +10,6 @@ export const loggerMiddleware = createLogger({
       }
     }
 
-    if ([
-        'rrf/blur',
-        'rrf/focus',
-        'rrf/clearIntents',
-        'rrf/setValidity'
-      ].includes(type)) return false
-
-    return true
+    return type !== mainPanelActions.SET_MAIN_PANEL_NODES
   }
 })

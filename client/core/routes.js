@@ -1,9 +1,8 @@
-import { routerActions } from 'core/router'
-import { centreTypes } from 'core/constants'
+import React from 'react'
 
-import { PlaceForm } from 'views/containers/places'
-import { UserForm } from 'views/containers/users'
-import { SymbolForm } from 'views/containers/symbols'
+import { centreTypes } from 'core/constants'
+import { routerActions } from 'core/router'
+
 
 export default {
   [routerActions.NOT_FOUND]: {
@@ -12,20 +11,18 @@ export default {
 
   [routerActions.AUTH]: {
     path: '/auth',
-    isModal: true,
-    modalRoute: routerActions.ROOT
+    modalRouteType: routerActions.ROOT
   },
 
   [routerActions.ROOT]: {
     path: '/',
-    centre: centreTypes.DEPARTMENT,
+    centre: centreTypes.DEPARTMENT
   },
 
   [routerActions.PLACES_ADD]: {
     path: '/places/add',
     centre: centreTypes.DEPARTMENT,
-    requiresAuth: true,
-    sidePanelComponent: PlaceForm
+    requiresAuth: true
   },
   [routerActions.PLACE_VIEW]: {
     path: '/place/:name',
@@ -34,8 +31,7 @@ export default {
   [routerActions.PLACE_EDIT]: {
     path: '/place/:name/edit',
     centre: centreTypes.DEPARTMENT,
-    requiresAuth: true,
-    sidePanelComponent: PlaceForm
+    requiresAuth: true
   },
 
   [routerActions.ME]: {
@@ -47,8 +43,7 @@ export default {
   [routerActions.ME_PLACES_ADD]: {
     path: '/me/places/add',
     centre: centreTypes.PERSON,
-    requiresAuth: true,
-    sidePanelComponent: PlaceForm
+    requiresAuth: true
   },
   [routerActions.ME_PLACE_VIEW]: {
     path: '/me/place/:name',
@@ -58,15 +53,13 @@ export default {
   [routerActions.ME_PLACE_EDIT]: {
     path: '/me/place/:name/edit',
     centre: centreTypes.PERSON,
-    requiresAuth: true,
-    sidePanelComponent: PlaceForm
+    requiresAuth: true
   },
 
   [routerActions.ME_SYMBOLS_ADD]: {
     path: '/me/symbols/add',
     centre: centreTypes.PERSON,
-    requiresAuth: true,
-    sidePanelComponent: SymbolForm
+    requiresAuth: true
   },
   [routerActions.ME_SYMBOL_VIEW]: {
     path: '/me/symbol/:name',
@@ -76,15 +69,13 @@ export default {
   [routerActions.ME_SYMBOL_EDIT]: {
     path: '/me/symbol/:name/edit',
     centre: centreTypes.PERSON,
-    requiresAuth: true,
-    sidePanelComponent: PlaceForm
+    requiresAuth: true
   },
 
   [routerActions.ME_USERS_ADD]: {
     path: '/me/users/add',
     centre: centreTypes.PERSON,
-    requiresAuth: true,
-    sidePanelComponent: UserForm
+    requiresAuth: true
   },
   [routerActions.ME_USER_VIEW]: {
     path: '/me/user/:name',
@@ -94,7 +85,6 @@ export default {
   [routerActions.ME_USER_EDIT]: {
     path: '/me/user/:name/edit',
     centre: centreTypes.PERSON,
-    requiresAuth: true,
-    //sidePanelComponent: UserForm
+    requiresAuth: true
   }
 }

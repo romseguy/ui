@@ -28,13 +28,12 @@ class CanvasManager extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      atomsToolboxOpen: props.atomsToolboxOpen,
-      maxZoom: props.maxZoom,
-      minZoom: props.minZoom,
-      zoomIncrement: props.zoomIncrement,
-      zoomLevel: props.zoomLevel,
-      zoomInDisabled: props.zoomInDisabled,
-      zoomOutDisabled: props.zoomOutDisabled
+      maxZoom: props.maxZoom || 1,
+      minZoom: props.minZoom || parseFloat('.5'),
+      zoomIncrement: props.zoomIncrement || parseFloat('.25'),
+      zoomLevel: props.zoomLevel || 1,
+      zoomInDisabled: props.zoomInDisabled || true,
+      zoomOutDisabled: props.zoomOutDisabled || false
     }
   }
 
@@ -78,14 +77,13 @@ class CanvasManager extends Component {
       ...item.itemAttributes,
       height: item.itemAttributes.height + 50,
       id: nodes.length,
-      mine: true,
       selected: true,
       textColor: 'blue',
       x: x,
       y: y
     }
 
-    addNode(nodes, onNodesChange)(node)
+    addNode(deselectAllNodes(nodes)(), onNodesChange)(node)
     onToolboxItemDrop && onToolboxItemDrop(item, x, y)
   }
   handleCanvasClick = e => {

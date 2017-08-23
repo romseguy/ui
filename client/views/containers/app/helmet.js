@@ -17,10 +17,6 @@ function AppHelmet({appTitle, title}) {
 }
 
 
-//=====================================
-//  CONNECT
-//-------------------------------------
-
 const mapStateToProps = state => {
   return {
     title: getTitle(state)

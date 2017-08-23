@@ -98,7 +98,7 @@ class PlaceFormFields extends Component {
         {action !== 'select' && (
           <Row>
             <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="name">Nom du lieu :</label>
+              <label htmlFor="name">{t('form:place.name')}</label>
             </Col>
 
             <Col mobile={16} tablet={16} computer={11}>
@@ -129,7 +129,7 @@ class PlaceFormFields extends Component {
         <Row>
           {action !== 'select' && (
             <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="marker">Cliquez à l'endroit où est situé le lieu :</label>
+              <label htmlFor="marker">{t('form:place.map')}</label>
             </Col>
           )}
 
@@ -155,7 +155,7 @@ class PlaceFormFields extends Component {
 
         <Row>
           <Col>
-            <Button type="submit">Enregistrer</Button>
+            <Button type="submit">{t('form:place.save')}</Button>
           </Col>
         </Row>
 

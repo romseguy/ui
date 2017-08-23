@@ -75,9 +75,6 @@ function ModalContainer({modals, onClose}) {
   )
 }
 
-//=====================================
-//  CONNECT
-//-------------------------------------
 
 const mapStateToProps = state => ({
   modals: getModals(state)

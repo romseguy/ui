@@ -3,25 +3,25 @@ import { call, put, select, take } from 'redux-saga/effects'
 import { client } from 'core/apollo'
 import { mainPanelActions } from 'core/mainPanel'
 import { routerActions } from 'core/router'
-import { settingsActions, getCity, getDepartment } from 'core/settings'
 
 import placeQuery from 'views/containers/place/place.query.graphql'
 
 import { setCentreSaga, setDepartmentTitle, setTitleSaga } from './router.sub.saga'
 
 
-export function* rootSaga(settings) {
+export function* rootSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
   yield call(setDepartmentTitle)
 }
 
-export function* placesAddSaga(settings) {
+export function* placesAddSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
 }
 
-export function* placeViewSaga(settings, {name}) {
+export function* placeViewSaga(payload, settings) {
+  const {name} = payload
   const {centre} = settings
   yield call(setCentreSaga, centre)
   yield put(mainPanelActions.setNodes([]))
@@ -38,13 +38,13 @@ export function* placeViewSaga(settings, {name}) {
     while (keepLooping) {
       const {operationName, result} = yield take('APOLLO_QUERY_RESULT')
 
-      if (operationName === 'place') {
+      if (operationName === 'place') {
         keepLooping = false
 
-        if (!result.data || !result.data.place) {
+        if (!result.data || !result.data.place) {
           yield put(routerActions.notFoundRoute())
         } else {
-          const { city, department } = result.data.place
+          const {city, department} = result.data.place
           yield call(setTitleSaga, `${name} à ${city}, ${department}`)
         }
       }
@@ -52,7 +52,7 @@ export function* placeViewSaga(settings, {name}) {
   }
 }
 
-export function* placeEditSaga(settings) {
+export function* placeEditSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
 }

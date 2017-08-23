@@ -160,10 +160,6 @@ class Header extends Component {
   }
 }
 
-//=====================================
-//  CONNECT
-//-------------------------------------
-
 const mapStateToProps = state => ({
   centre: getMeCentre(state),
   routeType: getRouteType(state),
@@ -177,9 +173,6 @@ const mapDispatchToProps = {
   rootRoute: routerActions.rootRoute
 }
 
-//=====================================
-//  GRAPHQL
-//-------------------------------------
 
 const currentUserQueryConfig = {
   name: 'currentUserQuery',

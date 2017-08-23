@@ -43,7 +43,3 @@ export function getSelectedNodeId(state) {
 export function getNextNodeId(state) {
   return getCanvasNodes(state).length
 }
-
-export function isSidePanelOpen(state) {
-  return getSidePanel(state).isOpen
-}

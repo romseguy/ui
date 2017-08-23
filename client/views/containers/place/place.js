@@ -2,15 +2,12 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
-import { translate } from 'react-i18next'
 
 import { roleTypes } from 'core/constants'
 import { mainPanelActions, getCanvasNodes, getSelectedNodeId } from 'core/mainPanel'
-import { getPayload } from 'core/router'
 
 import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
 
-import { CanvasManager } from 'views/components/canvas'
 import { Loader } from 'views/components/layout'
 import { ToolboxButton } from 'views/components/toolbox'
 
@@ -71,8 +68,8 @@ class Place extends Component {
         buttonProps: {
           active: false,
           disabled: currentMode !== modeTypes.EDIT,
-          label: t('map:atom') + 's',
-          title: t('map:atoms_add'),
+          label: t('map:atoms.label') + 's',
+          title: t('map:atoms.add'),
           toggle: true,
           onClick: () => this.setToolboxIsOpen('atoms')
         },
@@ -88,8 +85,8 @@ class Place extends Component {
         buttonProps: {
           active: false,
           disabled: currentMode !== modeTypes.EDIT,
-          label: t('map:symbol') + 's',
-          title: t('map:symbols_add'),
+          label: t('map:symbols.label') + 's',
+          title: t('map:symbols.add'),
           toggle: true,
           onClick: () => this.setToolboxIsOpen('symbols')
         },
@@ -296,71 +293,43 @@ class Place extends Component {
 
   render() {
     const {
-      canvasHeight,
-      canvasWidth,
-      hideTooltip,
-      isAuthed,
+      children,
       isLoading,
-      mine,
-      nodes,
-      selectedNodeId,
-      t,
-      onNodesChange
+      ...props
     } = this.props
 
     const {
       currentMode,
-      modes,
-      toolboxes
+      ...state
     } = this.state
 
     if (isLoading) {
       return <Loader active inline="centered"/>
     }
 
-    const editModeDisabled = !mine || !isAuthed
-
-    return (
-      <CanvasManager
-        canvasHeight={canvasHeight}
-        canvasWidth={canvasWidth}
-        currentMode={currentMode}
-        editModeDisabled={editModeDisabled}
-        hideTooltip={hideTooltip}
-        maxZoom={1}
-        minZoom={parseFloat('.5')}
-        modes={modes}
-        nodes={nodes}
-        readOnly={currentMode !== modeTypes.EDIT}
-        selectedNodeId={selectedNodeId}
-        t={t}
-        toolboxes={toolboxes}
-        zoomIncrement={parseFloat('.25')}
-        zoomInDisabled={true}
-        zoomLevel={1}
-        zoomOutDisabled={false}
-        onCanvasClick={this.handleCanvasClick}
-        onDeleteSelectedNode={this.handleCanvasNodeDelete}
-        onEditSelectedNode={this.handleCanvasNodeEdit}
-        onNodeAnchorClick={this.handleCanvasNodeAnchorClick}
-        onNodeHeaderClick={this.handleCanvasNodeHeaderClick}
-        onNodesChange={onNodesChange}
-        onToolboxItemDrop={this.handleToolboxItemDrop}
-      />
-    )
+    return React.cloneElement(children, {
+      ...props,
+      ...state,
+      currentMode,
+      readOnly: currentMode !== modeTypes.EDIT,
+      onCanvasClick: this.handleCanvasClick,
+      onDeleteSelectedNode: this.handleCanvasNodeDelete,
+      onEditSelectedNode: this.handleCanvasNodeEdit,
+      onNodeAnchorClick: this.handleCanvasNodeAnchorClick,
+      onNodeHeaderClick: this.handleCanvasNodeHeaderClick,
+      onToolboxItemDrop: this.handleToolboxItemDrop
+    })
   }
 }
 
 
-//=====================================
-//  GRAPHQL
-//-------------------------------------
-
 const placeQueryConfig = {
   options: (props) => {
+    const {name: placeName} = props.routePayload
+
     return {
       variables: {
-        title: props.placeName
+        title: placeName
       }
     }
   },
@@ -401,16 +370,10 @@ const placeQueryConfig = {
   }
 }
 
-//=====================================
-//  CONNECT
-//-------------------------------------
 
 const mapStateToProps = state => {
-  const {name: placeName} = getPayload(state)
-
   return {
     nodes: getCanvasNodes(state),
-    placeName,
     selectedNodeId: getSelectedNodeId(state),
   }
 }
@@ -421,7 +384,6 @@ const mapDispatchToProps = {
 }
 
 export default compose(
-  translate(),
   connect(
     mapStateToProps,
     mapDispatchToProps

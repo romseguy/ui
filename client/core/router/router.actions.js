@@ -2,6 +2,7 @@ export const routerActions = {
   AUTH: 'AUTH',
 
   ROOT: 'ROOT',
+
   PLACES_ADD: 'PLACES_ADD',
   PLACE_VIEW: 'PLACE_VIEW',
   PLACE_EDIT: 'PLACE_EDIT',
@@ -17,8 +18,8 @@ export const routerActions = {
   ME_USER_EDIT: 'ME_USER_EDIT',
 
   ME_SYMBOLS_ADD: 'ME_SYMBOLS_ADD',
-  ME_SYMBOL_EDIT: 'ME_SYMBOL_VIEW',
   ME_SYMBOL_VIEW: 'ME_SYMBOL_VIEW',
+  ME_SYMBOL_EDIT: 'ME_SYMBOL_EDIT',
 
   NOT_FOUND: 'NOT_FOUND',
 

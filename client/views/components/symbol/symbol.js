@@ -9,7 +9,7 @@ const map = {
   [symbolTypes.SERVICE]: atomImages.red
 }
 
-function symbol({image, type, height, width}) {
+function Symbol({image, type, height = 50, width = 50}) {
   let src = image
 
   if (type) {
@@ -21,5 +21,5 @@ function symbol({image, type, height, width}) {
   )
 }
 
-export default symbol
+export default Symbol
 

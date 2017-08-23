@@ -21,7 +21,7 @@ function RadioGroup(props) {
       <UIForm.Field>
         <Radio
           checked={input.value === 'create'}
-          label={t('map:user.create')}
+          label={t('form:user.create')}
           name={input.name}
           onChange={onChange('create')}
         />
@@ -29,7 +29,7 @@ function RadioGroup(props) {
       <UIForm.Field>
         <Radio
           checked={input.value === 'select'}
-          label={t('map:user.select')}
+          label={t('form:user.select')}
           name={input.name}
           onChange={onChange('select')}
         />

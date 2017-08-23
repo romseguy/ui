@@ -37,7 +37,7 @@ const handlers = {
       case 'select':
         const userPlace = {
           placeId: Number(placeId),
-          roleId: roleTypes.GUARDIAN,
+          roleId: roleTypes.FOLLOWER,
           x,
           y
         }
@@ -119,10 +119,6 @@ function PlaceFormContainer(props) {
 }
 
 
-//=====================================
-//  CONNECT
-//-------------------------------------
-
 const mapStateToProps = state => {
   const {name} = getPayload(state)
   const centre = getMeCentre(state)
@@ -147,9 +143,6 @@ const mapDispatchToProps = {
   meRoute: routerActions.meRoute
 }
 
-//=====================================
-//  GRAPHQL
-//-------------------------------------
 const placeFormQueryConfig = {
   options: (props) => {
     return {

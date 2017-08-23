@@ -89,10 +89,6 @@ function SymbolFormContainer(props) {
 }
 
 
-//=====================================
-//  CONNECT
-//-------------------------------------
-
 const mapStateToProps = state => {
   const routeType = getRouteType(state)
   const {name} = getPayload(state)
@@ -115,9 +111,6 @@ const mapDispatchToProps = {
   meRoute: routerActions.meRoute
 }
 
-//=====================================
-//  GRAPHQL
-//-------------------------------------
 const symbolFormQueryConfig = {
   options: (props) => {
     return {

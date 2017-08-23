@@ -1,48 +1,160 @@
 import { compose } from 'ramda'
-import React from 'react'
+import React, { Component } from 'react'
+import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 
+import { bindActionCreators } from 'utils/redux'
+
 import { getIsAuthed } from 'core/auth'
-import { routerActions, getRouteType } from 'core/router'
+import { routerActions, getPayload, getRouteType } from 'core/router'
 import routes from 'core/routes'
 
-import { Loader } from 'views/components/layout'
 import MainPanel from 'views/containers/mainPanel'
+import Me from 'views/containers/me'
+import Place, { PlaceForm } from 'views/containers/place'
+import Places from 'views/containers/places'
+import SidePanel from 'views/components/sidePanel'
+import { SymbolForm } from 'views/containers/symbol'
+import { UserForm } from 'views/containers/user'
+
+import { CanvasManager } from 'views/components/canvas'
+import { Loader } from 'views/components/layout'
+import { MapManager } from 'views/components/map'
 
 
-function Router({currentRoute = {}, isAuthed, routeType}) {
-  if (currentRoute.requiresAuth && routeType !== routerActions.AUTH && !isAuthed) {
-    return <Loader indeterminate/>
-  }
+function Route404({t}) {
+  return <span>{t('not_found')}</span>
+}
 
-  const selectedRouteType = currentRoute.isModal ? currentRoute.modalRoute : routeType
+class Router extends Component {
+  render() {
+    const {currentRoute = {}, isAuthed, isPortalOpen, routeType, t} = this.props
 
-  switch (selectedRouteType) {
-    case routerActions.NOT_FOUND:
-      return <span>404</span>
-    default:
-      return <MainPanel routeType={selectedRouteType}/>
+    if (routeType === routerActions.NOT_FOUND) {
+      return <Route404 t={t}/>
+    }
+
+    const {
+      modalRouteType,
+      portal,
+      requiresAuth
+    } = currentRoute
+
+    if (requiresAuth && routeType !== routerActions.AUTH && !isAuthed) {
+      return <Loader indeterminate/>
+    }
+
+    let routeEl = null
+    let sidePanelEl = null
+    let selectedRouteType = routeType
+
+    if (modalRouteType) {
+      selectedRouteType = modalRouteType
+    }
+
+    if (
+      [
+        routerActions.ROOT,
+        routerActions.PLACES_ADD,
+        routerActions.PLACE_EDIT
+      ].includes(routeType)
+    ) {
+      routeEl = (
+        <Places
+          {...this.props}
+          routeType={selectedRouteType}
+        >
+          <MainPanel>
+            <MapManager/>
+          </MainPanel>
+        </Places>
+      )
+    }
+    else if (
+      [
+        routerActions.ME,
+        routerActions.ME_PLACES_ADD,
+        routerActions.ME_PLACE_EDIT,
+        routerActions.ME_SYMBOLS_ADD,
+        routerActions.ME_SYMBOL_EDIT,
+        routerActions.ME_USERS_ADD,
+        routerActions.ME_USER_EDIT
+      ].includes(routeType)
+    ) {
+      routeEl = (
+        <Me
+          {...this.props}
+          routeType={selectedRouteType}
+        >
+          <MainPanel>
+            <CanvasManager/>
+          </MainPanel>
+        </Me>
+      )
+
+      if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
+        sidePanelEl = <PlaceForm/>
+      }
+      if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(routeType)) {
+        sidePanelEl = <SymbolForm/>
+      }
+      else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
+        sidePanelEl = <UserForm/>
+      }
+    }
+    else if (
+      [
+        routerActions.PLACE_VIEW,
+        routerActions.ME_PLACE_VIEW
+      ].includes(routeType)
+    ) {
+      routeEl = (
+        <Place
+          {...this.props}
+          routeType={selectedRouteType}
+        >
+          <MainPanel>
+            <CanvasManager/>
+          </MainPanel>
+        </Place>
+      )
+    }
+    else {
+      return <Route404 t={t}/>
+    }
+
+    return (
+      <div>
+        {routeEl}
+        {sidePanelEl && <SidePanel>{sidePanelEl}</SidePanel>}
+      </div>
+    )
   }
 }
 
 
-//=====================================
-//  CONNECT
-//-------------------------------------
-
 const mapStateToProps = state => {
   const routeType = getRouteType(state)
+  const routePayload = getPayload(state)
+  const currentRoute = routes[routeType]
+  const isAuthed = getIsAuthed(state)
 
   return {
-    currentRoute: routes[routeType],
-    isAuthed: getIsAuthed(state),
+    currentRoute,
+    isAuthed,
+    routePayload,
     routeType
   }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = dispatch => {
+  return {
+    routes: bindActionCreators(routerActions, dispatch)
+  }
+}
 
 export default compose(
+  translate(),
   connect(
     mapStateToProps,
     mapDispatchToProps

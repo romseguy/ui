@@ -6,9 +6,6 @@ export const MainPanelState = {
   canvas: {
     nodes: [],
     selectedNodeId: null
-  },
-  sidePanel: {
-    isOpen: false
   }
 }
 

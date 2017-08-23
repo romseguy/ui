@@ -3,7 +3,6 @@ import { all, call, fork, put, select, spawn, take, takeEvery } from 'redux-saga
 import { delay } from 'redux-saga'
 
 import routes from 'core/routes'
-import { mainPanelActions, isSidePanelOpen, getSelectedNodeId } from 'core/mainPanel'
 import { modalActions, modalConstants } from 'core/modal'
 
 import { routerActions } from './router.actions'
@@ -26,20 +25,6 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
       yield put(routerActions.authRoute())
       yield put(modalActions.setModal(modalConstants.AUTH, {isOpen: true}))
       return
-    }
-  }
-
-  if (currentRoute.sidePanelComponent) {
-    const shouldOpenSidePanel = !(yield select(isSidePanelOpen))
-
-    if (shouldOpenSidePanel) {
-      yield put(mainPanelActions.openSidePanel())
-    }
-  } else {
-    const shouldCloseSidePanel = yield select(isSidePanelOpen)
-
-    if (shouldCloseSidePanel) {
-      yield put(mainPanelActions.closeSidePanel())
     }
   }
 

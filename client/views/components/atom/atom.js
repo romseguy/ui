@@ -11,7 +11,7 @@ const map = {
   [atomTypes.PERSON]: atomImages.yellow
 }
 
-function Atom({image, type, height, width}) {
+function Atom({image, type, height = 50, width = 50}) {
   let src = image
 
   if (type) {

@@ -8,10 +8,10 @@ import { atoms as atomImages } from 'views/assets/img'
 
 import DraggableToolboxItem from 'views/components/draggableToolboxItem'
 import { Label } from 'views/components/layout'
-import symbol from 'views/components/symbol'
+import Symbol from 'views/components/symbol'
 import Toolbox, { ToolboxMenu } from 'views/components/toolbox'
 
-import { symbolTypes, symbolTypeToName } from 'views/utils/symbols'
+import { symbolTypes, symbolTypeToName } from 'views/utils/symbols'
 
 
 function SymbolsToolbox({symbols, isOpen, onClose}) {
@@ -39,7 +39,12 @@ function SymbolsToolbox({symbols, isOpen, onClose}) {
                 itemAttributes={symbol}
               >
                 <Label basic image>
-                  <symbol type={symbol.type}/>
+                  <Symbol
+                    height={symbol.height}
+                    image={symbol.image}
+                    type={symbol.type}
+                    width={symbol.width}
+                  />
                   {symbolTypeToName[symbol.type]()}
                 </Label>
               </DraggableToolboxItem>
@@ -53,10 +58,10 @@ function SymbolsToolbox({symbols, isOpen, onClose}) {
 
 
 const mapStateToProps = (state, props) => {
-  const { t } = props
+  const {t} = props
 
   const symbols = [{
-    name: t('new_symbol'),
+    name: t('map:symbols.new_service'),
     type: symbolTypes.SERVICE,
     image: atomImages.red,
     imageSelected: atomImages.red_selected,
