@@ -5,6 +5,7 @@ import { mainPanelActions } from 'core/mainPanel'
 import { routerActions } from 'core/router'
 
 import placeQuery from 'views/containers/place/place.query.graphql'
+import userQuery from 'views/containers/user/user.query.graphql'
 
 import { setCentreSaga, setDepartmentTitle, setTitleSaga } from './router.sub.saga'
 
@@ -55,6 +56,17 @@ export function* placeViewSaga(payload, settings) {
 export function* placeEditSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
+}
+
+export function* userViewSaga(payload, settings) {
+  const {name: username, noReset} = payload
+  const {centre} = settings
+  yield call(setTitleSaga, username)
+  yield call(setCentreSaga, centre)
+
+  if (!noReset) {
+    yield put(mainPanelActions.setNodes([]))
+  }
 }
 
 export function* notFoundSaga() {

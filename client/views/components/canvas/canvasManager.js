@@ -78,7 +78,6 @@ class CanvasManager extends Component {
       height: item.itemAttributes.height + 50,
       id: nodes.length,
       selected: true,
-      textColor: 'blue',
       x: x,
       y: y
     }

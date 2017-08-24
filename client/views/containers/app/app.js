@@ -7,7 +7,7 @@ import Router from 'views/containers/router'
 import AppHelmet from './helmet'
 
 
-const appTitle = 'Le Présent'
+const appTitle = "Bolo'Bolo"
 
 function App() {
   return (

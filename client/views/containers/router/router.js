@@ -15,7 +15,7 @@ import Place, { PlaceForm } from 'views/containers/place'
 import Places from 'views/containers/places'
 import SidePanel from 'views/components/sidePanel'
 import { SymbolForm } from 'views/containers/symbol'
-import { UserForm } from 'views/containers/user'
+import User, { UserForm } from 'views/containers/user'
 
 import { CanvasManager } from 'views/components/canvas'
 import { Loader } from 'views/components/layout'
@@ -117,6 +117,22 @@ class Router extends Component {
             <CanvasManager/>
           </MainPanel>
         </Place>
+      )
+    }
+    else if (
+      [
+        routerActions.USER_VIEW
+      ].includes(routeType)
+    ) {
+      routeEl = (
+        <User
+          {...this.props}
+          routeType={selectedRouteType}
+        >
+          <MainPanel>
+            <CanvasManager/>
+          </MainPanel>
+        </User>
       )
     }
     else {

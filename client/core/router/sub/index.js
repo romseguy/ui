@@ -6,6 +6,7 @@ import {
   placesAddSaga,
   placeViewSaga,
   placeEditSaga,
+  userViewSaga,
   notFoundSaga,
 } from './router.root.saga'
 
@@ -19,12 +20,13 @@ import {
 export default {
   [routerActions.NOT_FOUND]: notFoundSaga,
   [routerActions.AUTH]: authSaga,
-  
+
   [routerActions.ROOT]: rootSaga,
   [routerActions.PLACES_ADD]: placesAddSaga,
   [routerActions.PLACE_VIEW]: placeViewSaga,
   [routerActions.PLACE_EDIT]: placeEditSaga,
-  
+  [routerActions.USER_VIEW]: userViewSaga,
+
   [routerActions.ME]: meSaga,
   [routerActions.ME_PLACES_ADD]: mePlacesAddSaga,
   [routerActions.ME_PLACE_VIEW]: mePlaceViewSaga,

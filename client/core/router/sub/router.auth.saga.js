@@ -5,7 +5,7 @@ import { routerActions } from '../'
 import { setDepartmentTitle } from './router.sub.saga'
 
 
-export function* authSaga(settings) {
+export function* authSaga(payload, settings) {
   const {isAuthed} = settings
 
   if (isAuthed === false) {

@@ -13,13 +13,13 @@ import { ToolboxButton } from 'views/components/toolbox'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { personToNode } from 'views/utils/nodes'
+import { placeToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
 
-import placeQuery from './place.query.graphql'
+import userQuery from './user.query.graphql'
 
 
-class Place extends Component {
+class User extends Component {
 
   constructor(props) {
     super(props)
@@ -110,10 +110,10 @@ class Place extends Component {
 
   setEditRoute = (node) => {
     const {routes} = this.props
-    const {mePlaceEditRoute, meSymbolEditRoute, meUserEditRoute} = routes
+    const {meUserEditRoute, meSymbolEditRoute} = routes
 
     if (node.type === atomTypes.LOCATION) {
-      mePlaceEditRoute(node.name)
+      meUserEditRoute(node.name)
     }
     else if (node.type === atomTypes.PERSON) {
       meUserEditRoute(node.name)
@@ -124,8 +124,8 @@ class Place extends Component {
   }
 
   setModeActive = key => {
-    const {/*doUpdatePlacePlaces,*/ nodes} = this.props
-    //doUpdatePlacePlaces({nodes})
+    const {/*doUpdateUserUsers,*/ nodes} = this.props
+    //doUpdateUserUsers({nodes})
 
     this.setState(p => ({
       currentMode: key,
@@ -202,17 +202,13 @@ class Place extends Component {
   handleCanvasNodeAnchorClick = clickedNodeId => {
     const {nodes, routes, setSelectedNodeId} = this.props
     const {currentMode} = this.state
-    const {mePlaceViewRoute, placeViewRoute, userViewRoute} = routes
+    const {placeViewRoute, userViewRoute} = routes
     const clickedNode = nodes[clickedNodeId]
 
     switch (currentMode) {
       case modeTypes.DISCOVERY:
         if (clickedNode.type === atomTypes.LOCATION) {
-          if (clickedNode.mine) {
-            mePlaceViewRoute(clickedNode.name)
-          } else {
-            placeViewRoute(clickedNode.name)
-          }
+          placeViewRoute(clickedNode.name)
         }
         else if (clickedNode.type === atomTypes.PERSON) {
           userViewRoute(clickedNode.name)
@@ -229,10 +225,10 @@ class Place extends Component {
   handleCanvasNodeHeaderClick = clickedNodeId => {
     /*    const {
      nodes,
-     mePlaceEditRoute,
-     mePlaceViewRoute,
-     mePlacesAddRoute,
-     placeViewRoute,
+     meUserEditRoute,
+     meUserViewRoute,
+     meUsersAddRoute,
+     userViewRoute,
      setSelectedNodeId
      } = this.props
 
@@ -247,22 +243,22 @@ class Place extends Component {
 
      if (clickedNode.mine) {
      if (clickedNode.idServer) {
-     mePlaceEditRoute(clickedNode.name)
+     meUserEditRoute(clickedNode.name)
      } else {
-     mePlacesAddRoute()
+     meUsersAddRoute()
      }
      }
      } else if (currentMode === modeTypes.DISCOVERY) {
      if (clickedNode.mine) {
-     mePlaceViewRoute(clickedNode.name)
+     meUserViewRoute(clickedNode.name)
      } else {
-     placeViewRoute(clickedNode.name)
+     userViewRoute(clickedNode.name)
      }
      }*/
   }
 
   handleCanvasNodeDelete = deletedNode => {
-    // todo: delete place_place relation if deletedNode.type === LOCATION
+    // todo: delete user_user relation if deletedNode.type === LOCATION
   }
 
   handleCanvasNodeEdit = () => {
@@ -272,19 +268,6 @@ class Place extends Component {
   }
 
   handleToolboxItemDrop = (item, x, y) => {
-    const {routes} = this.props
-    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
-    const {type} = item.itemAttributes
-
-    if (type === atomTypes.LOCATION) {
-      mePlacesAddRoute()
-    }
-    else if (type === atomTypes.PERSON) {
-      meUsersAddRoute()
-    }
-    else if (symbolTypes[type]) {
-      meSymbolsAddRoute()
-    }
   }
 
   render() {
@@ -319,36 +302,40 @@ class Place extends Component {
 }
 
 
-const placeQueryConfig = {
+const userQueryConfig = {
   options: (props) => {
-    const {name: placeName} = props.routePayload
+    const {name: username} = props.routePayload
 
     return {
       variables: {
-        title: placeName
+        username
       }
     }
   },
-  props({ownProps, data: {loading, myPlaces, place}}) {
+  props({ownProps, data: {loading, myPlaces, user}}) {
     let {
       nodes = []
     } = ownProps
 
-    let mine = false
-
-    if (!loading) {
-      const userPlace = myPlaces.find(myPlace => myPlace.place.id === place.id)
-      mine = userPlace && userPlace.role.id === roleTypes.GUARDIAN
-
+    if (myPlaces) {
       if (!nodes.length) {
-        nodes = place.users.map((person, i) => personToNode(i, person))
+        nodes = myPlaces.map((myPlace, id) => {
+          const {place, role, x, y} = myPlace
+          const mine = Number(role.id) === roleTypes.GUARDIAN
+
+          return placeToNode(
+            id,
+            {...place, x, y},
+            mine
+          )
+        })
       } else {
         nodes = nodes.map((node, i) => {
-          const user = place.users.find(person => node.type === atomTypes.PERSON && person.id === node.idServer)
+          const myPlace = myPlaces.find(({place}) => node.type === atomTypes.LOCATION && place.id === node.idServer)
 
-          if (user) {
+          if (myPlace) {
             return {
-              ...personToNode(i, user),
+              ...placeToNode(i, myPlace),
               ...node
             }
           }
@@ -360,7 +347,6 @@ const placeQueryConfig = {
 
     return {
       isLoading: loading,
-      mine,
       nodes
     }
   }
@@ -384,5 +370,5 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   ),
-  graphql(placeQuery, placeQueryConfig)
-)(Place)
+  graphql(userQuery, userQueryConfig)
+)(User)

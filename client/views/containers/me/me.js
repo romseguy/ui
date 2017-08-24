@@ -218,13 +218,17 @@ class Me extends Component {
   handleCanvasNodeAnchorClick = clickedNodeId => {
     const {nodes, routes, setSelectedNodeId} = this.props
     const {currentMode} = this.state
-    const {mePlaceViewRoute} = routes
+    const {mePlaceViewRoute, placeViewRoute} = routes
     const clickedNode = nodes[clickedNodeId]
 
     switch (currentMode) {
       case modeTypes.DISCOVERY:
         if (clickedNode.type === atomTypes.LOCATION) {
-          mePlaceViewRoute(clickedNode.name)
+          if (clickedNode.mine) {
+            mePlaceViewRoute(clickedNode.name)
+          } else {
+            placeViewRoute(clickedNode.name)
+          }
         }
         break
 
@@ -324,11 +328,12 @@ const meQueryConfig = {
       if (!nodes.length) {
         nodes = myPlaces.map((myPlace, id) => {
           const {place, role, x, y} = myPlace
+          const mine = Number(role.id) === roleTypes.GUARDIAN
 
           return placeToNode(
             id,
             {...place, x, y},
-            Number(role.id) === roleTypes.GUARDIAN
+            mine
           )
         })
       } else {

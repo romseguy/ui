@@ -34,6 +34,12 @@ export default {
     requiresAuth: true
   },
 
+  [routerActions.USER_VIEW]: {
+    path: '/user/:name',
+    centre: centreTypes.PERSON,
+    requiresAuth: true
+  },
+
   [routerActions.ME]: {
     path: '/me',
     centre: centreTypes.PERSON,

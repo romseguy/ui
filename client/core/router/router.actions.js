@@ -20,6 +20,8 @@ export const routerActions = {
   ME_SYMBOLS_ADD: 'ME_SYMBOLS_ADD',
   ME_SYMBOL_VIEW: 'ME_SYMBOL_VIEW',
   ME_SYMBOL_EDIT: 'ME_SYMBOL_EDIT',
+  
+  USER_VIEW: 'USER_VIEW',
 
   NOT_FOUND: 'NOT_FOUND',
 
@@ -31,30 +33,34 @@ export const routerActions = {
     type: routerActions.AUTH
   }),
   
-  rootRoute: (centre) => ({
+  rootRoute: () => ({
     type: routerActions.ROOT,
     payload: {
-      centre
     }
   }),
-  placesAddRoute: (centre) => ({
+  
+  placesAddRoute: () => ({
     type: routerActions.PLACES_ADD,
     payload: {
-      centre
     }
   }),
-  placeViewRoute: (name, centre) => ({
+  placeViewRoute: (name) => ({
     type: routerActions.PLACE_VIEW,
     payload: {
-      name,
-      centre
+      name
     }
   }),
-  placeEditRoute: (name, centre) => ({
+  placeEditRoute: (name) => ({
     type: routerActions.PLACE_EDIT,
     payload: {
-      name,
-      centre
+      name
+    }
+  }),
+  
+  userViewRoute: (name) => ({
+    type: routerActions.USER_VIEW,
+    payload: {
+      name
     }
   }),
  
@@ -63,10 +69,9 @@ export const routerActions = {
     payload: params
   }),
   
-  mePlacesAddRoute: (centre) => ({
+  mePlacesAddRoute: () => ({
     type: routerActions.ME_PLACES_ADD,
     payload: {
-      centre
     }
   }),
   mePlaceViewRoute: (name) => ({
@@ -75,55 +80,48 @@ export const routerActions = {
       name
     }
   }),
-  mePlaceEditRoute: (name, centre) => ({
+  mePlaceEditRoute: (name) => ({
     type: routerActions.ME_PLACE_EDIT,
     payload: {
-      name,
-      centre
+      name
     }
   }),
   
-  meSymbolsAddRoute: (name, centre) => ({
+  meSymbolsAddRoute: (name) => ({
     type: routerActions.ME_SYMBOLS_ADD,
     payload: {
-      name,
-      centre
+      name
     }
   }),
-  meSymbolViewRoute: (name, centre) => ({
+  meSymbolViewRoute: (name) => ({
     type: routerActions.ME_SYMBOL_VIEW,
     payload: {
-      name,
-      centre
+      name
     }
   }),
-  meSymbolEditRoute: (name, centre) => ({
+  meSymbolEditRoute: (name) => ({
     type: routerActions.ME_SYMBOL_EDIT,
     payload: {
-      name,
-      centre
+      name
     }
   }),
 
-  meUsersAddRoute: (name, centre) => ({
+  meUsersAddRoute: (name) => ({
     type: routerActions.ME_USERS_ADD,
     payload: {
-      name,
-      centre
+      name
     }
   }),
-  meUserViewRoute: (name, centre) => ({
+  meUserViewRoute: (name) => ({
     type: routerActions.ME_USER_VIEW,
     payload: {
-      name,
-      centre
+      name
     }
   }),
-  meUserEditRoute: (name, centre) => ({
+  meUserEditRoute: (name) => ({
     type: routerActions.ME_USER_EDIT,
     payload: {
-      name,
-      centre
+      name
     }
   })
 }
