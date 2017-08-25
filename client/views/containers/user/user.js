@@ -31,9 +31,13 @@ class User extends Component {
       modes: [{
         key: modeTypes.DISCOVERY,
         active: currentMode === modeTypes.DISCOVERY,
-        label: t('map:modes.discovery'),
         disabled: false,
         iconId: 'search',
+        labels: {
+          active: t('map:modes.discovery.labels.active'),
+          disabled: t('map:modes.discovery.labels.disabled'),
+          inactive: t('map:modes.discovery.labels.inactive')
+        },
         onClick: () => {
           this.setModeActive(modeTypes.DISCOVERY)
           this.setToolboxDisabled('atoms', true)
@@ -42,9 +46,13 @@ class User extends Component {
       }, {
         key: modeTypes.EDIT,
         active: currentMode === modeTypes.EDIT,
-        label: t('map:modes.edit'),
         disabled: false,
         iconId: 'edit',
+        labels: {
+          active: t('map:modes.edit.labels.active'),
+          disabled: t('map:modes.edit.labels.disabled'),
+          inactive: t('map:modes.edit.labels.inactive')
+        },
         onClick: () => {
           this.setModeActive(modeTypes.EDIT)
           this.setToolboxDisabled('atoms', false)
@@ -53,9 +61,13 @@ class User extends Component {
       }, {
         key: modeTypes.NOTIFICATION,
         active: currentMode === modeTypes.NOTIFICATION,
-        label: t('map:modes.notification'),
         disabled: false,
         iconId: 'volume',
+        labels: {
+          active: t('map:modes.notification.labels.active'),
+          disabled: t('map:modes.notification.labels.disabled'),
+          inactive: t('map:modes.notification.labels.inactive')
+        },
         onClick: () => {
           this.setModeActive(modeTypes.NOTIFICATION)
           this.setToolboxDisabled('atoms', true)
@@ -267,7 +279,7 @@ class User extends Component {
     //this.setEditRoute(selectedNode)
   }
 
-  handleToolboxItemDrop = (item, x, y) => {
+  handleCanvasItemDrop = (item, x, y) => {
   }
 
   render() {
@@ -296,7 +308,7 @@ class User extends Component {
       onEditSelectedNode: this.handleCanvasNodeEdit,
       onNodeAnchorClick: this.handleCanvasNodeAnchorClick,
       onNodeHeaderClick: this.handleCanvasNodeHeaderClick,
-      onToolboxItemDrop: this.handleToolboxItemDrop
+      onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }
 }

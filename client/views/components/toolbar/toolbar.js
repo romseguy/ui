@@ -44,15 +44,10 @@ function Toolbar(props) {
           border: 0,
           padding: '0.25rem 0.25rem 0 0.5rem'
         }}>
-          {modes.map(({active, disabled, iconId, key, label, onClick}) => {
-            const title = `${label} ${
-              disabled
-                ? 'non autorisé'
-                : (active
-                  ? 'activé'
-                  : 'désactivé'
-              )
-              }`
+          {modes.map(({active, disabled, iconId, key, labels, onClick}) => {
+            const title = disabled
+              ? labels.disabled
+              : (active ? labels.active : labels.inactive)
 
             return (
               <ToolbarIcon

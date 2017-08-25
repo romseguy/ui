@@ -14,7 +14,8 @@ import {
   meSaga,
   mePlacesAddSaga,
   mePlaceViewSaga,
-  mePlaceEditSaga
+  mePlaceEditSaga,
+  meUsersAddSaga
 } from './router.me.saga'
 
 export default {
@@ -30,5 +31,6 @@ export default {
   [routerActions.ME]: meSaga,
   [routerActions.ME_PLACES_ADD]: mePlacesAddSaga,
   [routerActions.ME_PLACE_VIEW]: mePlaceViewSaga,
-  [routerActions.ME_PLACE_EDIT]: mePlaceEditSaga
+  [routerActions.ME_PLACE_EDIT]: mePlaceEditSaga,
+  [routerActions.ME_USERS_ADD]: meUsersAddSaga
 }

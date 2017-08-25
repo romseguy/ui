@@ -20,7 +20,7 @@ function PlaceFormHeader({routeType, routeTypes, t, title}) {
   else if (
     routeType === routeTypes.ME_PLACES_ADD
   ) {
-    label = `Connecter un Lieu à Mon Présent`
+    label = t('form:place.header_add')
   }
 
   return (

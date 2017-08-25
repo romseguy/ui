@@ -40,7 +40,11 @@ class Me extends Component {
       modes: [{
         key: modeTypes.DISCOVERY,
         active: currentMode === modeTypes.DISCOVERY,
-        label: t('map:modes.discovery'),
+        labels: {
+          active: t('map:modes.discovery.labels.active'),
+          disabled: t('map:modes.discovery.labels.disabled'),
+          inactive: t('map:modes.discovery.labels.inactive')
+        },
         disabled: false,
         iconId: 'search',
         onClick: () => {
@@ -51,7 +55,11 @@ class Me extends Component {
       }, {
         key: modeTypes.EDIT,
         active: currentMode === modeTypes.EDIT,
-        label: t('map:modes.edit'),
+        labels: {
+          active: t('map:modes.edit.labels.active'),
+          disabled: t('map:modes.edit.labels.disabled'),
+          inactive: t('map:modes.edit.labels.inactive')
+        },
         disabled: false,
         iconId: 'edit',
         onClick: () => {
@@ -62,7 +70,11 @@ class Me extends Component {
       }, {
         key: modeTypes.NOTIFICATION,
         active: currentMode === modeTypes.NOTIFICATION,
-        label: t('map:modes.notification'),
+        labels: {
+          active: t('map:modes.notification.labels.active'),
+          disabled: t('map:modes.notification.labels.disabled'),
+          inactive: t('map:modes.notification.labels.inactive')
+        },
         disabled: false,
         iconId: 'volume',
         onClick: () => {
@@ -270,7 +282,7 @@ class Me extends Component {
     }
   }
 
-  handleToolboxItemDrop = (item, x, y) => {
+  handleCanvasItemDrop = (item, x, y) => {
     const {routes} = this.props
     const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
     const {type} = item.itemAttributes
@@ -312,7 +324,7 @@ class Me extends Component {
       onEditSelectedNode: this.handleCanvasNodeEdit,
       onNodeAnchorClick: this.handleCanvasNodeAnchorClick,
       onNodeHeaderClick: this.handleCanvasNodeHeaderClick,
-      onToolboxItemDrop: this.handleToolboxItemDrop
+      onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }
 }

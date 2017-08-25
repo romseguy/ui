@@ -87,11 +87,8 @@ export const routerActions = {
     }
   }),
   
-  meSymbolsAddRoute: (name) => ({
+  meSymbolsAddRoute: () => ({
     type: routerActions.ME_SYMBOLS_ADD,
-    payload: {
-      name
-    }
   }),
   meSymbolViewRoute: (name) => ({
     type: routerActions.ME_SYMBOL_VIEW,
@@ -106,11 +103,8 @@ export const routerActions = {
     }
   }),
 
-  meUsersAddRoute: (name) => ({
-    type: routerActions.ME_USERS_ADD,
-    payload: {
-      name
-    }
+  meUsersAddRoute: () => ({
+    type: routerActions.ME_USERS_ADD
   }),
   meUserViewRoute: (name) => ({
     type: routerActions.ME_USER_VIEW,

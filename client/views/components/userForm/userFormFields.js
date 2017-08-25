@@ -55,7 +55,7 @@ class UserFormFields extends Component {
 
         <Row>
           <Col>
-            <Button type="submit">{t('form:user.save')}</Button>
+            <Button type="submit">{t(`form:user.${action}.save`)}</Button>
           </Col>
         </Row>
 

@@ -31,9 +31,13 @@ class Place extends Component {
       modes: [{
         key: modeTypes.DISCOVERY,
         active: currentMode === modeTypes.DISCOVERY,
-        label: t('map:modes.discovery'),
         disabled: false,
         iconId: 'search',
+        labels: {
+          active: t('map:modes.discovery.labels.active'),
+          disabled: t('map:modes.discovery.labels.disabled'),
+          inactive: t('map:modes.discovery.labels.inactive')
+        },
         onClick: () => {
           this.setModeActive(modeTypes.DISCOVERY)
           this.setToolboxDisabled('atoms', true)
@@ -42,20 +46,30 @@ class Place extends Component {
       }, {
         key: modeTypes.EDIT,
         active: currentMode === modeTypes.EDIT,
-        label: t('map:modes.edit'),
         disabled: false,
         iconId: 'edit',
+        labels: {
+          active: t('map:modes.edit.labels.active'),
+          disabled: t('map:modes.edit.labels.disabled'),
+          inactive: t('map:modes.edit.labels.inactive')
+        },
         onClick: () => {
-          this.setModeActive(modeTypes.EDIT)
-          this.setToolboxDisabled('atoms', false)
-          this.setToolboxDisabled('symbols', false)
+          if (this.props.mine) {
+            this.setModeActive(modeTypes.EDIT)
+            this.setToolboxDisabled('atoms', false)
+            this.setToolboxDisabled('symbols', false)
+          }
         }
       }, {
         key: modeTypes.NOTIFICATION,
         active: currentMode === modeTypes.NOTIFICATION,
-        label: t('map:modes.notification'),
         disabled: false,
         iconId: 'volume',
+        labels: {
+          active: t('map:modes.notification.labels.active'),
+          disabled: t('map:modes.notification.labels.disabled'),
+          inactive: t('map:modes.notification.labels.inactive')
+        },
         onClick: () => {
           this.setModeActive(modeTypes.NOTIFICATION)
           this.setToolboxDisabled('atoms', true)
@@ -101,10 +115,14 @@ class Place extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {isLoading, setNodes, nodes} = nextProps
+    const {isLoading, mine, nodes, setNodes} = nextProps
 
     if (!isLoading && isLoading !== this.props.isLoading) {
       setNodes(nodes)
+    }
+
+    if (mine === false && this.props.mine === null) {
+      this.setModeDisabled(modeTypes.EDIT)
     }
   }
 
@@ -124,23 +142,24 @@ class Place extends Component {
   }
 
   setModeActive = key => {
-    const {/*doUpdatePlacePlaces,*/ nodes} = this.props
-    //doUpdatePlacePlaces({nodes})
-
     this.setState(p => ({
       currentMode: key,
       modes: p.modes.map(mode => {
         if (mode.key === key) {
-          return {
-            ...mode,
-            active: true
-          }
+          return {...mode, active: true}
         }
+        return {...mode, active: false}
+      })
+    }))
+  }
 
-        return {
-          ...mode,
-          active: false
+  setModeDisabled = key => {
+    this.setState(p => ({
+      modes: p.modes.map(mode => {
+        if (mode.key === key) {
+          return {...mode, disabled: true}
         }
+        return mode
       })
     }))
   }
@@ -148,7 +167,7 @@ class Place extends Component {
   setToolboxDisabled = (key, disabled) => {
     this.setState(p => ({
       toolboxes: p.toolboxes.map(toolbox => {
-        if (toolbox.key === key) {
+        if (key === '*' || toolbox.key === key) {
           return {
             ...toolbox,
             buttonProps: {
@@ -165,7 +184,7 @@ class Place extends Component {
   setToolboxIsOpen = (key, isOpen) => {
     this.setState(p => ({
       toolboxes: p.toolboxes.map(toolbox => {
-        if (toolbox.key === key) {
+        if (key === '*' || toolbox.key === key) {
           const active = isOpen === undefined ? !toolbox.props.isOpen : isOpen
           return {
             ...toolbox,
@@ -199,7 +218,7 @@ class Place extends Component {
     this.setToolboxIsOpen('*', false)
   }
 
-  handleCanvasNodeAnchorClick = clickedNodeId => {
+  handleNodeAnchorClick = clickedNodeId => {
     const {nodes, routes, setSelectedNodeId} = this.props
     const {currentMode} = this.state
     const {mePlaceViewRoute, placeViewRoute, userViewRoute} = routes
@@ -226,52 +245,20 @@ class Place extends Component {
     }
   }
 
-  handleCanvasNodeHeaderClick = clickedNodeId => {
-    /*    const {
-     nodes,
-     mePlaceEditRoute,
-     mePlaceViewRoute,
-     mePlacesAddRoute,
-     placeViewRoute,
-     setSelectedNodeId
-     } = this.props
-
-     const {
-     currentMode
-     } = this.state
-
-     const clickedNode = nodes[clickedNodeId]
-
-     if (editMode) {
-     setSelectedNodeId(clickedNodeId)
-
-     if (clickedNode.mine) {
-     if (clickedNode.idServer) {
-     mePlaceEditRoute(clickedNode.name)
-     } else {
-     mePlacesAddRoute()
-     }
-     }
-     } else if (currentMode === modeTypes.DISCOVERY) {
-     if (clickedNode.mine) {
-     mePlaceViewRoute(clickedNode.name)
-     } else {
-     placeViewRoute(clickedNode.name)
-     }
-     }*/
-  }
-
-  handleCanvasNodeDelete = deletedNode => {
+  handleNodeDelete = deletedNode => {
     // todo: delete place_place relation if deletedNode.type === LOCATION
   }
 
-  handleCanvasNodeEdit = () => {
+  handleNodeEdit = () => {
     const {nodes} = this.props
     const selectedNode = nodes.find(node => node.selected)
     //this.setEditRoute(selectedNode)
   }
 
-  handleToolboxItemDrop = (item, x, y) => {
+  handleNodeHeaderClick = clickedNodeId => {
+  }
+
+  handleCanvasItemDrop = (item, x, y) => {
     const {routes} = this.props
     const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
     const {type} = item.itemAttributes
@@ -296,6 +283,7 @@ class Place extends Component {
 
     const {
       currentMode,
+      modes,
       ...state
     } = this.state
 
@@ -307,13 +295,14 @@ class Place extends Component {
       ...props,
       ...state,
       currentMode,
+      modes,
       readOnly: currentMode !== modeTypes.EDIT,
       onCanvasClick: this.handleCanvasClick,
-      onDeleteSelectedNode: this.handleCanvasNodeDelete,
-      onEditSelectedNode: this.handleCanvasNodeEdit,
-      onNodeAnchorClick: this.handleCanvasNodeAnchorClick,
-      onNodeHeaderClick: this.handleCanvasNodeHeaderClick,
-      onToolboxItemDrop: this.handleToolboxItemDrop
+      onDeleteSelectedNode: this.handleNodeDelete,
+      onEditSelectedNode: this.handleNodeEdit,
+      onNodeAnchorClick: this.handleNodeAnchorClick,
+      onNodeHeaderClick: this.handleNodeHeaderClick,
+      onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }
 }
@@ -334,7 +323,7 @@ const placeQueryConfig = {
       nodes = []
     } = ownProps
 
-    let mine = false
+    let mine = null
 
     if (!loading) {
       const userPlace = myPlaces.find(myPlace => myPlace.place.id === place.id)

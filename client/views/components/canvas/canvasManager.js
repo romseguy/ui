@@ -70,8 +70,8 @@ class CanvasManager extends Component {
   }
 
   // CANVAS
-  handleToolboxItemDrop = (item, x, y) => {
-    const {nodes, onNodesChange, onToolboxItemDrop} = this.props
+  handleCanvasItemDrop = (item, x, y) => {
+    const {nodes, onNodesChange, onCanvasItemDrop} = this.props
 
     const node = {
       ...item.itemAttributes,
@@ -83,7 +83,7 @@ class CanvasManager extends Component {
     }
 
     addNode(deselectAllNodes(nodes)(), onNodesChange)(node)
-    onToolboxItemDrop && onToolboxItemDrop(item, x, y)
+    onCanvasItemDrop && onCanvasItemDrop(item, x, y)
   }
   handleCanvasClick = e => {
     const {nodes, onCanvasClick, onNodesChange} = this.props
@@ -191,7 +191,7 @@ class CanvasManager extends Component {
           toolboxes={toolboxes}
           zoomLevel={zoomLevel}
           onClick={this.handleCanvasClick}
-          onToolboxItemDrop={this.handleToolboxItemDrop}
+          onCanvasItemDrop={this.handleCanvasItemDrop}
           onNodeAnchorClick={this.handleCanvasNodeAnchorClick}
           onNodeAnchorMouseOver={this.handleCanvasNodeAnchorMouseOver}
           onNodeAnchorMouseOut={this.handleCanvasNodeAnchorMouseOut}

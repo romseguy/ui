@@ -101,3 +101,16 @@ export function* mePlaceEditSaga(payload, settings) {
     }
   }
 }
+
+export function* meUsersAddSaga(payload, settings) {
+  const {centre} = settings
+  const {} = payload
+
+  yield call(setCentreSaga, centre)
+
+  const {currentUser: {username}} = yield call([client, client.readQuery], {
+    query: currentUserQuery
+  })
+
+  yield call(setTitleSaga, username)
+}

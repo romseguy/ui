@@ -1,7 +1,9 @@
-query userForm($userId: ID!) {
-  user(userId: $userId) {
+query userForm($username: String!) {
+  myFollowees {
     id
-    username
+  }
+  user(username: $username) {
+    id
   }
   users {
     id

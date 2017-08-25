@@ -55,54 +55,6 @@ class MainPanel extends Component {
       ...props,
       nodes
     })
-
-    // depending on the route, we select a data container for the corresponding manager
-    /*    return (
-     <Container fluid>
-     {[
-     routerActions.ROOT,
-     routerActions.PLACES_ADD,
-     routerActions.PLACE_EDIT
-     ].includes(routeType) && (
-     <Places
-     mapHeight={mapHeight}
-     mapWidth={mapWidth}
-     userLocation={userLocation}
-     onNodesChange={setNodes}
-     />
-     )}
-
-     {[
-     routerActions.PLACE_VIEW,
-     routerActions.ME_PLACE_VIEW
-     ].includes(routeType) && (
-     <Place
-     canvasHeight={canvasHeight}
-     canvasWidth={canvasWidth}
-     hideTooltip={hideTooltip}
-     routes={routes}
-     onNodesChange={setNodes}
-     >
-     </Place>
-     )}
-
-     {[
-     routerActions.ME,
-     routerActions.ME_PLACES_ADD,
-     routerActions.ME_PLACE_EDIT,
-     routerActions.ME_USERS_ADD,
-     routerActions.ME_USER_EDIT
-     ].includes(routeType) && (
-     <Me
-     canvasHeight={canvasHeight}
-     canvasWidth={canvasWidth}
-     hideTooltip={hideTooltip}
-     routes={routes}
-     onNodesChange={setNodes}
-     />
-     )}
-     </Container>
-     )*/
   }
 }
 

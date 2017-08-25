@@ -176,7 +176,7 @@ const dropCanvasSpec = {
     const delta = monitor.getDifferenceFromInitialOffset()
     const initial = monitor.getInitialClientOffset()
     const {matrix, zoomLevel} = component.state
-    const {onToolboxItemDrop, onNodeDragEnd} = component.props
+    const {onCanvasItemDrop, onNodeDragEnd} = component.props
 
     if (itemType === CanvasItemTypes.CANVAS_NODE) {
       const x = Math.round(item.node.x + (delta.x / zoomLevel))
@@ -189,7 +189,7 @@ const dropCanvasSpec = {
       const matrixDeltaY = matrix[5] < 0 ? Math.abs(matrix[5]) : -matrix[5]
       let x = (invert(matrix[4]) + delta.x + initial.x - canvasPosition.left - item.itemAttributes.width/1.8) / zoomLevel
       let y = (invert(matrix[5]) + delta.y + initial.y - canvasPosition.top - item.itemAttributes.height/1.8) / zoomLevel
-      onToolboxItemDrop(item, x, y)
+      onCanvasItemDrop(item, x, y)
     }
   },
 
