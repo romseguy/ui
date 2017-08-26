@@ -1,8 +1,9 @@
 import { call, put, select, take } from 'redux-saga/effects'
 
 import { client } from 'core/apollo'
-import { mainPanelActions } from 'core/mainPanel'
+import { canvasActions } from 'core/canvas'
 import { routerActions } from 'core/router'
+import { i18n } from 'core/settings'
 
 import placeQuery from 'views/containers/place/place.query.graphql'
 import userQuery from 'views/containers/user/user.query.graphql'
@@ -16,23 +17,38 @@ export function* rootSaga(payload, settings) {
   yield call(setDepartmentTitle)
 }
 
+export function* placeEditSaga(payload, settings) {
+  const {centre} = settings
+  yield call(setCentreSaga, centre)
+}
+
 export function* placesAddSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
 }
 
 export function* placeViewSaga(payload, settings) {
-  const {name} = payload
+  const {name: placeName, noReset} = payload
   const {centre} = settings
+
   yield call(setCentreSaga, centre)
-  yield put(mainPanelActions.setNodes([]))
+
+  if (!noReset) {
+    yield put(canvasActions.setNodes([]))
+  }
 
   try {
-    const {place: {city, department}} = yield call([client, client.readQuery], {
+    const {
+      myPlaces,
+      place: {city, department}
+    } = yield call([client, client.readQuery], {
       query: placeQuery,
-      variables: {title: name},
+      variables: {title: placeName},
     })
-    yield call(setTitleSaga, `${name} à ${city}, ${department}`)
+
+    const myPlace = myPlaces.find(({place}) => place.title === placeName)
+
+    yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
   } catch (e) {
     let keepLooping = true
 
@@ -44,18 +60,22 @@ export function* placeViewSaga(payload, settings) {
 
         if (!result.data || !result.data.place) {
           yield put(routerActions.notFoundRoute())
-        } else {
-          const {city, department} = result.data.place
-          yield call(setTitleSaga, `${name} à ${city}, ${department}`)
+          return
         }
+
+        const {
+          data: {
+            myPlaces,
+            place: {city, department}
+          }
+        } = result
+
+        const myPlace = myPlaces.find(({place}) => place.title === placeName)
+
+        yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
       }
     }
   }
-}
-
-export function* placeEditSaga(payload, settings) {
-  const {centre} = settings
-  yield call(setCentreSaga, centre)
 }
 
 export function* userViewSaga(payload, settings) {
@@ -65,7 +85,7 @@ export function* userViewSaga(payload, settings) {
   yield call(setCentreSaga, centre)
 
   if (!noReset) {
-    yield put(mainPanelActions.setNodes([]))
+    yield put(canvasActions.setNodes([]))
   }
 }
 

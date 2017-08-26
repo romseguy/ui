@@ -68,23 +68,25 @@ const mapStateToProps = (state, props) => {
     name: t('map:places.new'),
     type: atomTypes.LOCATION,
     image: atomImages.green,
-    imageSelected: atomImages.green_selected,
-    backgroundColor: 'transparent',
-    selected: false,
-    titleYOffset: 50,
-    width: 50,
-    height: 50
-  }, {
-    name: t('map:persons.new'),
-    type: atomTypes.PERSON,
-    image: atomImages.yellow,
-    imageSelected: atomImages.yellow_selected,
     backgroundColor: 'transparent',
     selected: false,
     titleYOffset: 50,
     width: 50,
     height: 50
   }]
+
+  if (centre === centreTypes.PERSON) {
+    atoms.push({
+      name: t('map:persons.new'),
+      type: atomTypes.PERSON,
+      image: atomImages.yellow,
+      backgroundColor: 'transparent',
+      selected: false,
+      titleYOffset: 50,
+      width: 50,
+      height: 50
+    })
+  }
 
   return {
     atoms

@@ -10,7 +10,6 @@ import {
   selectNode,
   toggleNode
 } from 'views/utils/nodes'
-import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 import withDragDropContext from 'views/utils/withDragDropContext'
 
 import Toolbar from 'views/components/toolbar'
@@ -93,30 +92,27 @@ class CanvasManager extends Component {
       onCanvasClick && onCanvasClick(e)
     }
   }
-  handleCanvasNodeAnchorClick = (id) => {
-    const {currentMode, hideTooltip, nodes, onNodeAnchorClick} = this.props
-    const clickedNode = nodes[id]
-
-    hideTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, clickedNode.selected)})
+  handleNodeAnchorClick = (id) => {
+    const {currentMode, nodes, onNodeAnchorClick} = this.props
     onNodeAnchorClick && onNodeAnchorClick(id)
   }
-  handleCanvasNodeAnchorMouseOver = (id) => {
+  handleNodeAnchorMouseOver = (id) => {
     const {nodes, onNodesChange} = this.props
     hoverNode(nodes, onNodesChange)(id, true)
   }
-  handleCanvasNodeAnchorMouseOut = (id) => {
+  handleNodeAnchorMouseOut = (id) => {
     const {nodes, onNodesChange} = this.props
     hoverNode(nodes, onNodesChange)(id, false)
   }
-  handleCanvasNodeDragEnd = (id, x, y) => {
+  handleNodeDragEnd = (id, x, y) => {
     const {nodes, onNodesChange} = this.props
     moveNode(nodes, onNodesChange)(id, x, y)
   }
-  handleCanvasNodeHeaderClick = (id) => {
+  handleNodeHeaderClick = (id) => {
     const {onNodeHeaderClick} = this.props
     onNodeHeaderClick && onNodeHeaderClick(id)
   }
-  handleCanvasWheel = ({deltaX, deltaY}) => {
+  handleWheel = ({deltaX, deltaY}) => {
     if (deltaY > 0) {
       this.zoomOut()
     } else {
@@ -144,7 +140,7 @@ class CanvasManager extends Component {
       currentMode,
       modes,
       readOnly,
-      selectedNodeId,
+      selectedNodeIds,
       nodes,
       t,
       toolboxes,
@@ -157,7 +153,15 @@ class CanvasManager extends Component {
       zoomInDisabled
     } = this.state
 
-    const hasSelectedNode = selectedNodeId !== null
+    let selectedNodeType = null
+
+    if (selectedNodeIds.length === 1) {
+      const selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
+
+      if (selectedNode) {
+        selectedNodeType = selectedNode.type
+      }
+    }
 
     return (
       <CanvasLayout>
@@ -165,9 +169,10 @@ class CanvasManager extends Component {
 
         <Toolbar
           currentMode={currentMode}
-          deleteDisabled={!hasSelectedNode || readOnly}
-          editDisabled={!hasSelectedNode || readOnly}
+          deleteDisabled={selectedNodeIds.length !== 1 || readOnly}
+          editDisabled={selectedNodeIds.length !== 1 || readOnly}
           modes={modes}
+          selectedNodeType={selectedNodeType}
           t={t}
           toolboxes={toolboxes}
           zoomInDisabled={zoomInDisabled}
@@ -192,12 +197,12 @@ class CanvasManager extends Component {
           zoomLevel={zoomLevel}
           onClick={this.handleCanvasClick}
           onCanvasItemDrop={this.handleCanvasItemDrop}
-          onNodeAnchorClick={this.handleCanvasNodeAnchorClick}
-          onNodeAnchorMouseOver={this.handleCanvasNodeAnchorMouseOver}
-          onNodeAnchorMouseOut={this.handleCanvasNodeAnchorMouseOut}
-          onNodeDragEnd={this.handleCanvasNodeDragEnd}
-          onNodeHeaderClick={this.handleCanvasNodeHeaderClick}
-          onWheel={this.handleCanvasWheel}
+          onNodeAnchorClick={this.handleNodeAnchorClick}
+          onNodeAnchorMouseOver={this.handleNodeAnchorMouseOver}
+          onNodeAnchorMouseOut={this.handleNodeAnchorMouseOut}
+          onNodeDragEnd={this.handleNodeDragEnd}
+          onNodeHeaderClick={this.handleNodeHeaderClick}
+          onWheel={this.handleWheel}
         />
 
       </CanvasLayout>

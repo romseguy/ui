@@ -2,6 +2,8 @@ import upd from 'immutability-helper'
 
 import { getRandomArbitrary } from 'utils/number'
 
+import { roleTypes } from 'core/constants'
+
 import { atomTypes } from 'views/utils/atoms'
 import { atoms } from 'views/assets/img'
 
@@ -10,7 +12,9 @@ const noop = () => {}
 
 export const personToNode = (id, person) => {
   const {
-    username
+    username,
+    x,
+    y
   }= person
 
   return {
@@ -21,8 +25,12 @@ export const personToNode = (id, person) => {
 
     // state
     name: username,
+
+    //x: x ? parseFloat(x) : 10,
+    //y: y ? parseFloat(y) : 10,
     x: getRandomArbitrary(50, 300),
     y: getRandomArbitrary(50, 300),
+
 
     // options
     height: 100,
@@ -64,11 +72,12 @@ export const placeToNode = (id, place, mine = false) => {
     // options
     backgroundColor: 'transparent',
     height: 100,
-    image: atoms.green,
-    imageSelected: atoms.green_selected,
+    // images
+    image: mine ? atoms.green : atoms.green,
+    imageSelected: mine ? atoms.green_selected : atoms.green_selected,
     imageHeight: 50,
     imageWidth: 50,
-    textColor: mine ? 'blue' : 'black',
+    textColor: 'black',
     titleYOffset: 50,
     width: 50
   }

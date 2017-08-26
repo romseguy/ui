@@ -2,9 +2,10 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
+import { actions as tooltipActions } from 'redux-tooltip'
 
 import { roleTypes } from 'core/constants'
-import { mainPanelActions, getCanvasNodes, getSelectedNodeId } from 'core/mainPanel'
+import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
 
 import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
 
@@ -13,8 +14,9 @@ import { ToolboxButton } from 'views/components/toolbox'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { placeToNode } from 'views/utils/nodes'
+import { deselectAllNodes, placeToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
+import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
 import userQuery from './user.query.graphql'
 
@@ -136,7 +138,8 @@ class User extends Component {
   }
 
   setModeActive = key => {
-    const {/*doUpdateUserUsers,*/ nodes} = this.props
+    const {/*doUpdateUserUsers,*/ nodes, setNodes} = this.props
+    deselectAllNodes(nodes, setNodes)()
     //doUpdateUserUsers({nodes})
 
     this.setState(p => ({
@@ -211,11 +214,13 @@ class User extends Component {
     this.setToolboxIsOpen('*', false)
   }
 
-  handleCanvasNodeAnchorClick = clickedNodeId => {
-    const {nodes, routes, setSelectedNodeId} = this.props
+  handleNodeAnchorClick = clickedNodeId => {
+    const {hideTooltip, nodes, routes, selectNode, showTooltip, unselectNode} = this.props
     const {currentMode} = this.state
     const {placeViewRoute, userViewRoute} = routes
+
     const clickedNode = nodes[clickedNodeId]
+    const isNodeSelected = clickedNode.selected
 
     switch (currentMode) {
       case modeTypes.DISCOVERY:
@@ -228,20 +233,26 @@ class User extends Component {
         break
 
       case modeTypes.EDIT:
-        const isNodeSelected = !clickedNode.selected
-        setSelectedNodeId(isNodeSelected ? clickedNodeId : null)
+        hideTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, isNodeSelected)})
+        showTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, !isNodeSelected), origin: `canvas-node__anchor-img-${clickedNodeId}`})
+
+        if (isNodeSelected) {
+          unselectNode(clickedNodeId)
+        } else {
+          selectNode(clickedNodeId)
+        }
         break
     }
   }
 
-  handleCanvasNodeHeaderClick = clickedNodeId => {
+  handleNodeHeaderClick = clickedNodeId => {
     /*    const {
      nodes,
      meUserEditRoute,
      meUserViewRoute,
      meUsersAddRoute,
      userViewRoute,
-     setSelectedNodeId
+     selectNode
      } = this.props
 
      const {
@@ -251,7 +262,7 @@ class User extends Component {
      const clickedNode = nodes[clickedNodeId]
 
      if (editMode) {
-     setSelectedNodeId(clickedNodeId)
+     selectNode(clickedNodeId)
 
      if (clickedNode.mine) {
      if (clickedNode.idServer) {
@@ -286,6 +297,7 @@ class User extends Component {
     const {
       children,
       isLoading,
+      setNodes,
       ...props
     } = this.props
 
@@ -306,8 +318,9 @@ class User extends Component {
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleCanvasNodeDelete,
       onEditSelectedNode: this.handleCanvasNodeEdit,
-      onNodeAnchorClick: this.handleCanvasNodeAnchorClick,
-      onNodeHeaderClick: this.handleCanvasNodeHeaderClick,
+      onNodeAnchorClick: this.handleNodeAnchorClick,
+      onNodeHeaderClick: this.handleNodeHeaderClick,
+      onNodesChange: setNodes,
       onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }
@@ -368,13 +381,15 @@ const userQueryConfig = {
 const mapStateToProps = state => {
   return {
     nodes: getCanvasNodes(state),
-    selectedNodeId: getSelectedNodeId(state),
+    selectedNodeIds: getSelectedNodeIds(state),
   }
 }
 
 const mapDispatchToProps = {
-  setNodes: mainPanelActions.setNodes,
-  setSelectedNodeId: mainPanelActions.setSelectedNodeId
+  hideTooltip: tooltipActions.hide,
+  setNodes: canvasActions.setNodes,
+  selectNode: canvasActions.selectNode,
+  showTooltip: tooltipActions.show
 }
 
 export default compose(

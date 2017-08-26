@@ -8,7 +8,7 @@ import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
 import { roleTypes } from 'core/constants'
-import { getCanvasNodes } from 'core/mainPanel'
+import { getCanvasNodes } from 'core/canvas'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'

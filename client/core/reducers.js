@@ -1,6 +1,6 @@
 import { apolloReducer } from './apollo'
 import { authReducer } from './auth'
-import { mainPanelReducer } from './mainPanel'
+import { canvasReducer } from './canvas'
 import { meReducer } from './me'
 import { modalReducer } from './modal'
 import { placesReducer } from './places'
@@ -13,7 +13,7 @@ export default {
   apollo: apolloReducer,
   auth: authReducer,
   form: formReducer,
-  mainPanel: mainPanelReducer,
+  canvas: canvasReducer,
   me: meReducer,
   modal: modalReducer,
   places: placesReducer,

@@ -144,9 +144,7 @@ class Header extends Component {
         >
           {currentUser ? (
             <div>
-              {routeType !== routerActions.ME && (
-                <HeaderRawLink onClick={() => meRoute()}>{currentUser.username}</HeaderRawLink>
-              )}
+              <HeaderRawLink onClick={() => meRoute()}>{currentUser.username}</HeaderRawLink>
               <HeaderRawLink onClick={this.handleLogout}>{t('accounts:logout')}</HeaderRawLink>
             </div>
           ) : (

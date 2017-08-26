@@ -2,9 +2,10 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
+import { actions as tooltipActions } from 'redux-tooltip'
 
 import { roleTypes } from 'core/constants'
-import { mainPanelActions, getCanvasNodes, getSelectedNodeId } from 'core/mainPanel'
+import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
 import { routerActions } from 'core/router'
 
 import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
@@ -16,6 +17,7 @@ import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
 import { deselectAllNodes, placeToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
+import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
 import meQuery from './me.query.graphql'
 import deleteUserPlaceMutation from './deleteUserPlace.mutation.graphql'
@@ -227,11 +229,29 @@ class Me extends Component {
     this.setToolboxIsOpen('*', false)
   }
 
-  handleCanvasNodeAnchorClick = clickedNodeId => {
-    const {nodes, routes, setSelectedNodeId} = this.props
+  handleCanvasItemDrop = (item, x, y) => {
+    const {routes} = this.props
+    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
+    const {type} = item.itemAttributes
+
+    if (type === atomTypes.LOCATION) {
+      mePlacesAddRoute()
+    }
+    else if (type === atomTypes.PERSON) {
+      meUsersAddRoute()
+    }
+    else if (symbolTypes[type]) {
+      meSymbolsAddRoute()
+    }
+  }
+
+  handleNodeAnchorClick = clickedNodeId => {
+    const {hideTooltip, nodes, routes, selectNode, showTooltip, unselectNode} = this.props
     const {currentMode} = this.state
     const {mePlaceViewRoute, placeViewRoute} = routes
+
     const clickedNode = nodes[clickedNodeId]
+    const isNodeSelected = clickedNode.selected
 
     switch (currentMode) {
       case modeTypes.DISCOVERY:
@@ -245,7 +265,14 @@ class Me extends Component {
         break
 
       case modeTypes.EDIT:
-        setSelectedNodeId(clickedNode.selected ? null : clickedNodeId)
+        hideTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, isNodeSelected)})
+        showTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, !isNodeSelected), origin: `canvas-node__anchor-img-${clickedNodeId}`})
+
+        if (isNodeSelected) {
+          unselectNode(clickedNodeId)
+        } else {
+          selectNode(clickedNodeId)
+        }
         break
 
       case modeTypes.NOTIFICATION:
@@ -265,8 +292,8 @@ class Me extends Component {
     this.setEditRoute(selectedNode)
   }
 
-  handleCanvasNodeHeaderClick = clickedNodeId => {
-    const {nodes, setSelectedNodeId} = this.props
+  handleNodeHeaderClick = clickedNodeId => {
+    const {nodes, selectNode} = this.props
     const {currentMode} = this.state
     const clickedNode = nodes[clickedNodeId]
 
@@ -276,25 +303,9 @@ class Me extends Component {
 
     switch (currentMode) {
       case modeTypes.EDIT:
-        setSelectedNodeId(clickedNodeId)
+        selectNode(clickedNodeId)
         this.setEditRoute(clickedNode)
         break
-    }
-  }
-
-  handleCanvasItemDrop = (item, x, y) => {
-    const {routes} = this.props
-    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
-    const {type} = item.itemAttributes
-
-    if (type === atomTypes.LOCATION) {
-      mePlacesAddRoute()
-    }
-    else if (type === atomTypes.PERSON) {
-      meUsersAddRoute()
-    }
-    else if (symbolTypes[type]) {
-      meSymbolsAddRoute()
     }
   }
 
@@ -322,8 +333,8 @@ class Me extends Component {
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleCanvasNodeDelete,
       onEditSelectedNode: this.handleCanvasNodeEdit,
-      onNodeAnchorClick: this.handleCanvasNodeAnchorClick,
-      onNodeHeaderClick: this.handleCanvasNodeHeaderClick,
+      onNodeAnchorClick: this.handleNodeAnchorClick,
+      onNodeHeaderClick: this.handleNodeHeaderClick,
       onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }
@@ -412,12 +423,15 @@ const updateUserPlacesMutationConfig = {
 
 const mapStateToProps = state => ({
   nodes: getCanvasNodes(state),
-  selectedNodeId: getSelectedNodeId(state),
+  selectedNodeIds: getSelectedNodeIds(state),
 })
 
 const mapDispatchToProps = {
-  setNodes: mainPanelActions.setNodes,
-  setSelectedNodeId: mainPanelActions.setSelectedNodeId
+  hideTooltip: tooltipActions.hide,
+  setNodes: canvasActions.setNodes,
+  selectNode: canvasActions.selectNode,
+  showTooltip: tooltipActions.show,
+  unselectNode: canvasActions.unselectNode,
 }
 
 export default compose(

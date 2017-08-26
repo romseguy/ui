@@ -2,9 +2,10 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
+import { actions as tooltipActions } from 'redux-tooltip'
 
 import { roleTypes } from 'core/constants'
-import { mainPanelActions, getCanvasNodes, getSelectedNodeId } from 'core/mainPanel'
+import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
 
 import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
 
@@ -13,8 +14,9 @@ import { ToolboxButton } from 'views/components/toolbox'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { personToNode } from 'views/utils/nodes'
+import { deselectAllNodes, personToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
+import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
 import placeQuery from './place.query.graphql'
 
@@ -120,10 +122,6 @@ class Place extends Component {
     if (!isLoading && isLoading !== this.props.isLoading) {
       setNodes(nodes)
     }
-
-    if (mine === false && this.props.mine === null) {
-      this.setModeDisabled(modeTypes.EDIT)
-    }
   }
 
   setEditRoute = (node) => {
@@ -142,6 +140,9 @@ class Place extends Component {
   }
 
   setModeActive = key => {
+    const {nodes, setNodes} = this.props
+    deselectAllNodes(nodes, setNodes)()
+
     this.setState(p => ({
       currentMode: key,
       modes: p.modes.map(mode => {
@@ -149,17 +150,6 @@ class Place extends Component {
           return {...mode, active: true}
         }
         return {...mode, active: false}
-      })
-    }))
-  }
-
-  setModeDisabled = key => {
-    this.setState(p => ({
-      modes: p.modes.map(mode => {
-        if (mode.key === key) {
-          return {...mode, disabled: true}
-        }
-        return mode
       })
     }))
   }
@@ -218,11 +208,29 @@ class Place extends Component {
     this.setToolboxIsOpen('*', false)
   }
 
+  handleCanvasItemDrop = (item, x, y) => {
+    const {routes} = this.props
+    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
+    const {type} = item.itemAttributes
+
+    if (type === atomTypes.LOCATION) {
+      mePlacesAddRoute()
+    }
+    else if (type === atomTypes.PERSON) {
+      meUsersAddRoute()
+    }
+    else if (symbolTypes[type]) {
+      meSymbolsAddRoute()
+    }
+  }
+
   handleNodeAnchorClick = clickedNodeId => {
-    const {nodes, routes, setSelectedNodeId} = this.props
+    const {hideTooltip, nodes, routes, selectNode, showTooltip, unselectNode} = this.props
     const {currentMode} = this.state
     const {mePlaceViewRoute, placeViewRoute, userViewRoute} = routes
+
     const clickedNode = nodes[clickedNodeId]
+    const isNodeSelected = clickedNode.selected
 
     switch (currentMode) {
       case modeTypes.DISCOVERY:
@@ -239,8 +247,14 @@ class Place extends Component {
         break
 
       case modeTypes.EDIT:
-        const isNodeSelected = !clickedNode.selected
-        setSelectedNodeId(isNodeSelected ? clickedNodeId : null)
+        hideTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, isNodeSelected)})
+        showTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, !isNodeSelected), origin: `canvas-node__anchor-img-${clickedNodeId}`})
+
+        if (isNodeSelected) {
+          unselectNode(clickedNodeId)
+        } else {
+          selectNode(clickedNodeId)
+        }
         break
     }
   }
@@ -258,26 +272,11 @@ class Place extends Component {
   handleNodeHeaderClick = clickedNodeId => {
   }
 
-  handleCanvasItemDrop = (item, x, y) => {
-    const {routes} = this.props
-    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
-    const {type} = item.itemAttributes
-
-    if (type === atomTypes.LOCATION) {
-      mePlacesAddRoute()
-    }
-    else if (type === atomTypes.PERSON) {
-      meUsersAddRoute()
-    }
-    else if (symbolTypes[type]) {
-      meSymbolsAddRoute()
-    }
-  }
-
   render() {
     const {
       children,
       isLoading,
+      mine,
       ...props
     } = this.props
 
@@ -295,7 +294,12 @@ class Place extends Component {
       ...props,
       ...state,
       currentMode,
-      modes,
+      modes: modes.map(mode => {
+        if (mode.key === modeTypes.EDIT) {
+          return {...mode, disabled: !mine}
+        }
+        return mode
+      }),
       readOnly: currentMode !== modeTypes.EDIT,
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleNodeDelete,
@@ -359,13 +363,15 @@ const placeQueryConfig = {
 const mapStateToProps = state => {
   return {
     nodes: getCanvasNodes(state),
-    selectedNodeId: getSelectedNodeId(state),
+    selectedNodeIds: getSelectedNodeIds(state),
   }
 }
 
 const mapDispatchToProps = {
-  setNodes: mainPanelActions.setNodes,
-  setSelectedNodeId: mainPanelActions.setSelectedNodeId
+  hideTooltip: tooltipActions.hide,
+  setNodes: canvasActions.setNodes,
+  selectNode: canvasActions.selectNode,
+  showTooltip: tooltipActions.show
 }
 
 export default compose(

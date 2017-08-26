@@ -2,9 +2,6 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
-import { actions as tooltipActions } from 'redux-tooltip'
-
-import { mainPanelActions } from 'core/mainPanel'
 
 
 class MainPanel extends Component {
@@ -62,10 +59,6 @@ class MainPanel extends Component {
 const mapStateToProps = state => ({})
 
 const mapDispatchToProps = {
-  closeSidePanel: mainPanelActions.closeSidePanel,
-  showTooltip: tooltipActions.show,
-  hideTooltip: tooltipActions.hide,
-  onNodesChange: mainPanelActions.setNodes
 }
 
 export default compose(

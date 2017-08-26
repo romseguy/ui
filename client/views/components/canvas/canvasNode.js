@@ -1,11 +1,17 @@
-import React, { Children } from 'react'
+import React from 'react'
 import { Origin } from 'redux-tooltip'
 import cx from 'classnames'
 import { pure } from 'recompose'
+import styled from 'styled-components'
 
 import { modeTypes } from 'views/utils/canvas'
 import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
+
+const CanvasNodeImage = styled.image`
+cursor: ${props => props.currentMode === modeTypes.DISCOVERY ? 'zoom-in' : 'pointer'};
+outline: ${props => props.node.hovered || props.node.selected ? '1px solid blue' : '0'} 
+`
 
 const SVGOrigin = Origin.wrapBy('g')
 
@@ -43,13 +49,14 @@ function CanvasNode(props) {
         onHover={e => onAnchorMouseOver(node.id)}
         onLeave={e => onAnchorMouseOut(node.id)}
       >
-        <image
+        <CanvasNodeImage
           id={`canvas-node__anchor-img-${node.id}`}
           alt=""
           className={className}
+          currentMode={currentMode}
           height={imageHeight}
-          href={node.selected || node.hovered ? node.imageSelected : node.image}
-          style={{cursor: currentMode === modeTypes.DISCOVERY ? 'zoom-in' : 'move'}}
+          href={node.image}
+          node={node}
           width={imageWidth}
           x={(nodeWidth - imageWidth) / 2}
           xlinkHref={node.image}

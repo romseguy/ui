@@ -1,5 +1,5 @@
 import { createLogger } from 'redux-logger'
-import { mainPanelActions } from 'core/mainPanel'
+import { canvasActions } from 'core/canvas'
 
 export const loggerMiddleware = createLogger({
   collapsed: true,
@@ -10,6 +10,6 @@ export const loggerMiddleware = createLogger({
       }
     }
 
-    return type !== mainPanelActions.SET_MAIN_PANEL_NODES
+    return type !== canvasActions.SET_NODES
   }
 })

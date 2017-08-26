@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Button, Col as UICol, Grid, Segment } from '../layout'
-import Icon from '../icon'
+import { atomTypes } from 'views/utils/atoms'
+
+import { Button, Col as UICol, Grid, Segment } from 'views/components/layout'
 
 import ToolbarIcon from './toolbarIcon'
 
@@ -24,6 +25,7 @@ function Toolbar(props) {
   const {
     editDisabled = false, deleteDisabled = false,
     modes,
+    selectedNodeType,
     t,
     toolboxes,
     zoomOutDisabled = true, zoomInDisabled = false,
@@ -86,7 +88,7 @@ function Toolbar(props) {
             disabled={deleteDisabled}
             id="trash"
             margin="0.4rem 0 0 0.4rem"
-            title={t('map:symbols.delete_selected')}
+            title={t(`map:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'delete_selected_entity' : 'delete_selected_symbol'}`)}
             onClick={(e) => handleActionClick(e, onDeleteClick, deleteDisabled)}
           />
 
@@ -94,7 +96,7 @@ function Toolbar(props) {
             disabled={editDisabled}
             id="compose"
             margin="0.4rem 0 0 0.4rem"
-            title={t('map:symbols.edit_selected')}
+            title={t(`map:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'edit_selected_entity' : 'edit_selected_symbol'}`)}
             onClick={(e) => handleActionClick(e, onEditClick, editDisabled)}
           />
         </Segment>

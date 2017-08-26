@@ -28,7 +28,7 @@ function Route404({t}) {
 
 class Router extends Component {
   render() {
-    const {currentRoute = {}, isAuthed, isPortalOpen, routeType, t} = this.props
+    const {currentRoute = {}, isAuthed, routeType, t} = this.props
 
     if (routeType === routerActions.NOT_FOUND) {
       return <Route404 t={t}/>
@@ -36,7 +36,6 @@ class Router extends Component {
 
     const {
       modalRouteType,
-      portal,
       requiresAuth
     } = currentRoute
 

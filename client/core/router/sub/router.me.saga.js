@@ -1,8 +1,9 @@
 import { call, put, select, take } from 'redux-saga/effects'
 
 import { client } from 'core/apollo'
-import { mainPanelActions, getCanvasNodesSaga } from 'core/mainPanel'
+import { canvasActions, getCanvasNodesSaga } from 'core/canvas'
 import { routerActions } from 'core/router'
+import { i18n } from 'core/settings'
 
 import placeQuery from 'views/containers/place/place.query.graphql'
 import currentUserQuery from 'views/containers/header/currentUser.query.graphql'
@@ -16,7 +17,7 @@ export function* meSaga(payload, settings) {
   yield call(setCentreSaga, centre)
 
   if (!noReset) {
-    yield put(mainPanelActions.setNodes([]))
+    yield put(canvasActions.setNodes([]))
   }
 
   const {currentUser: {username}} = yield call([client, client.readQuery], {
@@ -26,47 +27,6 @@ export function* meSaga(payload, settings) {
   yield call(setTitleSaga, username)
 }
 
-export function* mePlacesAddSaga(payload, settings) {
-  const {centre} = settings
-  yield call(setCentreSaga, centre)
-}
-
-export function* mePlaceViewSaga(payload, settings) {
-  const {centre} = settings
-  const {name, noReset} = payload
-
-  yield call(setCentreSaga, centre)
-
-  if (!noReset) {
-    yield put(mainPanelActions.setNodes([]))
-  }
-
-  try {
-    const {place: {city, department}} = yield call([client, client.readQuery], {
-      query: placeQuery,
-      variables: {title: name},
-    })
-    yield call(setTitleSaga, `${name} à ${city}, ${department}`)
-  } catch (e) {
-    let keepLooping = true
-
-    while (keepLooping) {
-      const {operationName, result} = yield take('APOLLO_QUERY_RESULT')
-
-      if (operationName === 'place') {
-        keepLooping = false
-
-        if (!result.data || !result.data.place) {
-          yield put(routerActions.meRoute())
-        } else {
-          const {city, department} = result.data.place
-          yield call(setTitleSaga, `${name} à ${city}, ${department}`)
-        }
-      }
-    }
-  }
-}
-
 export function* mePlaceEditSaga(payload, settings) {
   const {centre} = settings
   const {name} = payload
@@ -74,7 +34,7 @@ export function* mePlaceEditSaga(payload, settings) {
 
   yield call(setCentreSaga, centre)
   const nodes = yield call(getCanvasNodesSaga)
-  yield put(mainPanelActions.setSelectedNodeId(nodes.find(node => node.name === name).id))
+  yield put(canvasActions.selectNode(nodes.find(node => node.name === name).id))
 
   // todo: cleanup (see apollo client issues)
   try {
@@ -97,6 +57,62 @@ export function* mePlaceEditSaga(payload, settings) {
           const {city, department} = result.data.place
           yield call(setTitleSaga, `${name} à ${city}, ${department}`)
         }
+      }
+    }
+  }
+}
+
+export function* mePlacesAddSaga(payload, settings) {
+  const {centre} = settings
+  yield call(setCentreSaga, centre)
+}
+
+export function* mePlaceViewSaga(payload, settings) {
+  const {name: placeName, noReset} = payload
+  const {centre} = settings
+
+  yield call(setCentreSaga, centre)
+
+  if (!noReset) {
+    yield put(canvasActions.setNodes([]))
+  }
+
+  try {
+    const {
+      myPlaces,
+      place: {city, department}
+    } = yield call([client, client.readQuery], {
+      query: placeQuery,
+      variables: {title: placeName},
+    })
+
+    const myPlace = myPlaces.find(({place}) => place.title === placeName)
+
+    yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
+  } catch (e) {
+    let keepLooping = true
+
+    while (keepLooping) {
+      const {operationName, result} = yield take('APOLLO_QUERY_RESULT')
+
+      if (operationName === 'place') {
+        keepLooping = false
+
+        if (!result.data || !result.data.place) {
+          yield put(routerActions.meRoute())
+          return
+        }
+
+        const {
+          data: {
+            myPlaces,
+            place: {city, department}
+          }
+        } = result
+
+        const myPlace = myPlaces.find(({place}) => place.title === placeName)
+
+        yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
       }
     }
   }
