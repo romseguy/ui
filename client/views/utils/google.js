@@ -1,5 +1,9 @@
-const createLatLngObject = (lat, lng) => {
-  return new google.maps.LatLng(lat, lng)
+export const createLatLngObject = (lat, lng) => {
+  if (window.google !== undefined) {
+    return new google.maps.LatLng(lat, lng)
+  }
+
+  return {lat, lng}
 }
 
 export const computeDistanceBetween = (p1, p2) => {

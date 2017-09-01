@@ -4,6 +4,7 @@ import { placesActions } from './places.actions'
 
 
 export const PlacesState = {
+  currentPlace: null
 }
 
 export function placesReducer(state = PlacesState, {payload, type}) {

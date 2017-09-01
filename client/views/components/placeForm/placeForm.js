@@ -10,7 +10,7 @@ import PlaceFormSelector from './placeFormSelector'
 
 
 class PlaceForm extends Component {
-  state = {isLoading: process.env.NODE_ENV !== 'development'}
+  state = {isLoading: true}
 
   componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed}) {
     if (isScriptLoaded && !this.props.isScriptLoaded) { // load finished

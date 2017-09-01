@@ -286,9 +286,7 @@ class Me extends Component {
     doDeleteUserPlace({placeId: deletedNode.idServer})
   }
 
-  handleCanvasNodeEdit = () => {
-    const {nodes} = this.props
-    const selectedNode = nodes.find(node => node.selected)
+  handleCanvasNodeEdit = (selectedNode) => {
     this.setEditRoute(selectedNode)
   }
 
@@ -313,6 +311,7 @@ class Me extends Component {
     const {
       children,
       isLoading,
+      setNodes,
       ...props
     } = this.props
 
@@ -335,6 +334,7 @@ class Me extends Component {
       onEditSelectedNode: this.handleCanvasNodeEdit,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
+      onNodesChange: setNodes,
       onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }

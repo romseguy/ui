@@ -30,15 +30,15 @@ function AtomsToolbox({atoms, isOpen, onClose}) {
     >
       <ToolboxMenu>
         {atoms.map(atom => {
-          const name = `toolbox__atom-${atom.type}`
+          const tooltipName = `toolbox__atom-${atom.type}`
 
           return (
             <Origin
-              name={name}
-              key={name}
+              name={tooltipName}
+              key={tooltipName}
             >
               <DraggableToolboxItem
-                id={name}
+                id={tooltipName}
                 itemAttributes={atom}
               >
                 <Label basic image>

@@ -4,11 +4,11 @@ import { atomTypes, atomTypeToName } from 'views/utils/atoms'
 import { symbolTypes, symbolTypeToName } from 'views/utils/symbols'
 
 
-export function CanvasDragDropTooltip({name, width, label}) {
+export function ToolboxTooltip({tooltipName, width, label}) {
   return (
     <Tooltip
-      name={name}
-      key={name}
+      name={tooltipName}
+      key={tooltipName}
     >
       <div style={{
         //width: `${width}px`,
@@ -25,12 +25,12 @@ export function AtomsToolboxTooltips() {
     <div>
       {Object.keys(atomTypes).map(type => {
         const label = atomTypeToName[type]({prefix: true})
-        const name = `toolbox__atom-${type}`
+        const tooltipName = `toolbox__atom-${type}`
 
         return (
-          <CanvasDragDropTooltip
-            key={name}
-            name={name}
+          <ToolboxTooltip
+            key={tooltipName}
+            tooltipName={tooltipName}
             label={label}
           />
         )
@@ -44,12 +44,12 @@ export function SymbolsToolboxTooltips() {
     <div>
       {Object.keys(symbolTypes).map(type => {
         const label = symbolTypeToName[type]({prefix: true})
-        const name = `toolbox__symbol-${type}`
+        const tooltipName = `toolbox__symbol-${type}`
 
         return (
-          <CanvasDragDropTooltip
-            key={name}
-            name={name}
+          <ToolboxTooltip
+            key={tooltipName}
+            tooltipName={tooltipName}
             label={label}
           />
         )
@@ -58,7 +58,7 @@ export function SymbolsToolboxTooltips() {
   )
 }
 
-export default function() {
+export default function ToolboxTooltips() {
   return (
     <div>
       <AtomsToolboxTooltips/>

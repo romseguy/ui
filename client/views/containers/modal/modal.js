@@ -6,6 +6,7 @@ import { modalActions, modalConstants, getModals } from 'core/modal'
 
 import { AuthForm } from 'views/containers/auth'
 import { Button, Container, Header, Icon, Modal } from 'views/components/layout'
+import SetLocationForm from 'views/components/setLocationForm'
 
 
 const withModal = (modalProps, modalComponentProps) => {
@@ -39,10 +40,19 @@ const modalComponents = {
         </Button>
       </Modal.Actions>
     </Modal>
+  ),
+  [modalConstants.SET_LOCATION]: ({modalProps, center, title}) => (
+    <Modal {...modalProps}>
+      <Modal.Header icon="world" content={title}/>
+      <SetLocationForm
+        center={center}
+        onSubmit={modalProps.onClose}
+      />
+    </Modal>
   )
 }
 
-function ModalContainer({modals, onClose}) {
+function ModalContainer({modals, onClose}) {
   const modalTypes = Object.keys(modals)
 
   if (!modalTypes.length) {
@@ -51,7 +61,7 @@ function ModalContainer({modals, onClose}) {
 
   const closeIcon = (
     <Container textAlign="right">
-      <Icon name="close" fitted style={{cursor: 'pointer'}} />
+      <Icon name="close" fitted style={{cursor: 'pointer'}}/>
     </Container>
   )
 

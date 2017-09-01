@@ -4,7 +4,7 @@ import Map from 'pigeon-maps'
 import Marker from 'pigeon-marker'
 import { providers } from 'views/utils/map'
 
-class PlaceFormMap extends Component {
+class MapField extends Component {
   handleMapClick = e => {
     const {
       input,
@@ -52,4 +52,4 @@ class PlaceFormMap extends Component {
   }
 }
 
-export default PlaceFormMap
+export default MapField

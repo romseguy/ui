@@ -13,7 +13,7 @@ import {
 import withDragDropContext from 'views/utils/withDragDropContext'
 
 import Toolbar from 'views/components/toolbar'
-import { CanvasTooltips } from 'views/components/tooltips'
+import { NodeTooltips, ToolboxTooltips } from 'views/components/tooltips'
 
 import Canvas from './canvas'
 import CanvasItemTypes from './canvasItemTypes'
@@ -26,14 +26,15 @@ const canvasDropItemTypes = [CanvasItemTypes.CANVAS_NODE, CanvasItemTypes.TOOLBO
 class CanvasManager extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      maxZoom: props.maxZoom || 1,
-      minZoom: props.minZoom || parseFloat('.5'),
-      zoomIncrement: props.zoomIncrement || parseFloat('.25'),
-      zoomLevel: props.zoomLevel || 1,
-      zoomInDisabled: props.zoomInDisabled || true,
-      zoomOutDisabled: props.zoomOutDisabled || false
-    }
+    const {
+      maxZoom = 1,
+      minZoom = parseFloat('.5'),
+      zoomIncrement = parseFloat('.25'),
+      zoomLevel = 1,
+      zoomInDisabled = true,
+      zoomOutDisabled = false
+    } = props
+    this.state = {maxZoom, minZoom, zoomIncrement, zoomInDisabled, zoomLevel, zoomOutDisabled}
   }
 
   setSvgReference = ref => {
@@ -62,14 +63,22 @@ class CanvasManager extends Component {
       const level = (zoomLevel * 10 - zoomIncrement * 10) / 10
       this.setState({
         zoomLevel: level,
-        zoomOutDisabled: level === minZoom,
-        zoomInDisabled: false
+        zoomInDisabled: false,
+        zoomOutDisabled: level === minZoom
       })
     }
   }
 
   // CANVAS
-  handleCanvasItemDrop = (item, x, y) => {
+  handleClick = e => {
+    const {nodes, onCanvasClick, onNodesChange} = this.props
+
+    if (e.target === this.svg) {
+      deselectAllNodes(nodes, onNodesChange)()
+      onCanvasClick && onCanvasClick(e)
+    }
+  }
+  handleItemDrop = (item, x, y) => {
     const {nodes, onNodesChange, onCanvasItemDrop} = this.props
 
     const node = {
@@ -84,16 +93,8 @@ class CanvasManager extends Component {
     addNode(deselectAllNodes(nodes)(), onNodesChange)(node)
     onCanvasItemDrop && onCanvasItemDrop(item, x, y)
   }
-  handleCanvasClick = e => {
-    const {nodes, onCanvasClick, onNodesChange} = this.props
-
-    if (e.target === this.svg) {
-      deselectAllNodes(nodes, onNodesChange)()
-      onCanvasClick && onCanvasClick(e)
-    }
-  }
   handleNodeAnchorClick = (id) => {
-    const {currentMode, nodes, onNodeAnchorClick} = this.props
+    const {onNodeAnchorClick} = this.props
     onNodeAnchorClick && onNodeAnchorClick(id)
   }
   handleNodeAnchorMouseOver = (id) => {
@@ -121,10 +122,18 @@ class CanvasManager extends Component {
   }
 
   // TOOLBAR
-  handleToolbarDeleteClick = () => {
-    const {nodes, onDeleteSelectedNode, onNodesChange} = this.props
-    const deletedNode = deleteSelectedNode(nodes, onNodesChange)()
-    onDeleteSelectedNode && onDeleteSelectedNode(deletedNode)
+  handleToolbarDeleteClick = (event, selectedNode) => {
+    const {nodes, t, onDeleteSelectedNode, onNodesChange} = this.props
+    // todo: proper modal
+    const confirmed = window.confirm(t('map:atoms.delete_confirm') + ' ' + selectedNode.name)
+    if (confirmed) {
+      const deletedNode = deleteSelectedNode(nodes, onNodesChange)()
+      onDeleteSelectedNode && onDeleteSelectedNode(deletedNode)
+    }
+  }
+  handleToolbarEditClick = (event, selectedNode) => {
+    const {onEditSelectedNode} = this.props
+    onEditSelectedNode && onEditSelectedNode(selectedNode)
   }
   handleToolbarZoomInClick = () => {
     this.zoomIn()
@@ -143,8 +152,7 @@ class CanvasManager extends Component {
       selectedNodeIds,
       nodes,
       t,
-      toolboxes,
-      onEditSelectedNode
+      toolboxes
     } = this.props
 
     const {
@@ -153,32 +161,28 @@ class CanvasManager extends Component {
       zoomInDisabled
     } = this.state
 
-    let selectedNodeType = null
+    let selectedNode = null
 
     if (selectedNodeIds.length === 1) {
-      const selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
-
-      if (selectedNode) {
-        selectedNodeType = selectedNode.type
-      }
+      selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
     }
 
     return (
       <CanvasLayout>
-        <CanvasTooltips/>
+        <NodeTooltips/>
+        <ToolboxTooltips/>
 
         <Toolbar
-          currentMode={currentMode}
           deleteDisabled={selectedNodeIds.length !== 1 || readOnly}
           editDisabled={selectedNodeIds.length !== 1 || readOnly}
           modes={modes}
-          selectedNodeType={selectedNodeType}
+          selectedNode={selectedNode}
           t={t}
           toolboxes={toolboxes}
           zoomInDisabled={zoomInDisabled}
           zoomOutDisabled={zoomOutDisabled}
           onDeleteClick={this.handleToolbarDeleteClick}
-          onEditClick={onEditSelectedNode}
+          onEditClick={this.handleToolbarEditClick}
           onZoomInClick={this.handleToolbarZoomInClick}
           onZoomOutClick={this.handleToolbarZoomOutClick}
         />
@@ -195,8 +199,8 @@ class CanvasManager extends Component {
           setSvgReference={this.setSvgReference}
           toolboxes={toolboxes}
           zoomLevel={zoomLevel}
-          onClick={this.handleCanvasClick}
-          onCanvasItemDrop={this.handleCanvasItemDrop}
+          onCanvasItemDrop={this.handleItemDrop}
+          onClick={this.handleClick}
           onNodeAnchorClick={this.handleNodeAnchorClick}
           onNodeAnchorMouseOver={this.handleNodeAnchorMouseOver}
           onNodeAnchorMouseOut={this.handleNodeAnchorMouseOut}

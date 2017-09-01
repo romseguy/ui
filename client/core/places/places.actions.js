@@ -1,6 +1,6 @@
 export const placesActions = {
   // ACTIONS
-  CREATE_PICTURE: 'CREATE_PICTURE',
+  SET_CURRENT_PLACE: 'SET_CURRENT_PLACE',
   UPDATE_PLACE: 'UPDATE_PLACE',
 
   createPicture: file => ({

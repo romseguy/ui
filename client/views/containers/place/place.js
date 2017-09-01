@@ -277,6 +277,7 @@ class Place extends Component {
       children,
       isLoading,
       mine,
+      setNodes,
       ...props
     } = this.props
 
@@ -306,6 +307,7 @@ class Place extends Component {
       onEditSelectedNode: this.handleNodeEdit,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
+      onNodesChange: setNodes,
       onCanvasItemDrop: this.handleCanvasItemDrop
     })
   }

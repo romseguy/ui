@@ -7,7 +7,6 @@ import Icon from 'views/components/icon'
 import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
 import { Grid, Row as UIRow, Col as UICol } from 'views/components/layout'
-import ToolboxTooltips from './toolboxTooltips'
 
 
 const Col = styled(UICol)`
@@ -20,7 +19,8 @@ padding: 0 !important;
 margin: 0 !important;
 `
 
-function CanvasNodeAnchorTooltips() {
+
+export function NodeAnchorTooltips() {
   const modes = []
 
   Object
@@ -34,7 +34,7 @@ function CanvasNodeAnchorTooltips() {
     <div>
       {modes.map(({modeKey, selected}) => {
         const discoveryMode = modeKey === modeTypes.DISCOVERY
-        const name = getCanvasNodeAnchorTooltipName(modeKey, selected)
+        const tooltipName = getCanvasNodeAnchorTooltipName(modeKey, selected)
         let width = 150
 
         if (discoveryMode) {
@@ -45,8 +45,8 @@ function CanvasNodeAnchorTooltips() {
 
         return (
           <Tooltip
-            key={name}
-            name={name}
+            key={tooltipName}
+            name={tooltipName}
           >
             <Grid style={{width: `${width}px`}}>
               {!discoveryMode && (
@@ -83,7 +83,7 @@ function CanvasNodeAnchorTooltips() {
   )
 }
 
-function CanvasNodeHeaderTooltips() {
+export function NodeHeaderTooltips() {
   return (
     <div>
       <Tooltip name="canvas-node__header">
@@ -106,12 +106,11 @@ function CanvasNodeHeaderTooltips() {
   )
 }
 
-export default function() {
+export default function NodeTooltips() {
   return (
     <div>
-      <CanvasNodeAnchorTooltips/>
-      <CanvasNodeHeaderTooltips/>
-      <ToolboxTooltips/>
+      <NodeAnchorTooltips/>
+      <NodeHeaderTooltips/>
     </div>
   )
 }

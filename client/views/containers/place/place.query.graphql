@@ -13,6 +13,8 @@ query place($title: String) {
     id
     city
     department
+    latitude
+    longitude
     users {
       id
       username

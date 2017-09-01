@@ -14,25 +14,28 @@ width: auto !important;
 const ToolbarButton = styled(Button)`
 `
 
-const handleActionClick = (event, func, disabled) => {
-  event.preventDefault()
-  if (!disabled && func) {
-    func(event)
-  }
-}
-
 function Toolbar(props) {
   const {
     editDisabled = false, deleteDisabled = false,
     modes,
-    selectedNodeType,
+    selectedNode,
     t,
     toolboxes,
     zoomOutDisabled = true, zoomInDisabled = false,
-    onDeleteClick, onDiscoveryClick, onDuplicateClick,
-    onEditClick,
+    onDeleteClick, onEditClick,
     onZoomOutClick, onZoomInClick
   } = props
+
+  /* todo: avoid fn creation */
+  const handleActionClick = (event, func, disabled = false) => {
+    event.preventDefault()
+
+    if (!disabled && func) {
+      func(event, selectedNode)
+    }
+  }
+
+  const selectedNodeType = selectedNode && selectedNode.type
 
   return (
     <Grid
@@ -46,7 +49,17 @@ function Toolbar(props) {
           border: 0,
           padding: '0.25rem 0.25rem 0 0.5rem'
         }}>
-          {modes.map(({active, disabled, iconId, key, labels, onClick}) => {
+          {modes.map(mode => {
+            const {
+              active,
+              disabled,
+              iconId,
+              key,
+              labels,
+              text,
+              onClick
+            } = mode
+
             const title = disabled
               ? labels.disabled
               : (active ? labels.active : labels.inactive)
@@ -58,6 +71,7 @@ function Toolbar(props) {
                 id={iconId}
                 key={key}
                 margin='0.4rem 0.4rem 0 0'
+                text={text}
                 title={title}
                 onClick={onClick}
               />
@@ -115,15 +129,18 @@ function Toolbar(props) {
             disabled={zoomOutDisabled}
             id="minus"
             margin="0.4rem 0.4rem 0 0"
+            title={t('map:buttons.zoom_out')}
             onClick={(e) => handleActionClick(e, onZoomOutClick, zoomOutDisabled)}
           />
 
           <ToolbarIcon
             disabled={zoomInDisabled}
             id="plus"
+            title={t('map:buttons.zoom_in')}
             onClick={(e) => handleActionClick(e, onZoomInClick, zoomInDisabled)}
           />
         </Segment>
+
       </Col>
     </Grid>
   )

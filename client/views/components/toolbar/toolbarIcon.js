@@ -2,13 +2,17 @@ import React from 'react'
 import Icon, { IconLink } from '../icon'
 
 
-function ToolbarIcon(props) {
+const noop = () => {}
+
+function ToolbarIcon(props) {
   const {
     active,
     disabled,
     id,
     margin,
     name,
+    style,
+    text,
     title,
     onClick
   } = props
@@ -17,14 +21,20 @@ function ToolbarIcon(props) {
     <IconLink
       active={active}
       disabled={disabled}
-      onClick={disabled ? () => {} : onClick}
+      onClick={disabled ? noop : onClick}
+      style={{
+        fontSize: text ? '1.5rem' : '1rem',
+        ...style
+      }}
       title={title}
     >
-      <Icon
-        id={id}
-        name={name}
-        margin={margin}
-      />
+      {text ? text : (
+        <Icon
+          id={id}
+          name={name}
+          margin={margin}
+        />
+      )}
     </IconLink>
   )
 }

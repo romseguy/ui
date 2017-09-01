@@ -27,15 +27,15 @@ function SymbolsToolbox({symbols, isOpen, onClose}) {
     >
       <ToolboxMenu>
         {symbols.map(symbol => {
-          const name = `toolbox__symbol-${symbol.type}`
+          const tooltipName = `toolbox__symbol-${symbol.type}`
 
           return (
             <Origin
-              name={name}
-              key={name}
+              name={tooltipName}
+              key={tooltipName}
             >
               <DraggableToolboxItem
-                id={name}
+                id={tooltipName}
                 itemAttributes={symbol}
               >
                 <Label basic image>

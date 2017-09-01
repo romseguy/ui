@@ -120,7 +120,7 @@ function PlaceFormContainer(props) {
 
 
 const mapStateToProps = state => {
-  const {name} = getPayload(state)
+  const {name: placeName} = getPayload(state)
   const centre = getMeCentre(state)
   const nodes = getCanvasNodes(state)
   const routeType = getRouteType(state)
@@ -131,7 +131,7 @@ const mapStateToProps = state => {
     centre,
     formValues: state.form.PlaceForm ? state.form.PlaceForm.values : {},
     userLocation,
-    placeName: name,
+    placeName,
     nodes,
     routeType,
     title

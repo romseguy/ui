@@ -29,20 +29,20 @@ export function* meSaga(payload, settings) {
 
 export function* mePlaceEditSaga(payload, settings) {
   const {centre} = settings
-  const {name} = payload
+  const {name: placeName} = payload
   let keepLooping = true
 
   yield call(setCentreSaga, centre)
   const nodes = yield call(getCanvasNodesSaga)
-  yield put(canvasActions.selectNode(nodes.find(node => node.name === name).id))
+  yield put(canvasActions.selectNode(nodes.find(node => node.name === placeName).id))
 
   // todo: cleanup (see apollo client issues)
   try {
     const {place: {city, department}} = yield call([client, client.readQuery], {
       query: placeQuery,
-      variables: {title: name},
+      variables: {title: placeName},
     })
-    yield call(setTitleSaga, `${name} à ${city}, ${department}`)
+    yield call(setTitleSaga, `${placeName} à ${city}, ${department}`)
 
   } catch (e) {
     while (keepLooping) {
@@ -55,7 +55,7 @@ export function* mePlaceEditSaga(payload, settings) {
           yield put(routerActions.meRoute())
         } else {
           const {city, department} = result.data.place
-          yield call(setTitleSaga, `${name} à ${city}, ${department}`)
+          yield call(setTitleSaga, `${placeName} à ${city}, ${department}`)
         }
       }
     }

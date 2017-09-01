@@ -164,8 +164,6 @@ function Icon(props) {
   } else if (name) {
     return <UIIcon name={name}/>
   }
-
-  return null
 }
 
 export default Icon

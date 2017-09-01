@@ -21,9 +21,15 @@ class MapManager extends Component {
     super(props)
 
     this.state = {
-      center: [props.userLocation.lat, props.userLocation.lng],
+      center: props.center,
       zoom: 14,
       provider: 'outdoors'
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.center.lat !== nextProps.center.lat && this.state.center.lng !== nextProps.center.lng) {
+      this.setState(p => ({center: nextProps.center}))
     }
   }
 

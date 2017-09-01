@@ -1,41 +1,15 @@
 import React, { Component } from 'react'
-import Geosuggest from 'react-geosuggest'
 import { Field } from 'redux-form'
-import './geosuggest.scss'
 
+import CityField from 'views/components/cityField'
 import {
   Button,
   Col,
   Grid,
   Row
 } from 'views/components/layout'
+import MapField from 'views/components/mapField'
 
-import PlaceFormMap from './placeFormMap'
-
-
-class CityField extends Component {
-  render() {
-    const {disabled, id, input, center, meta, t, onSuggestSelect} = this.props
-
-    return (
-      <Geosuggest
-        ref={el => this._geoSuggest = el}
-        id={id}
-        initialValue={input.value}
-        location={new google.maps.LatLng(center[0], center[1])}
-        disabled={disabled}
-        placeholder={t('geosuggest_placeholder')}
-        radius="20"
-        skipSuggest={suggest => {
-          // keep cities only
-          return !suggest.types.includes('locality')
-        }}
-        onChange={input.onChange}
-        onSuggestSelect={onSuggestSelect}
-      />
-    )
-  }
-}
 
 class PlaceFormFields extends Component {
   constructor(props) {
@@ -142,7 +116,7 @@ class PlaceFormFields extends Component {
               <Field
                 name="marker"
                 id="marker"
-                component={PlaceFormMap}
+                component={MapField}
                 center={center}
                 location={userLocation}
                 readOnly={readOnly}

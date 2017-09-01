@@ -91,7 +91,7 @@ function SymbolFormContainer(props) {
 
 const mapStateToProps = state => {
   const routeType = getRouteType(state)
-  const {name} = getPayload(state)
+  const {name: symbolName} = getPayload(state)
   const centre = getMeCentre(state)
   const userLocation = getUserLocation(state)
   const title = getTitle(state)
@@ -100,7 +100,7 @@ const mapStateToProps = state => {
     centre,
     formValues: state.form.SymbolForm ? state.form.SymbolForm.values : {},
     userLocation,
-    name,
+    symbolName,
     routeType,
     title
   }
@@ -115,7 +115,7 @@ const symbolFormQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        title: props.name || ''
+        title: props.symbolName || ''
       }
     }
   },

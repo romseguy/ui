@@ -6,14 +6,18 @@ import Link from 'redux-first-router-link'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 
+import { client } from 'core/apollo'
 import { authActions } from 'core/auth'
 import { getMeCentre } from 'core/me'
-import { routerActions, getRouteType } from 'core/router'
-import { getTitle } from 'core/settings'
+import { modalActions, modalConstants } from 'core/modal'
+import { routerActions, getPayload, getRouteType } from 'core/router'
+import { getTitle, getUserLocation } from 'core/settings'
+
+import { media } from 'views/utils/responsive'
 
 import Atom from 'views/components/atom'
 import { Grid, Col, Segment } from 'views/components/layout'
-import { media } from 'views/utils/responsive'
+import placeQuery from 'views/containers/place/place.query.graphql'
 
 import currentUserQuery from './currentUser.query.graphql'
 
@@ -29,7 +33,7 @@ ${media.desktop`padding-left: 1rem;`}
 ${media.tablet`padding-left: 0;`}
 `
 
-const HeaderTitle = styled(Segment)`
+const HeaderTitleContainer = styled(Segment)`
 padding: 0 !important;
 margin: 0 !important;
 
@@ -39,6 +43,16 @@ margin: 0 !important;
   height: 1.5em !important;
 }
 `
+
+function HeaderTitle({children, isLoading, onClick}) {
+  return (
+    <HeaderTitleContainer basic loading={isLoading}>
+      <Link href="" onClick={onClick}>
+        {children}
+      </Link>
+    </HeaderTitleContainer>
+  )
+}
 
 const HeaderLink = styled(Link)`
 text-decoration: underline;
@@ -73,12 +87,37 @@ class Header extends Component {
   }
 
   handleLogout = event => {
-    const { doLogout, rootRoute, setIsAuthed } = this.props
+    const {doLogout, rootRoute, setIsAuthed} = this.props
 
     doLogout().then(() => {
       setIsAuthed(false)
       rootRoute()
     })
+  }
+
+  handleHeaderTitleClick = event => {
+    event.preventDefault()
+    const {rootRoute, routePayload, routeType, setModal, t, userLocation} = this.props
+
+    if (routeType === routerActions.ROOT) {
+      setModal(modalConstants.SET_LOCATION, {
+        isOpen: true,
+        center: [userLocation.lat, userLocation.lng],
+        modalProps: {
+          size: 'small',
+          closeIcon: null
+        },
+        title: t('form:setLocation.header')
+      })
+    } else {
+      const {name: placeName} = routePayload
+      const {place: {latitude, longitude}} = client.readQuery({
+        query: placeQuery,
+        variables: {title: placeName},
+      })
+
+      rootRoute({center: [latitude, longitude]})
+    }
   }
 
   render() {
@@ -129,9 +168,9 @@ class Header extends Component {
           textAlign={isStacked ? 'left' : 'center'}
         >
           <HeaderTitle
-            basic
-            loading={isLoading}
+            isLoading={isLoading}
             title={truncateTitle ? title : ""}
+            onClick={this.handleHeaderTitleClick}
           >
             {!isLoading && titleIcon}
             {!isLoading && truncateTitle ? `${title.substring(0, titleMaxLength)}...` : title}
@@ -160,15 +199,18 @@ class Header extends Component {
 
 const mapStateToProps = state => ({
   centre: getMeCentre(state),
+  routePayload: getPayload(state),
   routeType: getRouteType(state),
-  title: getTitle(state)
+  title: getTitle(state),
+  userLocation: getUserLocation(state)
 })
 
 const mapDispatchToProps = {
   setIsAuthed: authActions.setIsAuthed,
   authRoute: routerActions.authRoute,
   meRoute: routerActions.meRoute,
-  rootRoute: routerActions.rootRoute
+  rootRoute: routerActions.rootRoute,
+  setModal: modalActions.setModal
 }
 
 

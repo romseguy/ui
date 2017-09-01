@@ -12,6 +12,18 @@ import placesQuery from './places.query.graphql'
 
 
 class Places extends Component {
+  getCenter() {
+    const {
+      routePayload,
+      userLocation
+    } = this.props
+
+    return routePayload.center || [
+        userLocation.lat,
+        userLocation.lng
+      ]
+  }
+
   handleNodeAnchorClick = (clickedNodeId) => {
     const {nodes, routes} = this.props
     const clickedNode = nodes[clickedNodeId]
@@ -37,6 +49,7 @@ class Places extends Component {
 
     return React.cloneElement(children, {
       ...props,
+      center: this.getCenter(),
       onNodeAnchorClick: this.handleNodeAnchorClick,
     })
   }

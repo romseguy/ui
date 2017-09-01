@@ -92,7 +92,7 @@ function UserFormContainer(props) {
 
 const mapStateToProps = state => {
   const routeType = getRouteType(state)
-  const {name} = getPayload(state)
+  const {name: username} = getPayload(state)
   const centre = getMeCentre(state)
   const userLocation = getUserLocation(state)
   const title = getTitle(state)
@@ -101,7 +101,7 @@ const mapStateToProps = state => {
     centre,
     formValues: state.form.UserForm ? state.form.UserForm.values : {},
     userLocation,
-    name,
+    username,
     routeType,
     title
   }
@@ -116,7 +116,7 @@ const userFormQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        username: props.name || ''
+        username: props.username || ''
       }
     }
   },

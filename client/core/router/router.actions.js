@@ -33,10 +33,9 @@ export const routerActions = {
     type: routerActions.AUTH
   }),
   
-  rootRoute: () => ({
+  rootRoute: (payload) => ({
     type: routerActions.ROOT,
-    payload: {
-    }
+    payload
   }),
   
   placesAddRoute: () => ({
