@@ -2,9 +2,14 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
+import { actions as tooltipActions } from 'redux-tooltip'
+
+import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
+import { routerActions } from 'core/router'
+import { getUserLocation } from 'core/settings'
 
 
-class MainPanel extends Component {
+class MainPanelContainer extends Component {
 
   static getDimensions() {
     const {innerHeight, innerWidth} = window
@@ -27,19 +32,18 @@ class MainPanel extends Component {
   }
 
   state = {
-    ...MainPanel.getDimensions(),
+    ...MainPanelContainer.getDimensions(),
   }
 
   componentDidMount() {
     window.addEventListener('resize', event => {
-      this.setState(MainPanel.getDimensions())
+      this.setState(MainPanelContainer.getDimensions())
     })
   }
 
   render() {
     const {
       children,
-      nodes,
       ...props
     } = this.props
 
@@ -49,16 +53,31 @@ class MainPanel extends Component {
 
     return React.cloneElement(children, {
       ...state,
-      ...props,
-      nodes
+      ...props
     })
   }
 }
 
 
-const mapStateToProps = state => ({})
+const mapStateToProps = (state, {routeType}) => {
+  const props = {
+    nodes: getCanvasNodes(state),
+    selectedNodeIds: getSelectedNodeIds(state)
+  }
+
+  if (routeType === routerActions.ROOT) {
+    props.userLocation = getUserLocation(state)
+  }
+
+  return props
+}
 
 const mapDispatchToProps = {
+  hideTooltip: tooltipActions.hide,
+  setNodes: canvasActions.setNodes,
+  selectNode: canvasActions.selectNode,
+  showTooltip: tooltipActions.show,
+  unselectNode: canvasActions.unselectNode
 }
 
 export default compose(
@@ -67,4 +86,4 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   )
-)(MainPanel)
+)(MainPanelContainer)

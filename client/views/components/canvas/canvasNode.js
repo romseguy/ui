@@ -5,7 +5,7 @@ import { pure } from 'recompose'
 import styled from 'styled-components'
 
 import { modeTypes } from 'views/utils/canvas'
-import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
+import { getCanvasNodeAnchorTooltipName, getCanvasNodeHeaderTooltipName } from 'views/utils/tooltips'
 
 
 const CanvasNodeImage = styled.image`
@@ -111,7 +111,7 @@ function CanvasNode(props) {
   // text
   if (node.name) {
     if (foreignObjectSupport) {
-      let tooltipName = 'canvas-node__header'
+      let tooltipName = getCanvasNodeHeaderTooltipName(node.mine)
       let cursor = 'pointer'
 
       if (currentMode === modeTypes.DISCOVERY) {
@@ -119,7 +119,6 @@ function CanvasNode(props) {
         cursor = 'default'
       } else {
         if (!node.mine) {
-          tooltipName = null
           cursor = 'move'
         }
       }

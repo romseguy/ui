@@ -4,7 +4,8 @@ import { I18nextProvider } from 'react-i18next'
 
 import { client } from 'core/apollo'
 import { i18n } from 'core/settings'
-import App from './containers/app'
+
+import App from 'views/dataContainers/app'
 
 
 function Root({store}) {

@@ -81,25 +81,6 @@ class PlaceFormFields extends Component {
           </Row>
         )}
 
-        {action !== 'select' && (
-          <Row>
-            <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="city">Ville :</label>
-            </Col>
-            <Col mobile={16} tablet={16} computer={11}>
-              <Field
-                name="city"
-                component={CityField}
-                id="city"
-                center={center}
-                disabled={readOnly}
-                t={t}
-                onSuggestSelect={this.handleSuggestSelect}
-              />
-            </Col>
-          </Row>
-        )}
-
         <Row>
           {action !== 'select' && (
             <Col mobile={16} tablet={16} computer={5}>
@@ -126,6 +107,26 @@ class PlaceFormFields extends Component {
             </Col>
           )}
         </Row>
+
+        {action !== 'select' && (
+          <Row>
+            <Col mobile={16} tablet={16} computer={5}>
+              <label htmlFor="city">{t('form:place.city')}</label>
+            </Col>
+            <Col mobile={16} tablet={16} computer={11}>
+              <Field
+                name="city"
+                component={CityField}
+                id="city"
+                center={center}
+                disabled={readOnly}
+                t={t}
+                onSuggestSelect={this.handleSuggestSelect}
+              />
+            </Col>
+          </Row>
+        )}
+
 
         <Row>
           <Col>

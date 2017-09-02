@@ -10,12 +10,12 @@ import { routerActions, getPayload, getRouteType } from 'core/router'
 import routes from 'core/routes'
 
 import MainPanel from 'views/containers/mainPanel'
-import Me from 'views/containers/me'
-import Place, { PlaceForm } from 'views/containers/place'
-import Places from 'views/containers/places'
+import Me from 'views/dataContainers/me'
+import Place, { PlaceForm } from 'views/dataContainers/place'
+import Places from 'views/dataContainers/places'
 import SidePanel from 'views/components/sidePanel'
 import { SymbolForm } from 'views/containers/symbol'
-import User, { UserForm } from 'views/containers/user'
+import User, { UserForm } from 'views/dataContainers/user'
 
 import { CanvasManager } from 'views/components/canvas'
 import { Loader } from 'views/components/layout'
@@ -26,7 +26,7 @@ function Route404({t}) {
   return <span>{t('not_found')}</span>
 }
 
-class Router extends Component {
+class RouterContainer extends Component {
   render() {
     const {currentRoute = {}, isAuthed, routeType, t} = this.props
 
@@ -59,14 +59,11 @@ class Router extends Component {
       ].includes(routeType)
     ) {
       routeEl = (
-        <Places
-          {...this.props}
-          routeType={selectedRouteType}
-        >
-          <MainPanel>
+        <MainPanel {...this.props} routeType={selectedRouteType}>
+          <Places>
             <MapManager/>
-          </MainPanel>
-        </Places>
+          </Places>
+        </MainPanel>
       )
     }
     else if (
@@ -81,14 +78,11 @@ class Router extends Component {
       ].includes(routeType)
     ) {
       routeEl = (
-        <Me
-          {...this.props}
-          routeType={selectedRouteType}
-        >
-          <MainPanel>
+        <MainPanel {...this.props} routeType={selectedRouteType}>
+          <Me>
             <CanvasManager/>
-          </MainPanel>
-        </Me>
+          </Me>
+        </MainPanel>
       )
 
       if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
@@ -108,14 +102,11 @@ class Router extends Component {
       ].includes(routeType)
     ) {
       routeEl = (
-        <Place
-          {...this.props}
-          routeType={selectedRouteType}
-        >
-          <MainPanel>
+        <MainPanel {...this.props} routeType={selectedRouteType}>
+          <Place>
             <CanvasManager/>
-          </MainPanel>
-        </Place>
+          </Place>
+        </MainPanel>
       )
     }
     else if (
@@ -124,14 +115,11 @@ class Router extends Component {
       ].includes(routeType)
     ) {
       routeEl = (
-        <User
-          {...this.props}
-          routeType={selectedRouteType}
-        >
-          <MainPanel>
+        <MainPanel {...this.props} routeType={selectedRouteType}>
+          <User>
             <CanvasManager/>
-          </MainPanel>
-        </User>
+          </User>
+        </MainPanel>
       )
     }
     else {
@@ -148,11 +136,11 @@ class Router extends Component {
 }
 
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, {currentUser}) => {
   const routeType = getRouteType(state)
   const routePayload = getPayload(state)
   const currentRoute = routes[routeType]
-  const isAuthed = getIsAuthed(state)
+  const isAuthed = currentUser !== null
 
   return {
     currentRoute,
@@ -173,5 +161,5 @@ export default compose(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  ),
-)(Router)
+  )
+)(RouterContainer)

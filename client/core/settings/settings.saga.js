@@ -30,7 +30,7 @@ const i18nOptions = {
   },
 
   // have a common namespace used around the full app
-  ns: ['common', 'errors', 'form', 'accounts', 'map', 'header'],
+  ns: ['common', 'errors', 'form', 'accounts', 'canvas', 'header'],
   defaultNS: 'common',
 
   backend: {
@@ -68,8 +68,8 @@ export function* settingsSaga() {
 
   try {
     const {currentPosition, t1} = yield race({
-      currentPosition: call(getCurrentPosition, 5000),
-      t1: delay(5000)
+      currentPosition: call(getCurrentPosition),
+      t1: delay(10000)
     })
 
     if (t1) {

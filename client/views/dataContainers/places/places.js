@@ -1,9 +1,6 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
-import { connect } from 'react-redux'
-
-import { getUserLocation } from 'core/settings'
 
 import { Loader } from 'views/components/layout'
 import { placeToNode } from 'views/utils/nodes'
@@ -56,12 +53,6 @@ class Places extends Component {
 }
 
 
-const mapStateToProps = state => ({
-  userLocation: getUserLocation(state)
-})
-
-const mapDispatchToProps = {}
-
 const placesQueryConfig = {
   props({ownProps, data: {loading, currentUser, myPlaces, places = []}}) {
     let {
@@ -87,9 +78,5 @@ const placesQueryConfig = {
 
 
 export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
   graphql(placesQuery, placesQueryConfig)
 )(Places)

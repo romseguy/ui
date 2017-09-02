@@ -1,11 +1,9 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
-import { connect } from 'react-redux'
-import { actions as tooltipActions } from 'redux-tooltip'
 
 import { roleTypes } from 'core/constants'
-import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
+import { routerActions } from 'core/router'
 
 import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
 
@@ -14,32 +12,40 @@ import { ToolboxButton } from 'views/components/toolbox'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { deselectAllNodes, personToNode } from 'views/utils/nodes'
+import { deselectAllNodes, placeToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
 import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
-import placeQuery from './place.query.graphql'
+import meQuery from './me.query.graphql'
+import deleteUserPlaceMutation from './deleteUserPlace.mutation.graphql'
+import updateUserPlacesMutation from './updateUserPlaces.mutation.graphql'
 
 
-class Place extends Component {
+class Me extends Component {
 
   constructor(props) {
     super(props)
-    const {t} = props
-    const currentMode = modeTypes.DISCOVERY
+    const {routeType, t} = props
+
+    const editModeRouteTypes = [
+      routerActions.ME_PLACES_ADD,
+      routerActions.ME_PLACE_EDIT
+    ]
+
+    const currentMode = editModeRouteTypes.includes(routeType) ? modeTypes.EDIT : modeTypes.DISCOVERY
 
     this.state = {
       currentMode,
       modes: [{
         key: modeTypes.DISCOVERY,
         active: currentMode === modeTypes.DISCOVERY,
+        labels: {
+          active: t('canvas:modes.discovery.labels.active'),
+          disabled: t('canvas:modes.discovery.labels.disabled'),
+          inactive: t('canvas:modes.discovery.labels.inactive')
+        },
         disabled: false,
         iconId: 'search',
-        labels: {
-          active: t('map:modes.discovery.labels.active'),
-          disabled: t('map:modes.discovery.labels.disabled'),
-          inactive: t('map:modes.discovery.labels.inactive')
-        },
         onClick: () => {
           this.setModeActive(modeTypes.DISCOVERY)
           this.setToolboxDisabled('atoms', true)
@@ -48,30 +54,28 @@ class Place extends Component {
       }, {
         key: modeTypes.EDIT,
         active: currentMode === modeTypes.EDIT,
+        labels: {
+          active: t('canvas:modes.edit.labels.active'),
+          disabled: t('canvas:modes.edit.labels.disabled'),
+          inactive: t('canvas:modes.edit.labels.inactive')
+        },
         disabled: false,
         iconId: 'edit',
-        labels: {
-          active: t('map:modes.edit.labels.active'),
-          disabled: t('map:modes.edit.labels.disabled'),
-          inactive: t('map:modes.edit.labels.inactive')
-        },
         onClick: () => {
-          if (this.props.mine) {
-            this.setModeActive(modeTypes.EDIT)
-            this.setToolboxDisabled('atoms', false)
-            this.setToolboxDisabled('symbols', false)
-          }
+          this.setModeActive(modeTypes.EDIT)
+          this.setToolboxDisabled('atoms', false)
+          this.setToolboxDisabled('symbols', false)
         }
       }, {
         key: modeTypes.NOTIFICATION,
         active: currentMode === modeTypes.NOTIFICATION,
+        labels: {
+          active: t('canvas:modes.notification.labels.active'),
+          disabled: t('canvas:modes.notification.labels.disabled'),
+          inactive: t('canvas:modes.notification.labels.inactive')
+        },
         disabled: false,
         iconId: 'volume',
-        labels: {
-          active: t('map:modes.notification.labels.active'),
-          disabled: t('map:modes.notification.labels.disabled'),
-          inactive: t('map:modes.notification.labels.inactive')
-        },
         onClick: () => {
           this.setModeActive(modeTypes.NOTIFICATION)
           this.setToolboxDisabled('atoms', true)
@@ -84,8 +88,8 @@ class Place extends Component {
         buttonProps: {
           active: false,
           disabled: currentMode !== modeTypes.EDIT,
-          label: t('map:atoms.label') + 's',
-          title: t('map:atoms.add'),
+          label: t('canvas:atoms.label') + 's',
+          title: t('canvas:atoms.add'),
           toggle: true,
           onClick: () => this.setToolboxIsOpen('atoms')
         },
@@ -101,8 +105,8 @@ class Place extends Component {
         buttonProps: {
           active: false,
           disabled: currentMode !== modeTypes.EDIT,
-          label: t('map:symbols.label') + 's',
-          title: t('map:symbols.add'),
+          label: t('canvas:symbols.label') + 's',
+          title: t('canvas:symbols.add'),
           toggle: true,
           onClick: () => this.setToolboxIsOpen('symbols')
         },
@@ -117,7 +121,7 @@ class Place extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {isLoading, mine, nodes, setNodes} = nextProps
+    const {isLoading, setNodes, nodes} = nextProps
 
     if (!isLoading && isLoading !== this.props.isLoading) {
       setNodes(nodes)
@@ -140,16 +144,24 @@ class Place extends Component {
   }
 
   setModeActive = key => {
-    const {nodes, setNodes} = this.props
+    const {doUpdateUserPlaces, nodes, setNodes} = this.props
     deselectAllNodes(nodes, setNodes)()
+    doUpdateUserPlaces({nodes})
 
     this.setState(p => ({
       currentMode: key,
       modes: p.modes.map(mode => {
         if (mode.key === key) {
-          return {...mode, active: true}
+          return {
+            ...mode,
+            active: true
+          }
         }
-        return {...mode, active: false}
+
+        return {
+          ...mode,
+          active: false
+        }
       })
     }))
   }
@@ -157,7 +169,7 @@ class Place extends Component {
   setToolboxDisabled = (key, disabled) => {
     this.setState(p => ({
       toolboxes: p.toolboxes.map(toolbox => {
-        if (key === '*' || toolbox.key === key) {
+        if (toolbox.key === key) {
           return {
             ...toolbox,
             buttonProps: {
@@ -174,7 +186,7 @@ class Place extends Component {
   setToolboxIsOpen = (key, isOpen) => {
     this.setState(p => ({
       toolboxes: p.toolboxes.map(toolbox => {
-        if (key === '*' || toolbox.key === key) {
+        if (toolbox.key === key) {
           const active = isOpen === undefined ? !toolbox.props.isOpen : isOpen
           return {
             ...toolbox,
@@ -205,6 +217,12 @@ class Place extends Component {
   }
 
   handleCanvasClick = () => {
+    const {routes, routeType} = this.props
+    const {meRoute} = routes
+
+    if (routeType !== routerActions.ME) {
+      meRoute({noReset: true})
+    }
     this.setToolboxIsOpen('*', false)
   }
 
@@ -227,7 +245,7 @@ class Place extends Component {
   handleNodeAnchorClick = clickedNodeId => {
     const {hideTooltip, nodes, routes, selectNode, showTooltip, unselectNode} = this.props
     const {currentMode} = this.state
-    const {mePlaceViewRoute, placeViewRoute, userViewRoute} = routes
+    const {mePlaceViewRoute, placeViewRoute} = routes
 
     const clickedNode = nodes[clickedNodeId]
     const isNodeSelected = clickedNode.selected
@@ -241,9 +259,6 @@ class Place extends Component {
             placeViewRoute(clickedNode.name)
           }
         }
-        else if (clickedNode.type === atomTypes.PERSON) {
-          userViewRoute(clickedNode.name)
-        }
         break
 
       case modeTypes.EDIT:
@@ -256,34 +271,49 @@ class Place extends Component {
           selectNode(clickedNodeId)
         }
         break
+
+      case modeTypes.NOTIFICATION:
+        // todo
+        break
     }
   }
 
-  handleNodeDelete = deletedNode => {
-    // todo: delete place_place relation if deletedNode.type === LOCATION
+  handleCanvasNodeDelete = deletedNode => {
+    const {doDeleteUserPlace} = this.props
+    doDeleteUserPlace({placeId: deletedNode.idServer})
   }
 
-  handleNodeEdit = () => {
-    const {nodes} = this.props
-    const selectedNode = nodes.find(node => node.selected)
-    //this.setEditRoute(selectedNode)
+  handleCanvasNodeEdit = (selectedNode) => {
+    this.setEditRoute(selectedNode)
   }
 
   handleNodeHeaderClick = clickedNodeId => {
+    const {nodes, selectNode} = this.props
+    const {currentMode} = this.state
+    const clickedNode = nodes[clickedNodeId]
+
+    if (!clickedNode.mine) {
+      return
+    }
+
+    switch (currentMode) {
+      case modeTypes.EDIT:
+        selectNode(clickedNodeId)
+        this.setEditRoute(clickedNode)
+        break
+    }
   }
 
   render() {
     const {
       children,
       isLoading,
-      mine,
       setNodes,
       ...props
     } = this.props
 
     const {
       currentMode,
-      modes,
       ...state
     } = this.state
 
@@ -295,16 +325,10 @@ class Place extends Component {
       ...props,
       ...state,
       currentMode,
-      modes: modes.map(mode => {
-        if (mode.key === modeTypes.EDIT) {
-          return {...mode, disabled: !mine}
-        }
-        return mode
-      }),
       readOnly: currentMode !== modeTypes.EDIT,
       onCanvasClick: this.handleCanvasClick,
-      onDeleteSelectedNode: this.handleNodeDelete,
-      onEditSelectedNode: this.handleNodeEdit,
+      onDeleteSelectedNode: this.handleCanvasNodeDelete,
+      onEditSelectedNode: this.handleCanvasNodeEdit,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
       onNodesChange: setNodes,
@@ -314,36 +338,31 @@ class Place extends Component {
 }
 
 
-const placeQueryConfig = {
-  options: (props) => {
-    const {name: placeName} = props.routePayload
-
-    return {
-      variables: {
-        title: placeName
-      }
-    }
-  },
-  props({ownProps, data: {loading, myPlaces, place}}) {
+const meQueryConfig = {
+  props({ownProps, data: {loading, myPlaces, /*refetch*/}}) {
     let {
       nodes = []
     } = ownProps
 
-    let mine = null
-
-    if (!loading) {
-      const userPlace = myPlaces.find(myPlace => myPlace.place.id === place.id)
-      mine = userPlace && userPlace.role.id === roleTypes.GUARDIAN
-
+    if (myPlaces) {
       if (!nodes.length) {
-        nodes = place.users.map((person, i) => personToNode(i, person))
+        nodes = myPlaces.map((myPlace, id) => {
+          const {place, role, x, y} = myPlace
+          const mine = Number(role.id) === roleTypes.GUARDIAN
+
+          return placeToNode(
+            id,
+            {...place, x, y},
+            mine
+          )
+        })
       } else {
         nodes = nodes.map((node, i) => {
-          const user = place.users.find(person => node.type === atomTypes.PERSON && person.id === node.idServer)
+          const myPlace = myPlaces.find(({place}) => node.type === atomTypes.LOCATION && place.id === node.idServer)
 
-          if (user) {
+          if (myPlace) {
             return {
-              ...personToNode(i, user),
+              ...placeToNode(i, myPlace),
               ...node
             }
           }
@@ -355,31 +374,51 @@ const placeQueryConfig = {
 
     return {
       isLoading: loading,
-      mine,
       nodes
     }
   }
 }
 
-
-const mapStateToProps = state => {
-  return {
-    nodes: getCanvasNodes(state),
-    selectedNodeIds: getSelectedNodeIds(state),
+const deleteUserPlaceMutationConfig = {
+  props({ownProps, mutate}) {
+    return {
+      doDeleteUserPlace({placeId}){
+        return mutate({
+          variables: {
+            placeId: Number(placeId)
+          },
+          refetchQueries: [{
+            query: meQuery
+          }]
+        })
+      }
+    }
   }
 }
 
-const mapDispatchToProps = {
-  hideTooltip: tooltipActions.hide,
-  setNodes: canvasActions.setNodes,
-  selectNode: canvasActions.selectNode,
-  showTooltip: tooltipActions.show
+const updateUserPlacesMutationConfig = {
+  props({ownProps, mutate}) {
+    return {
+      doUpdateUserPlaces({nodes}){
+        return mutate({
+          variables: {
+            userPlaces: nodes.map(({idServer, x, y}) => ({
+              placeId: Number(idServer),
+              x: parseFloat(x),
+              y: parseFloat(y)
+            }))
+          },
+          refetchQueries: [{
+            query: meQuery
+          }]
+        })
+      }
+    }
+  }
 }
 
 export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
-  graphql(placeQuery, placeQueryConfig)
-)(Place)
+  graphql(deleteUserPlaceMutation, deleteUserPlaceMutationConfig),
+  graphql(meQuery, meQueryConfig),
+  graphql(updateUserPlacesMutation, updateUserPlacesMutationConfig)
+)(Me)

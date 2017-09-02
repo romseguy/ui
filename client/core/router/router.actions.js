@@ -1,5 +1,6 @@
 export const routerActions = {
   AUTH: 'AUTH',
+  LOGOUT: 'LOGOUT',
 
   ROOT: 'ROOT',
 
@@ -31,6 +32,10 @@ export const routerActions = {
 
   authRoute: () => ({
     type: routerActions.AUTH
+  }),
+
+  logoutRoute: () => ({
+    type: routerActions.LOGOUT
   }),
   
   rootRoute: (payload) => ({

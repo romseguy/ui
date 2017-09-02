@@ -7,8 +7,8 @@ import { connect } from 'react-redux'
 import { authActions } from 'core/auth'
 import { modalActions, modalConstants } from 'core/modal'
 
-import { meQuery } from 'views/containers/me'
-import { placesQuery } from 'views/containers/places'
+import { meQuery } from 'views/dataContainers/me'
+import { placesQuery } from 'views/dataContainers/places'
 
 import AuthForm from 'views/components/authForm'
 

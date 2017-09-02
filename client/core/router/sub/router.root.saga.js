@@ -5,8 +5,8 @@ import { canvasActions } from 'core/canvas'
 import { routerActions } from 'core/router'
 import { i18n } from 'core/settings'
 
-import placeQuery from 'views/containers/place/place.query.graphql'
-import userQuery from 'views/containers/user/user.query.graphql'
+import placeQuery from 'views/dataContainers/place/place.query.graphql'
+import userQuery from 'views/dataContainers/user/user.query.graphql'
 
 import { setCentreSaga, setDepartmentTitle, setTitleSaga } from './router.sub.saga'
 
@@ -17,11 +17,13 @@ export function* rootSaga(payload, settings) {
   yield call(setDepartmentTitle)
 }
 
+// NIY
 export function* placeEditSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
 }
 
+// NIY
 export function* placesAddSaga(payload, settings) {
   const {centre} = settings
   yield call(setCentreSaga, centre)
@@ -37,6 +39,9 @@ export function* placeViewSaga(payload, settings) {
     yield put(canvasActions.setNodes([]))
   }
 
+  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`)
+
+  /*
   try {
     const {
       myPlaces,
@@ -47,7 +52,6 @@ export function* placeViewSaga(payload, settings) {
     })
 
     const myPlace = myPlaces.find(({place}) => place.title === placeName)
-
     yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
   } catch (e) {
     let keepLooping = true
@@ -76,12 +80,13 @@ export function* placeViewSaga(payload, settings) {
       }
     }
   }
+  */
 }
 
 export function* userViewSaga(payload, settings) {
   const {name: username, noReset} = payload
   const {centre} = settings
-  yield call(setTitleSaga, username)
+  yield call(setTitleSaga, `${i18n.t('header:user_profile')} ${username}`)
   yield call(setCentreSaga, centre)
 
   if (!noReset) {

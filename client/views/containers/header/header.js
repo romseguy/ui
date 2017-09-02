@@ -2,9 +2,7 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { gql, graphql } from 'react-apollo'
-import Link from 'redux-first-router-link'
 import { connect } from 'react-redux'
-import styled from 'styled-components'
 
 import { client } from 'core/apollo'
 import { authActions } from 'core/auth'
@@ -13,72 +11,27 @@ import { modalActions, modalConstants } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
 
-import { media } from 'views/utils/responsive'
+import placeQuery from 'views/dataContainers/place/place.query.graphql'
 
 import Atom from 'views/components/atom'
-import { Grid, Col, Segment } from 'views/components/layout'
-import placeQuery from 'views/containers/place/place.query.graphql'
+import { Col } from 'views/components/layout'
+import { HeaderGrid, HeaderLink, HeaderTitle } from 'views/components/header'
 
-import currentUserQuery from './currentUser.query.graphql'
+import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
 
-const HeaderContainer = styled(Grid)`
-${media.desktop`box-shadow: 0px -1px 10px black;`}
-${media.tablet`
-box-shadow: none;
-`}
-`
 
-const HeaderAppTitle = styled.h1`
-${media.desktop`padding-left: 1rem;`}
-${media.tablet`padding-left: 0;`}
-`
-
-const HeaderTitleContainer = styled(Segment)`
-padding: 0 !important;
-margin: 0 !important;
-
-::after {
-  margin-top: -0.85em !important;
-  width: 1.5em !important;
-  height: 1.5em !important;
-}
-`
-
-function HeaderTitle({children, isLoading, onClick}) {
-  return (
-    <HeaderTitleContainer basic loading={isLoading}>
-      <Link href="" onClick={onClick}>
-        {children}
-      </Link>
-    </HeaderTitleContainer>
-  )
-}
-
-const HeaderLink = styled(Link)`
-text-decoration: underline;
-cursor: pointer;
-color: blue;
-margin-right: 5px;
-`
-const HeaderRawLink = styled.a`
-text-decoration: underline;
-cursor: pointer;
-color: blue;
-margin-right: 5px;
-`
-
-class Header extends Component {
+class HeaderContainer extends Component {
   static isStacked() {
     return window.innerWidth < 767
   }
 
   state = {
-    isStacked: Header.isStacked()
+    isStacked: HeaderContainer.isStacked()
   }
 
   componentDidMount() {
     window.addEventListener('resize', event => {
-      const isStacked = Header.isStacked()
+      const isStacked = HeaderContainer.isStacked()
 
       if (isStacked !== this.state.isStacked) {
         this.setState(p => ({isStacked}))
@@ -86,18 +39,13 @@ class Header extends Component {
     })
   }
 
-  handleLogout = event => {
-    const {doLogout, rootRoute, setIsAuthed} = this.props
-
-    doLogout().then(() => {
-      setIsAuthed(false)
-      rootRoute()
-    })
-  }
-
   handleHeaderTitleClick = event => {
     event.preventDefault()
     const {rootRoute, routePayload, routeType, setModal, t, userLocation} = this.props
+    const placeRouteTypes = [
+      routerActions.ME_PLACE_VIEW,
+      routerActions.PLACE_VIEW
+    ]
 
     if (routeType === routerActions.ROOT) {
       setModal(modalConstants.SET_LOCATION, {
@@ -109,7 +57,8 @@ class Header extends Component {
         },
         title: t('form:setLocation.header')
       })
-    } else {
+    }
+    else if (placeRouteTypes.includes(routeType) && routePayload.name) {
       const {name: placeName} = routePayload
       const {place: {latitude, longitude}} = client.readQuery({
         query: placeQuery,
@@ -120,13 +69,19 @@ class Header extends Component {
     }
   }
 
+  handleLogout = event => {
+    const {doLogout, rootRoute, setIsAuthed} = this.props
+
+    doLogout().then(() => {
+      setIsAuthed(false)
+      rootRoute()
+    })
+  }
+
   render() {
     const {
-      authRoute,
-      appTitle,
       centre,
-      currentUserQuery: {currentUser},
-      meRoute,
+      currentUser,
       routeType,
       t
     } = this.props
@@ -135,32 +90,50 @@ class Header extends Component {
       isStacked
     } = this.state
 
+    let titleIcon = <Atom type={centre} height={16} width={16}/>
+
+    if (routeType === routerActions.ROOT) {
+      titleIcon = null
+    }
+
     let {title} = this.props
+    let truncateTitle = false
+    let isLoading = title === null
 
     if (currentUser && [
         routerActions.ME,
         routerActions.ME_PLACE_EDIT,
         routerActions.ME_PLACES_ADD
       ].includes(routeType)) {
-      title = currentUser.username
+      isLoading = false
+      title = `${t('header:my_profile')}`
+    }
+    else if (!isLoading) {
+      const titleMaxLength = 40
+
+      if (title.length > titleMaxLength) {
+        truncateTitle = true
+        title = `${title.substring(0, titleMaxLength)}...`
+      }
+
+      if (routeType === routerActions.ROOT) {
+        title = `${t('header:current_position')} ${title}`
+      }
     }
 
-    const isLoading = title === null
-    const titleIcon = <Atom type={centre} height={16} width={16}/>
-    const titleMaxLength = 40
-    const truncateTitle = title && title.length > titleMaxLength
-
     return (
-      <HeaderContainer
+      <HeaderGrid
         className="app-header"
         columns={3}
         stackable
-        verticalAlign='middle'
+        verticalAlign="middle"
       >
         <Col computer={3}>
-          <HeaderAppTitle>
-            <Link href={routerActions.rootRoute()}>{appTitle}</Link>
-          </HeaderAppTitle>
+          <HeaderLink
+            to={routerActions.rootRoute()}
+          >
+            {t('header:map')}
+          </HeaderLink>
         </Col>
 
         <Col
@@ -172,8 +145,8 @@ class Header extends Component {
             title={truncateTitle ? title : ""}
             onClick={this.handleHeaderTitleClick}
           >
-            {!isLoading && titleIcon}
-            {!isLoading && truncateTitle ? `${title.substring(0, titleMaxLength)}...` : title}
+            {titleIcon}
+            {title}
           </HeaderTitle>
         </Col>
 
@@ -183,16 +156,25 @@ class Header extends Component {
         >
           {currentUser ? (
             <div>
-              <HeaderRawLink onClick={() => meRoute()}>{currentUser.username}</HeaderRawLink>
-              <HeaderRawLink onClick={this.handleLogout}>{t('accounts:logout')}</HeaderRawLink>
+              <HeaderLink to={routerActions.meRoute()}>
+                {currentUser.username}
+              </HeaderLink>
+
+              <HeaderLink
+                to={routerActions.logoutRoute()}
+                shouldDispatch={false}
+                onClick={this.handleLogout}
+              >
+                {t('accounts:logout')}
+              </HeaderLink>
             </div>
           ) : (
             <div>
-              <HeaderRawLink onClick={() => authRoute()}>Connexion</HeaderRawLink>
+              <HeaderLink to={routerActions.authRoute()}>Connexion</HeaderLink>
             </div>
           )}
         </Col>
-      </HeaderContainer>
+      </HeaderGrid>
     )
   }
 }
@@ -213,12 +195,6 @@ const mapDispatchToProps = {
   setModal: modalActions.setModal
 }
 
-
-const currentUserQueryConfig = {
-  name: 'currentUserQuery',
-  fetchPolicy: 'network-only'
-}
-
 const logoutMutationConfig = {
   props({ownProps: {rootRoute, setIsAuthed}, mutate}) {
     return {
@@ -236,7 +212,6 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   ),
-  graphql(currentUserQuery, currentUserQueryConfig),
   graphql(gql`mutation logout {logout{currentUser{id}}}`, logoutMutationConfig),
   translate()
-)(Header)
+)(HeaderContainer)

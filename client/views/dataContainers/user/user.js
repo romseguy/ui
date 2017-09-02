@@ -1,11 +1,8 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
-import { connect } from 'react-redux'
-import { actions as tooltipActions } from 'redux-tooltip'
 
 import { roleTypes } from 'core/constants'
-import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
 
 import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
 
@@ -36,9 +33,9 @@ class User extends Component {
         disabled: false,
         iconId: 'search',
         labels: {
-          active: t('map:modes.discovery.labels.active'),
-          disabled: t('map:modes.discovery.labels.disabled'),
-          inactive: t('map:modes.discovery.labels.inactive')
+          active: t('canvas:modes.discovery.labels.active'),
+          disabled: t('canvas:modes.discovery.labels.disabled'),
+          inactive: t('canvas:modes.discovery.labels.inactive')
         },
         onClick: () => {
           this.setModeActive(modeTypes.DISCOVERY)
@@ -51,9 +48,9 @@ class User extends Component {
         disabled: false,
         iconId: 'edit',
         labels: {
-          active: t('map:modes.edit.labels.active'),
-          disabled: t('map:modes.edit.labels.disabled'),
-          inactive: t('map:modes.edit.labels.inactive')
+          active: t('canvas:modes.edit.labels.active'),
+          disabled: t('canvas:modes.edit.labels.disabled'),
+          inactive: t('canvas:modes.edit.labels.inactive')
         },
         onClick: () => {
           this.setModeActive(modeTypes.EDIT)
@@ -66,9 +63,9 @@ class User extends Component {
         disabled: false,
         iconId: 'volume',
         labels: {
-          active: t('map:modes.notification.labels.active'),
-          disabled: t('map:modes.notification.labels.disabled'),
-          inactive: t('map:modes.notification.labels.inactive')
+          active: t('canvas:modes.notification.labels.active'),
+          disabled: t('canvas:modes.notification.labels.disabled'),
+          inactive: t('canvas:modes.notification.labels.inactive')
         },
         onClick: () => {
           this.setModeActive(modeTypes.NOTIFICATION)
@@ -82,8 +79,8 @@ class User extends Component {
         buttonProps: {
           active: false,
           disabled: currentMode !== modeTypes.EDIT,
-          label: t('map:atoms.label') + 's',
-          title: t('map:atoms.add'),
+          label: t('canvas:atoms.label') + 's',
+          title: t('canvas:atoms.add'),
           toggle: true,
           onClick: () => this.setToolboxIsOpen('atoms')
         },
@@ -99,8 +96,8 @@ class User extends Component {
         buttonProps: {
           active: false,
           disabled: currentMode !== modeTypes.EDIT,
-          label: t('map:symbols.label') + 's',
-          title: t('map:symbols.add'),
+          label: t('canvas:symbols.label') + 's',
+          title: t('canvas:symbols.add'),
           toggle: true,
           onClick: () => this.setToolboxIsOpen('symbols')
         },
@@ -377,25 +374,6 @@ const userQueryConfig = {
   }
 }
 
-
-const mapStateToProps = state => {
-  return {
-    nodes: getCanvasNodes(state),
-    selectedNodeIds: getSelectedNodeIds(state),
-  }
-}
-
-const mapDispatchToProps = {
-  hideTooltip: tooltipActions.hide,
-  setNodes: canvasActions.setNodes,
-  selectNode: canvasActions.selectNode,
-  showTooltip: tooltipActions.show
-}
-
 export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
   graphql(userQuery, userQueryConfig)
 )(User)

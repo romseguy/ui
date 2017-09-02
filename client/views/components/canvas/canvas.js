@@ -152,7 +152,7 @@ class Canvas extends React.Component {
 
     return (
       <div className='canvas-toolbox-container'>
-        {toolboxes.map(({component, props}) => React.createElement(component, props))}
+        {toolboxes.map(toolbox => React.createElement(toolbox.component, toolbox.props))}
         <div>
           {connectDropTarget(svg)}
         </div>

@@ -5,21 +5,24 @@ import { connect } from 'react-redux'
 
 import { getTitle } from 'core/settings'
 
-function AppHelmet({appTitle, title}) {
+
+function HelmetContainer({title}) {
   return (
     <Helmet>
       <meta charSet="utf-8"/>
       <link rel="canonical" href="http://mysite.com/example"/>
 
-      <title>{`${appTitle} | ${title || ''}`}</title>
+      <title>{title}</title>
     </Helmet>
   )
 }
 
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, {appTitle}) => {
+  const title = getTitle(state)
+
   return {
-    title: getTitle(state)
+    title: `${appTitle} | ${title || 'Chargement...'}`
   }
 }
 
@@ -30,4 +33,4 @@ export default pipe(
     mapStateToProps,
     mapDispatchToProps
   ),
-)(AppHelmet)
+)(HelmetContainer)

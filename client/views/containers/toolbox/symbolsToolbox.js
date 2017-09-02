@@ -61,7 +61,7 @@ const mapStateToProps = (state, props) => {
   const {t} = props
 
   const symbols = [{
-    name: t('map:symbols.new_service'),
+    name: t('canvas:symbols.new_service'),
     type: symbolTypes.SERVICE,
     image: atomImages.red,
     imageSelected: atomImages.red_selected,

@@ -13,7 +13,7 @@ import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'
 
-import { meQuery } from 'views/containers/me'
+import { meQuery } from 'views/dataContainers/me'
 import { Container } from 'views/components/layout'
 import PlaceForm, { PlaceFormHeader } from 'views/components/placeForm'
 

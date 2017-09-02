@@ -13,6 +13,9 @@ export default {
     path: '/auth',
     modalRouteType: routerActions.ROOT
   },
+  [routerActions.LOGOUT]: {
+    path: '/logout'
+  },
 
   [routerActions.ROOT]: {
     path: '/',

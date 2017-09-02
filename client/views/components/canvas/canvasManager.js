@@ -125,7 +125,7 @@ class CanvasManager extends Component {
   handleToolbarDeleteClick = (event, selectedNode) => {
     const {nodes, t, onDeleteSelectedNode, onNodesChange} = this.props
     // todo: proper modal
-    const confirmed = window.confirm(t('map:atoms.delete_confirm') + ' ' + selectedNode.name)
+    const confirmed = window.confirm(t('canvas:atoms.delete_confirm') + ' ' + selectedNode.name)
     if (confirmed) {
       const deletedNode = deleteSelectedNode(nodes, onNodesChange)()
       onDeleteSelectedNode && onDeleteSelectedNode(deletedNode)

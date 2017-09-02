@@ -102,7 +102,7 @@ function Toolbar(props) {
             disabled={deleteDisabled}
             id="trash"
             margin="0.4rem 0 0 0.4rem"
-            title={t(`map:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'delete_selected_entity' : 'delete_selected_symbol'}`)}
+            title={t(`canvas:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'delete_selected_entity' : 'delete_selected_symbol'}`)}
             onClick={(e) => handleActionClick(e, onDeleteClick, deleteDisabled)}
           />
 
@@ -110,7 +110,7 @@ function Toolbar(props) {
             disabled={editDisabled}
             id="compose"
             margin="0.4rem 0 0 0.4rem"
-            title={t(`map:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'edit_selected_entity' : 'edit_selected_symbol'}`)}
+            title={t(`canvas:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'edit_selected_entity' : 'edit_selected_symbol'}`)}
             onClick={(e) => handleActionClick(e, onEditClick, editDisabled)}
           />
         </Segment>
@@ -129,14 +129,14 @@ function Toolbar(props) {
             disabled={zoomOutDisabled}
             id="minus"
             margin="0.4rem 0.4rem 0 0"
-            title={t('map:buttons.zoom_out')}
+            title={t('canvas:buttons.zoom_out')}
             onClick={(e) => handleActionClick(e, onZoomOutClick, zoomOutDisabled)}
           />
 
           <ToolbarIcon
             disabled={zoomInDisabled}
             id="plus"
-            title={t('map:buttons.zoom_in')}
+            title={t('canvas:buttons.zoom_in')}
             onClick={(e) => handleActionClick(e, onZoomInClick, zoomInDisabled)}
           />
         </Segment>

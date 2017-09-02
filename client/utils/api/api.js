@@ -34,7 +34,7 @@ export default {
       return undefined
     }
 
-    const body = response.datas || response
+    const body = response.data || response
 
     if (!key) {
       return body

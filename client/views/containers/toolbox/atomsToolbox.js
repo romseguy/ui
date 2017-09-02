@@ -65,7 +65,7 @@ const mapStateToProps = (state, props) => {
   const centre = getMeCentre(state)
 
   const atoms = [{
-    name: t('map:places.new'),
+    name: t('canvas:places.new'),
     type: atomTypes.LOCATION,
     image: atomImages.green,
     backgroundColor: 'transparent',
@@ -77,7 +77,7 @@ const mapStateToProps = (state, props) => {
 
   if (centre === centreTypes.PERSON) {
     atoms.push({
-      name: t('map:persons.new'),
+      name: t('canvas:persons.new'),
       type: atomTypes.PERSON,
       image: atomImages.yellow,
       backgroundColor: 'transparent',
