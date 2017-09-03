@@ -1,5 +1,6 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
+import { withHandlers } from 'recompose'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { actions as tooltipActions } from 'redux-tooltip'
@@ -8,6 +9,12 @@ import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
 import { routerActions } from 'core/router'
 import { getUserLocation } from 'core/settings'
 
+
+const handlers = {
+  onDeleteSelectedNode: props => deletedNode => {
+    props.unselectAllNodes()
+  }
+}
 
 class MainPanelContainer extends Component {
 
@@ -77,6 +84,7 @@ const mapDispatchToProps = {
   setNodes: canvasActions.setNodes,
   selectNode: canvasActions.selectNode,
   showTooltip: tooltipActions.show,
+  unselectAllNodes: canvasActions.unselectAllNodes,
   unselectNode: canvasActions.unselectNode
 }
 
@@ -85,5 +93,6 @@ export default compose(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )
+  ),
+  withHandlers(handlers)
 )(MainPanelContainer)

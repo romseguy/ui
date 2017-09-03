@@ -1,9 +1,10 @@
+import 'views/assets/scss/main.scss'
+
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { AppContainer } from 'react-hot-loader'
+import { AppContainer as HotReloadable } from 'react-hot-loader'
 import { configureStore } from './redux/store'
 
-import './views/assets/scss/main.scss'
 import Root from './views/root'
 
 
@@ -22,12 +23,16 @@ const store = configureStore()
 render(Root)
 
 function render(Component) {
-  ReactDOM.render(
-    <AppContainer>
-      <Component store={store}/>
-    </AppContainer>,
-    document.getElementById('root')
-  )
+  if (module.hot) {
+    ReactDOM.render(
+      <HotReloadable>
+        <Component store={store}/>
+      </HotReloadable>,
+      document.getElementById('root')
+    )
+  } else {
+    ReactDOM.render(<Component store={store}/>, document.getElementById('root'))
+  }
 }
 
 if (module.hot) {

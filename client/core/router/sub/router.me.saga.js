@@ -14,6 +14,7 @@ import { setCentreSaga, setTitleSaga } from './router.sub.saga'
 export function* meSaga(payload, settings) {
   const {centre} = settings
   const {noReset} = payload
+
   yield call(setCentreSaga, centre)
 
   if (!noReset) {
@@ -32,14 +33,15 @@ export function* mePlaceEditSaga(payload, settings) {
   const {name: placeName} = payload
 
   yield call(setCentreSaga, centre)
+
   const nodes = yield call(getCanvasNodesSaga)
   const selectedNode = nodes.find(node => node.name === placeName)
 
-  if (!selectedNode) {
-    yield put(routerActions.meRoute())
-  } else {
+  // todo: 404 place
+  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`)
+
+  if (selectedNode) {
     yield put(canvasActions.selectNode(selectedNode.id))
-    yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`)
   }
 
 /*
@@ -134,10 +136,9 @@ export function* meUsersAddSaga(payload, settings) {
   const {} = payload
 
   yield call(setCentreSaga, centre)
-
-  const {currentUser: {username}} = yield call([client, client.readQuery], {
+/*  const {currentUser: {username}} = yield call([client, client.readQuery], {
     query: currentUserQuery
   })
 
-  yield call(setTitleSaga, username)
+  yield call(setTitleSaga, username)*/
 }

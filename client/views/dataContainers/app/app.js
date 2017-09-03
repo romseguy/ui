@@ -1,5 +1,5 @@
 import { compose } from 'ramda'
-import React from 'react'
+import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 
 import Router from 'views/containers/router'
@@ -12,18 +12,33 @@ import { Layout } from 'views/components/layout'
 import currentUserQuery from './currentUser.query.graphql'
 
 
-function App({currentUserQuery: {currentUser}}) {
-  return (
-    <div>
-      <Helmet appTitle="Paix Roquet"/>
+class App extends Component {
 
-      <Layout header={<Header currentUser={currentUser}/>}>
-        <Router currentUser={currentUser}/>
-      </Layout>
+  handleTitleIconClick = event => {
+    this.forceUpdate()
+  }
 
-      <Modals/>
-    </div>
-  )
+  render() {
+    const {currentUserQuery: {currentUser}} = this.props
+
+    return (
+      <div>
+        <Helmet appTitle="Paix Roquet"/>
+
+        <Layout
+          header={
+            <Header
+              currentUser={currentUser}
+              onTitleIconClick={this.handleTitleIconClick}
+            />
+          }>
+          <Router currentUser={currentUser}/>
+        </Layout>
+
+        <Modals/>
+      </div>
+    )
+  }
 }
 
 

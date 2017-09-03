@@ -79,11 +79,11 @@ export function* settingsSaga() {
       })
     }
 
-    const {coords: {longitude: lng, latitude: lat}} = currentPosition
-    yield put(settingsActions.setLocation(lng, lat))
+    const {coords: {latitude: lat, longitude: lng}} = currentPosition
+    yield put(settingsActions.setLocation(lat, lng))
 
     const {locationData, t2} = yield race({
-      locationData: call(getLocationDataSaga, lng, lat),
+      locationData: call(getLocationDataSaga, lat, lng),
       t2: delay(10000)
     })
 
@@ -103,7 +103,7 @@ export function* settingsSaga() {
   } catch (error) {
     if (error.name === 't1') {
       // todo: open modal for custom city selection
-      yield put(settingsActions.setLocation(4.2667, 44.2167))
+      yield put(settingsActions.setLocation(44.2167, 4.2667))
       yield put(settingsActions.setDepartment('Gard'))
       yield put(settingsActions.setCity('Uzès'))
     }
@@ -123,7 +123,7 @@ export function* settingsSaga() {
           errors: [i18n.t('errors:modal.offline.content')]
         })
       }
-      yield put(settingsActions.setLocation(4.2667, 44.2167))
+      yield put(settingsActions.setLocation(44.2167, 4.2667))
       yield put(settingsActions.setDepartment('Gard'))
       yield put(settingsActions.setCity('Uzès'))
     }

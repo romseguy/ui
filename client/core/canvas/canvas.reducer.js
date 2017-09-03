@@ -21,6 +21,13 @@ export function canvasReducer(state = canvasState, {payload, type}) {
     case canvasActions.REMOVE_NODE:
       return updateIn(state, ['nodes'], nodes => nodes.filter(node => node.key !== payload.key))
 
+    case canvasActions.SELECT_ALL_NODES:
+      state = updateIn(state, ['nodes'], nodes => nodes.map(node => ({...node, selected: true})))
+
+      state = set(state, 'selectedNodeIds', state.nodes.map(node => node.id))
+
+      return state
+
     case canvasActions.SELECT_NODE:
     case canvasActions.SELECT_NODES:
       state = updateIn(state, ['selectedNodeIds'], selectedNodeIds => {
@@ -48,6 +55,13 @@ export function canvasReducer(state = canvasState, {payload, type}) {
       )
     case canvasActions.SET_NODES:
       return setIn(state, ['nodes'], payload.nodes)
+
+    case canvasActions.UNSELECT_ALL_NODES:
+      state = updateIn(state, ['nodes'], nodes => nodes.map(node => ({...node, selected: false})))
+
+      state = set(state, 'selectedNodeIds', [])
+
+      return state
 
     case canvasActions.UNSELECT_NODE:
     case canvasActions.UNSELECT_NODES:

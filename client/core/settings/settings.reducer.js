@@ -1,5 +1,5 @@
 import { settingsActions } from './settings.actions'
-import { merge, set, setIn, getIn } from 'zaphod/compat'
+import { set, setIn, getIn, updateIn } from 'zaphod/compat'
 
 
 export const SettingsState = {
@@ -34,7 +34,7 @@ export function settingsReducer(state = SettingsState, {payload, type}) {
 
     case settingsActions.SET_LOCATION:
       const location = getIn(state, ['user', 'location'])
-      return setIn(state, ['user', 'location'], location::merge(payload.location))
+      return updateIn(state, ['user', 'location'], location => ({...location, ...payload.location}))
 
     case settingsActions.SET_TITLE:
       return set(state, 'title', payload.title)

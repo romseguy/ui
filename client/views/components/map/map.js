@@ -37,7 +37,7 @@ const Map = withGoogleMap(props => {
           <Marker
             {...marker}
             key={`m${i}`}
-            onClick={() => onMarkerClick && onMarkerClick(marker)}
+            onClick={() => typeof onMarkerClick === 'function' && onMarkerClick(marker)}
             onRightClick={() => onMarkerRightClick(marker)}
           >
             {content}

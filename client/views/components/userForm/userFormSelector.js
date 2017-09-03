@@ -29,7 +29,7 @@ function RadioGroup(props) {
       <UIForm.Field>
         <Radio
           checked={input.value === 'select'}
-          label={t('form:user.select')}
+          label={t('form:user.select.label')}
           name={input.name}
           onChange={onChange('select')}
         />
@@ -63,7 +63,7 @@ function UserFormSelector(props) {
             <Field
               name="userId"
               component={Select}
-              placeholder={t('form:user.select')}
+              placeholder={t('form:user.select.label')}
               options={Array.isArray(disconnectedUsers) ? disconnectedUsers.map(user => {
                 const option = {
                   key: user.id,

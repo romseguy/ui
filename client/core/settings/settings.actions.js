@@ -19,11 +19,12 @@ export const settingsActions = {
     payload: {city}
   }),
 
-  setLocation: (lng, lat) => ({
+  setLocation: (lat, lng) => ({
     type: settingsActions.SET_LOCATION,
     payload: {
       location: {
-        lng, lat
+        lat,
+        lng
       }
     }
   }),

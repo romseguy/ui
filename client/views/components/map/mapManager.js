@@ -28,8 +28,14 @@ class MapManager extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.center.lat !== nextProps.center.lat && this.state.center.lng !== nextProps.center.lng) {
-      this.setState(p => ({center: nextProps.center}))
+    const [lat, lng] = this.state.center
+
+    if (nextProps.center) {
+      const [lat2, lng2] = nextProps.center
+
+      if (lat !== lat2 || lng !== lng2) {
+        this.setState(p => ({center: nextProps.center}))
+      }
     }
   }
 

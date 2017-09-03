@@ -38,6 +38,7 @@ class PlaceForm extends Component {
       t,
       userLocation,
       handleSubmit,
+      onMapClick,
       onSuggestSelect
     } = this.props
 
@@ -81,6 +82,7 @@ class PlaceForm extends Component {
             readOnly={readOnly}
             showSelector={showSelector}
             t={t}
+            onMapClick={onMapClick}
             onSuggestSelect={onSuggestSelect}
           />
         </UIForm>

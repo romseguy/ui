@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Segment } from 'views/components/layout'
+import { Segment as UISegment } from 'views/components/layout'
 
 
-const HeaderTitleContainer = styled(Segment)`
+const Segment = styled(UISegment)`
 padding: 0 !important;
 margin: 0 !important;
 
@@ -15,21 +15,36 @@ margin: 0 !important;
 }
 `
 
-const HeaderTitleLink = styled.a`
+const Link = styled.a`
 text-decoration: underline;
 cursor: pointer;
 color: blue;
-margin-left: 5px;
-margin-right: 5px;
 `
 
-function HeaderTitle({children, isLoading, onClick}) {
+const titleMaxLength = 30
+
+
+function HeaderTitle({children, iconTitle, isLoading, title, titleIcon, onClick, onIconClick}) {
+
+  if (typeof children === 'string' && children.length > titleMaxLength) {
+    children = `${children.substring(0, titleMaxLength)}...`
+  }
+
   return (
-    <HeaderTitleContainer basic loading={isLoading}>
-      <HeaderTitleLink onClick={onClick}>
+    <Segment basic loading={isLoading}>
+      <Link
+        title={iconTitle}
+        onClick={onIconClick}
+      >
+        {titleIcon}
+      </Link>
+      <Link
+        title={title}
+        onClick={onClick}
+      >
         {children}
-      </HeaderTitleLink>
-    </HeaderTitleContainer>
+      </Link>
+    </Segment>
   )
 }
 

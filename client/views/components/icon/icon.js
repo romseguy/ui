@@ -162,7 +162,7 @@ function Icon(props) {
   if (src) {
     return <Image src={src} width={width} height={height}/>
   } else if (name) {
-    return <UIIcon name={name}/>
+    return <UIIcon name={name} {...rest}/>
   }
 }
 

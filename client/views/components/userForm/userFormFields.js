@@ -42,7 +42,7 @@ class UserFormFields extends Component {
             <Col mobile={16} tablet={16} computer={11}>
               <Field
                 name="city"
-                component={CityField}
+                component={GeosuggestField}
                 id="city"
                 center={center}
                 disabled={readOnly}

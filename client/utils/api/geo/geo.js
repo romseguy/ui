@@ -8,8 +8,13 @@ const geoApi = {
     return this.get(`/`)
   },
 
-  getReverseGeocoding(lng, lat){
-    this.opts.baseURI = `http://api-adresse.data.gouv.fr/reverse`
+  geocodeCity(city) {
+    this.opts.baseURI = `https://api-adresse.data.gouv.fr/search`
+    return this.get(`/?q=${city}`)
+  },
+
+  getReverseGeocoding(lat, lng){
+    this.opts.baseURI = `https://api-adresse.data.gouv.fr/reverse`
     return this.get(`/?lon=${lng}&lat=${lat}`)
   }
 }

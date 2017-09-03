@@ -1,3 +1,5 @@
+import 'views/assets/scss/modal.scss'
+
 import { compose } from 'ramda'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -41,15 +43,23 @@ const modalComponents = {
       </Modal.Actions>
     </Modal>
   ),
-  [modalConstants.SET_LOCATION]: ({modalProps, center, title}) => (
-    <Modal {...modalProps}>
-      <Modal.Header icon="world" content={title}/>
-      <SetLocationForm
-        center={center}
-        onSubmit={modalProps.onClose}
-      />
-    </Modal>
-  )
+  [modalConstants.SET_LOCATION]: ({modalProps, center, title, onSubmit, onSuggestSelect}) => {
+    const handleSubmit = values => onSubmit(values, modalProps.onClose)
+
+    return (
+      <Modal {...modalProps}>
+        <Header
+          icon="world"
+          content={title}
+        />
+        <SetLocationForm
+          center={center}
+          onSubmit={handleSubmit}
+          onSuggestSelect={onSuggestSelect}
+        />
+      </Modal>
+    )
+  }
 }
 
 function ModalContainer({modals, onClose}) {

@@ -253,7 +253,7 @@ class Me extends Component {
     switch (currentMode) {
       case modeTypes.DISCOVERY:
         if (clickedNode.type === atomTypes.LOCATION) {
-          if (clickedNode.mine) {
+          if (false /*clickedNode.mine*/) {
             mePlaceViewRoute(clickedNode.name)
           } else {
             placeViewRoute(clickedNode.name)
@@ -263,7 +263,10 @@ class Me extends Component {
 
       case modeTypes.EDIT:
         hideTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, isNodeSelected)})
-        showTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, !isNodeSelected), origin: `canvas-node__anchor-img-${clickedNodeId}`})
+        showTooltip({
+          name: getCanvasNodeAnchorTooltipName(currentMode, !isNodeSelected),
+          origin: `canvas-node__anchor-img-${clickedNodeId}`
+        })
 
         if (isNodeSelected) {
           unselectNode(clickedNodeId)
@@ -279,8 +282,10 @@ class Me extends Component {
   }
 
   handleCanvasNodeDelete = deletedNode => {
-    const {doDeleteUserPlace} = this.props
+    const {doDeleteUserPlace, onDeleteSelectedNode} = this.props
     doDeleteUserPlace({placeId: deletedNode.idServer})
+
+    typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(deletedNode)
   }
 
   handleCanvasNodeEdit = (selectedNode) => {
@@ -357,6 +362,19 @@ const meQueryConfig = {
           )
         })
       } else {
+        /*
+         FIXME:
+         myPlaces.forEach(myPlace => {
+         let node = nodes.find(node => node.idServer === myPlace.place.id)
+
+         if (!node) {
+         node = placeToNode(nodes.length, myPlace.place)
+         console.log('??', 'FOUND A MYPLACE WITHOUT CORRESPONDING NODE => CREATING IT', myPlace, node)
+         nodes.push(node)
+         }
+         })
+         */
+
         nodes = nodes.map((node, i) => {
           const myPlace = myPlaces.find(({place}) => node.type === atomTypes.LOCATION && place.id === node.idServer)
 

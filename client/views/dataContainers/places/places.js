@@ -15,10 +15,7 @@ class Places extends Component {
       userLocation
     } = this.props
 
-    return routePayload.center || [
-        userLocation.lat,
-        userLocation.lng
-      ]
+    return routePayload.center || [userLocation.lat, userLocation.lng]
   }
 
   handleNodeAnchorClick = (clickedNodeId) => {
@@ -26,7 +23,7 @@ class Places extends Component {
     const clickedNode = nodes[clickedNodeId]
     const {mePlaceViewRoute, placeViewRoute} = routes
 
-    if (clickedNode.mine) {
+    if (false /*clickedNode.mine*/) {
       mePlaceViewRoute(clickedNode.name)
     } else {
       placeViewRoute(clickedNode.name)
@@ -44,9 +41,11 @@ class Places extends Component {
       return <Loader active inline="centered"/>
     }
 
+    const center = this.getCenter()
+
     return React.cloneElement(children, {
       ...props,
-      center: this.getCenter(),
+      center,
       onNodeAnchorClick: this.handleNodeAnchorClick,
     })
   }

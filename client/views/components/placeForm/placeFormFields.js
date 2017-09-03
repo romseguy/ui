@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Field } from 'redux-form'
 
-import CityField from 'views/components/cityField'
+import { keepCities } from 'views/utils/geosuggest'
+
+import GeosuggestField from 'views/components/geosuggestField'
 import {
   Button,
   Col,
@@ -49,15 +51,15 @@ class PlaceFormFields extends Component {
     const {onSuggestSelect} = this.props
     const {label, placeId, location, gmaps} = suggest
 
-    onSuggestSelect(suggest)
-
     if (location && location.lat && location.lng) {
       this.setState(p => ({center: [location.lat, location.lng]}))
     }
+
+    typeof onSuggestSelect === 'function' && onSuggestSelect(suggest)
   }
 
   render() {
-    const {formValues, userLocation, readOnly, showSelector, t} = this.props
+    const {formValues, userLocation, readOnly, showSelector, t, onMapClick} = this.props
     const {center, zoom} = this.state
     const {action} = formValues
 
@@ -79,6 +81,34 @@ class PlaceFormFields extends Component {
               <Field name="title" component="input" type="text" id="name" disabled={readOnly}/>
             </Col>
           </Row>
+        )}
+
+        {action !== 'select' && (
+          <Row>
+            <Col mobile={16} tablet={16} computer={5}>
+              <label htmlFor="city">{t('form:place.city')}</label>
+            </Col>
+            <Col mobile={16} tablet={16} computer={11}>
+              <Field
+                name="city"
+                component={GeosuggestField}
+                id="city"
+                center={center}
+                disabled={readOnly}
+                skipSuggest={keepCities}
+                t={t}
+                onSuggestSelect={this.handleSuggestSelect}
+              />
+            </Col>
+          </Row>
+        )}
+
+        {action !== 'select' && (
+          <Field
+            name="department"
+            component="input"
+            type="hidden"
+          />
         )}
 
         <Row>
@@ -103,30 +133,11 @@ class PlaceFormFields extends Component {
                 readOnly={readOnly}
                 zoom={zoom}
                 onBoundsChanged={this.handleBoundsChange}
+                onMapClick={onMapClick}
               />
             </Col>
           )}
         </Row>
-
-        {action !== 'select' && (
-          <Row>
-            <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="city">{t('form:place.city')}</label>
-            </Col>
-            <Col mobile={16} tablet={16} computer={11}>
-              <Field
-                name="city"
-                component={CityField}
-                id="city"
-                center={center}
-                disabled={readOnly}
-                t={t}
-                onSuggestSelect={this.handleSuggestSelect}
-              />
-            </Col>
-          </Row>
-        )}
-
 
         <Row>
           <Col>

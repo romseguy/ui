@@ -7,11 +7,16 @@ import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
+import geo from 'utils/api/geo'
+import { getReverseGeocodedDepartment, getReverseGeocodedProperty } from 'utils/geo'
+
 import { roleTypes } from 'core/constants'
 import { getCanvasNodes } from 'core/canvas'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'
+
+import { getSuggestedDepartment } from 'views/utils/geosuggest'
 
 import { meQuery } from 'views/dataContainers/me'
 import { Container } from 'views/components/layout'
@@ -23,58 +28,88 @@ import createUserPlaceMutation from './createUserPlace.mutation.graphql'
 
 
 const handlers = {
+  onMapClick: props => ({event, latLng, pixel}) => {
+    const [lat, lng] = latLng
+    geo.getReverseGeocoding(lat, lng).then(res => {
+      const city = getReverseGeocodedProperty(res, 'city')
+      const department = getReverseGeocodedDepartment(res)
+      props.change('PlaceForm', 'city', city)
+      props.change('PlaceForm', 'department', department)
+    })
+  },
+
   onSubmit: props => formValues => {
     const {
-      action, placeId,
-      city, department, marker, title
+      doCreatePlace,
+      doCreateUserPlace,
+      doUpdatePlace,
+      routes,
+      nodes
+    } = props
+
+    const {meRoute, mePlaceEditRoute} = routes
+
+    const {
+      routeType,
+
+      action,
+      // select
+      placeId,
+      // create or update
+      city,
+      department,
+      marker,
+      title
     } = formValues
 
-    const {nodes} = props
-    const selectedNode = nodes.find(node => node.selected) || {}
-    const {x = 0, y = 0} = selectedNode
+    let place = {
+      city,
+      department,
+      title
+    }
+
+    if (marker) {
+      const [latitude, longitude] = marker
+      place = {...place, latitude, longitude}
+    }
 
     switch (action) {
       case 'select':
+        const selectedNode = nodes.find(node => node.selected) || {}
+        const {x = 0, y = 0} = selectedNode
         const userPlace = {
           placeId: Number(placeId),
           roleId: roleTypes.FOLLOWER,
           x,
           y
         }
-        props.doCreateUserPlace({userPlace}).then(data => {
-          props.meRoute()
+
+        doCreateUserPlace({userPlace}).then(({data}) => {
+          meRoute()
         })
         break
 
       case 'create':
-        const [latitude, longitude] = marker
-        const place = {
-          city,
-          department,
-          latitude,
-          longitude,
-          title,
-          x,
-          y
-        }
-        props.doCreatePlace({place})
+        doCreatePlace({place}).then(({data}) => {
+          mePlaceEditRoute(data.createPlace.title)
+        })
         break
+
+      default:
+        if (routeType === routerActions.ME_PLACE_EDIT) {
+          doUpdatePlace({place}).then(({data}) => {
+            mePlaceEditRoute(data.title)
+          })
+        }
     }
   },
   onSuggestSelect: props => suggest => {
-    const {short_name: city} = suggest.gmaps.address_components.find(address_component => {
-      return address_component.types.includes('locality')
-    })
-
-    const {short_name: department} = suggest.gmaps.address_components.find(address_component => {
-      return address_component.types.includes('administrative_area_level_2')
-    })
-
-    props.change('PlaceForm', 'city', city)
+    const department = getSuggestedDepartment(suggest)
     props.change('PlaceForm', 'department', department)
+    props.change('PlaceForm', 'marker', null)
   }
 }
-function PlaceFormContainer(props) {
+function PlaceFormContainer(props) {
   const {
     // state
     centre,
@@ -83,12 +118,13 @@ function PlaceFormContainer(props) {
     userLocation,
     disconnectedPlaces,
     routeType,
+    t,
     title,
     // options
     isLoading,
     mustCreate,
-    // actions
-    t,
+    // handlers
+    onMapClick,
     onSubmit,
     onSuggestSelect
   } = props
@@ -111,6 +147,7 @@ function PlaceFormContainer(props) {
         routeType={routeType}
         routeTypes={routerActions}
         t={t}
+        onMapClick={onMapClick}
         onSubmit={onSubmit}
         onSuggestSelect={onSuggestSelect}
       />
@@ -139,8 +176,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-  change,
-  meRoute: routerActions.meRoute
+  change
 }
 
 const placeFormQueryConfig = {
@@ -159,6 +195,7 @@ const placeFormQueryConfig = {
     if (place) {
       initialValues = merge(initialValues, {
         city: place.city,
+        department: place.department,
         marker: [place.latitude, place.longitude],
         title: place.title
       })
@@ -199,7 +236,7 @@ const createPlaceMutationConfig = {
   }
 }
 
-const createUserPlaceMutationConfig = {
+const createUserPlaceMutationConfig = {
   props({ownProps, mutate}) {
     return {
       doCreateUserPlace({userPlace}){

@@ -232,7 +232,7 @@ class Place extends Component {
     switch (currentMode) {
       case modeTypes.DISCOVERY:
         if (clickedNode.type === atomTypes.LOCATION) {
-          if (clickedNode.mine) {
+          if (false /*clickedNode.mine*/) {
             mePlaceViewRoute(clickedNode.name)
           } else {
             placeViewRoute(clickedNode.name)

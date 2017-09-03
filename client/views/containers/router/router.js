@@ -58,6 +58,9 @@ class RouterContainer extends Component {
         routerActions.PLACE_EDIT
       ].includes(routeType)
     ) {
+      // MainPanel: container
+      // Places: data container
+      // MapManager: presentational component
       routeEl = (
         <MainPanel {...this.props} routeType={selectedRouteType}>
           <Places>
@@ -86,13 +89,13 @@ class RouterContainer extends Component {
       )
 
       if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
-        sidePanelEl = <PlaceForm/>
+        sidePanelEl = <PlaceForm {...this.props}/>
       }
       if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(routeType)) {
-        sidePanelEl = <SymbolForm/>
+        sidePanelEl = <SymbolForm {...this.props}/>
       }
       else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
-        sidePanelEl = <UserForm/>
+        sidePanelEl = <UserForm {...this.props}/>
       }
     }
     else if (

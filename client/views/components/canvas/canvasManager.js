@@ -75,7 +75,7 @@ class CanvasManager extends Component {
 
     if (e.target === this.svg) {
       deselectAllNodes(nodes, onNodesChange)()
-      onCanvasClick && onCanvasClick(e)
+      typeof onCanvasClick === 'function' && onCanvasClick(e)
     }
   }
   handleItemDrop = (item, x, y) => {
@@ -91,11 +91,11 @@ class CanvasManager extends Component {
     }
 
     addNode(deselectAllNodes(nodes)(), onNodesChange)(node)
-    onCanvasItemDrop && onCanvasItemDrop(item, x, y)
+    typeof onCanvasItemDrop === 'function' && onCanvasItemDrop(item, x, y)
   }
   handleNodeAnchorClick = (id) => {
     const {onNodeAnchorClick} = this.props
-    onNodeAnchorClick && onNodeAnchorClick(id)
+    typeof onNodeAnchorClick === 'function' && onNodeAnchorClick(id)
   }
   handleNodeAnchorMouseOver = (id) => {
     const {nodes, onNodesChange} = this.props
@@ -111,7 +111,7 @@ class CanvasManager extends Component {
   }
   handleNodeHeaderClick = (id) => {
     const {onNodeHeaderClick} = this.props
-    onNodeHeaderClick && onNodeHeaderClick(id)
+    typeof onNodeHeaderClick === 'function' && onNodeHeaderClick(id)
   }
   handleWheel = ({deltaX, deltaY}) => {
     if (deltaY > 0) {
@@ -124,16 +124,16 @@ class CanvasManager extends Component {
   // TOOLBAR
   handleToolbarDeleteClick = (event, selectedNode) => {
     const {nodes, t, onDeleteSelectedNode, onNodesChange} = this.props
-    // todo: proper modal
+    // todo: in parent component: proper modal to choose whether we want to delete the place as well or just user_place
     const confirmed = window.confirm(t('canvas:atoms.delete_confirm') + ' ' + selectedNode.name)
     if (confirmed) {
       const deletedNode = deleteSelectedNode(nodes, onNodesChange)()
-      onDeleteSelectedNode && onDeleteSelectedNode(deletedNode)
+      typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(deletedNode)
     }
   }
   handleToolbarEditClick = (event, selectedNode) => {
     const {onEditSelectedNode} = this.props
-    onEditSelectedNode && onEditSelectedNode(selectedNode)
+    typeof onEditSelectedNode === 'function' && onEditSelectedNode(selectedNode)
   }
   handleToolbarZoomInClick = () => {
     this.zoomIn()

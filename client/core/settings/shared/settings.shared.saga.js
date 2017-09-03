@@ -2,8 +2,9 @@ import { call } from 'redux-saga/effects'
 
 import geo from 'utils/api/geo'
 
-export function* getLocationDataSaga(lng, lat) {
-  const {body: {features}} = yield call([geo, geo.getReverseGeocoding], lng, lat)
+
+export function* getLocationDataSaga(lat, lng) {
+  const {body: {features}} = yield call([geo, geo.getReverseGeocoding], lat, lng)
 
   if (!features.length) {
     return

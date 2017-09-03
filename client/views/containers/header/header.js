@@ -2,21 +2,25 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { gql, graphql } from 'react-apollo'
+import { change } from 'redux-form'
 import { connect } from 'react-redux'
+
+import geo from 'utils/api/geo'
+import { getGeocodedLocation, getReverseGeocodedDepartment } from 'utils/geo'
 
 import { client } from 'core/apollo'
 import { authActions } from 'core/auth'
 import { getMeCentre } from 'core/me'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
-import { getTitle, getUserLocation } from 'core/settings'
-
-import placeQuery from 'views/dataContainers/place/place.query.graphql'
+import { settingsActions, getTitle, getUserLocation } from 'core/settings'
 
 import Atom from 'views/components/atom'
+import Icon from 'views/components/icon'
 import { Col } from 'views/components/layout'
 import { HeaderGrid, HeaderLink, HeaderTitle } from 'views/components/header'
 
+import placeQuery from 'views/dataContainers/place/place.query.graphql'
 import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
 
 
@@ -39,9 +43,21 @@ class HeaderContainer extends Component {
     })
   }
 
-  handleHeaderTitleClick = event => {
+  handleTitleClick = event => {
     event.preventDefault()
-    const {rootRoute, routePayload, routeType, setModal, t, userLocation} = this.props
+    const {
+      change,
+      rootRoute,
+      routePayload,
+      routeType,
+      setCity,
+      setDepartment,
+      setLocation,
+      setModal,
+      t,
+      userLocation
+    } = this.props
+
     const placeRouteTypes = [
       routerActions.ME_PLACE_VIEW,
       routerActions.PLACE_VIEW
@@ -55,6 +71,39 @@ class HeaderContainer extends Component {
           size: 'small',
           closeIcon: null
         },
+        onSubmit: function handleSetLocationFormSubmit(values, onClose) {
+         let {city, department, marker} = values
+
+          if (marker) {
+            navigate(city, department, marker)
+          }
+          // we didnt select a suggestion so location and department are still unknown
+          else {
+            geo.geocodeCity(city).then(res => {
+              const {lat, lng} = getGeocodedLocation(res)
+              department = getReverseGeocodedDepartment(res)
+              marker = [lat, lng]
+              navigate(city, department, marker)
+            })
+          }
+
+          function navigate(city, department, marker) {
+            setCity(city)
+            setDepartment(department)
+            setLocation(marker[0], marker[1])
+            rootRoute({center: marker})
+            typeof onClose === 'function' && onClose()
+          }
+        },
+        onSuggestSelect: function handleSuggestSelect(suggest) {
+          const {lat, lng} = suggest.location
+          change('SetLocationForm', 'marker', [lat, lng])
+
+          geo.getReverseGeocoding(lat, lng).then(res => {
+            const department = getReverseGeocodedDepartment(res)
+            change('SetLocationForm', 'department', department)
+          })
+        },
         title: t('form:setLocation.header')
       })
     }
@@ -67,6 +116,19 @@ class HeaderContainer extends Component {
 
       rootRoute({center: [latitude, longitude]})
     }
+  }
+
+  handleTitleIconClick = event => {
+    const {
+      rootRoute,
+      userLocation,
+      onTitleIconClick
+    } = this.props
+
+    const {lat, lng} = userLocation
+    const center = [lat, lng]
+    rootRoute({center})
+    typeof onTitleIconClick === 'function' && onTitleIconClick(event)
   }
 
   handleLogout = event => {
@@ -93,32 +155,24 @@ class HeaderContainer extends Component {
     let titleIcon = <Atom type={centre} height={16} width={16}/>
 
     if (routeType === routerActions.ROOT) {
-      titleIcon = null
+      titleIcon = <Icon name="location arrow"/>
     }
 
     let {title} = this.props
-    let truncateTitle = false
     let isLoading = title === null
 
-    if (currentUser && [
+    if ([
         routerActions.ME,
         routerActions.ME_PLACE_EDIT,
-        routerActions.ME_PLACES_ADD
+        routerActions.ME_PLACES_ADD,
+        routerActions.ME_USERS_ADD,
+        routerActions.ME_USER_EDIT
       ].includes(routeType)) {
       isLoading = false
       title = `${t('header:my_profile')}`
     }
-    else if (!isLoading) {
-      const titleMaxLength = 40
-
-      if (title.length > titleMaxLength) {
-        truncateTitle = true
-        title = `${title.substring(0, titleMaxLength)}...`
-      }
-
-      if (routeType === routerActions.ROOT) {
-        title = `${t('header:current_position')} ${title}`
-      }
+    else if ([routerActions.ROOT].includes(routeType) && title) {
+      title = `${title}`
     }
 
     return (
@@ -142,10 +196,12 @@ class HeaderContainer extends Component {
         >
           <HeaderTitle
             isLoading={isLoading}
-            title={truncateTitle ? title : ""}
-            onClick={this.handleHeaderTitleClick}
+            iconTitle={t('header:icon_title')}
+            title={t('header:title')}
+            titleIcon={titleIcon}
+            onClick={this.handleTitleClick}
+            onIconClick={this.handleTitleIconClick}
           >
-            {titleIcon}
             {title}
           </HeaderTitle>
         </Col>
@@ -188,10 +244,14 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  setIsAuthed: authActions.setIsAuthed,
   authRoute: routerActions.authRoute,
+  change,
   meRoute: routerActions.meRoute,
   rootRoute: routerActions.rootRoute,
+  setIsAuthed: authActions.setIsAuthed,
+  setCity: settingsActions.setCity,
+  setDepartment: settingsActions.setDepartment,
+  setLocation: settingsActions.setLocation,
   setModal: modalActions.setModal
 }
 

@@ -5,14 +5,12 @@ import Marker from 'pigeon-marker'
 import { providers } from 'views/utils/map'
 
 class MapField extends Component {
-  handleMapClick = e => {
-    const {
-      input,
-      readOnly
-    } = this.props
+  handleMapClick = click => {
+    const {event, latLng, pixel} = click
 
-    if (!readOnly) {
-      input.onChange(e.latLng)
+    if (!this.props.readOnly) {
+      this.props.onMapClick(click)
+      this.props.input.onChange(latLng)
     }
   }
 

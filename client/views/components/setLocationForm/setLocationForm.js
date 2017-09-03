@@ -4,18 +4,18 @@ import scriptLoader from 'react-async-script-loader'
 import { translate } from 'react-i18next'
 import { reduxForm, Field } from 'redux-form'
 
-import CityField from 'views/components/cityField'
+import { keepCities } from 'views/utils/geosuggest'
+
+import GeosuggestField from 'views/components/geosuggestField'
 import {
   Button,
   Col,
   Form as UIForm,
   Grid,
   Icon,
-  Loader,
   Modal,
   Row
 } from 'views/components/layout'
-import MapField from 'views/components/mapField'
 
 
 class SetLocationForm extends Component {
@@ -24,8 +24,7 @@ class SetLocationForm extends Component {
     const {center} = props
     this.state = {
       center,
-      isLoading: true,
-      zoom: 14
+      isLoading: true
     };
   }
 
@@ -44,19 +43,15 @@ class SetLocationForm extends Component {
     }
   }
 
-  handleBoundsChange = ({center, zoom, bounds, initial}) => {
-    if (initial) {
-      //console.log('Got initial bounds: ', bounds)
-    }
-    this.setState(p => ({center, zoom}))
-  }
-
   handleSuggestSelect = suggest => {
+    const {onSuggestSelect} = this.props
     const {label, placeId, location, gmaps} = suggest
 
     if (location && location.lat && location.lng) {
       this.setState(p => ({center: [location.lat, location.lng]}))
     }
+
+    typeof onSuggestSelect === 'function' && onSuggestSelect(suggest)
   }
 
   render() {
@@ -68,66 +63,55 @@ class SetLocationForm extends Component {
 
     const {
       center,
-      isLoading,
-      zoom
+      isLoading
     } = this.state
 
-    if (isLoading) {
-      return <Loader active inline="centered"/>
-    }
-
     return (
-      <UIForm onSubmit={(v) => {
-        handleSubmit(v)
-        onSubmit()
-      }}>
+      <UIForm
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Modal.Content>
-          <Grid>
-            <Row>
-              <Col mobile={16} tablet={16} computer={5}>
-                <label htmlFor="marker">{t('form:setLocation.city')}</label>
-              </Col>
+          {isLoading ? (
+            <span>{t('loading')}</span>
+          ) : (
+            <Grid>
+              <Row>
+                <Col mobile={16} tablet={16} computer={5}>
+                  <label htmlFor="city">{t('form:setLocation.city')}</label>
+                </Col>
 
-              <Col mobile={16} tablet={16} computer={11}>
+                <Col mobile={16} tablet={16} computer={11}>
+                  <Field
+                    name="city"
+                    component={GeosuggestField}
+                    id="city"
+                    center={center}
+                    skipSuggest={keepCities}
+                    t={t}
+                    onSuggestSelect={this.handleSuggestSelect}
+                  />
+                </Col>
+
                 <Field
-                  name="city"
-                  component={CityField}
-                  id="city"
-                  center={center}
-                  t={t}
-                  onSuggestSelect={this.handleSuggestSelect}
+                  name="department"
+                  component="input"
+                  type="hidden"
                 />
-              </Col>
-            </Row>
 
-            <Row>
-              <Col mobile={16} tablet={16} computer={5}>
-                <label htmlFor="marker">{t('form:setLocation.map')}</label>
-              </Col>
-
-              <Col
-                mobile={16}
-                tablet={16}
-                computer={11}
-              >
                 <Field
                   name="marker"
-                  id="marker"
-                  component={MapField}
-                  center={center}
-                  zoom={zoom}
-                  onBoundsChanged={this.handleBoundsChange}
+                  component="input"
+                  type="hidden"
                 />
-              </Col>
-            </Row>
-
-          </Grid>
+              </Row>
+            </Grid>
+          )}
         </Modal.Content>
 
         <Modal.Actions>
           <Button type="submit">
             <Icon name="checkmark"/> {t('form:setLocation.save')}
-            </Button>
+          </Button>
         </Modal.Actions>
       </UIForm>
     )
@@ -138,6 +122,6 @@ export default compose(
   translate(),
   scriptLoader('https://maps.googleapis.com/maps/api/js?key=AIzaSyCZbB5gENry_UJNvwtOStrRqTt7sTi0E9k&libraries=places'),
   reduxForm({
-    form: 'Set'
+    form: 'SetLocationForm'
   })
 )(SetLocationForm)
