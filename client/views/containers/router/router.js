@@ -56,7 +56,7 @@ class RouterContainer extends Component {
         routerActions.ROOT,
         routerActions.PLACES_ADD,
         routerActions.PLACE_EDIT
-      ].includes(routeType)
+      ].includes(selectedRouteType)
     ) {
       // MainPanel: container
       // Places: data container
@@ -78,7 +78,7 @@ class RouterContainer extends Component {
         routerActions.ME_SYMBOL_EDIT,
         routerActions.ME_USERS_ADD,
         routerActions.ME_USER_EDIT
-      ].includes(routeType)
+      ].includes(selectedRouteType)
     ) {
       routeEl = (
         <MainPanel {...this.props} routeType={selectedRouteType}>
@@ -88,13 +88,13 @@ class RouterContainer extends Component {
         </MainPanel>
       )
 
-      if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
+      if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(selectedRouteType)) {
         sidePanelEl = <PlaceForm {...this.props}/>
       }
-      if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(routeType)) {
+      if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(selectedRouteType)) {
         sidePanelEl = <SymbolForm {...this.props}/>
       }
-      else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
+      else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(selectedRouteType)) {
         sidePanelEl = <UserForm {...this.props}/>
       }
     }
@@ -102,7 +102,7 @@ class RouterContainer extends Component {
       [
         routerActions.PLACE_VIEW,
         routerActions.ME_PLACE_VIEW
-      ].includes(routeType)
+      ].includes(selectedRouteType)
     ) {
       routeEl = (
         <MainPanel {...this.props} routeType={selectedRouteType}>
@@ -115,7 +115,7 @@ class RouterContainer extends Component {
     else if (
       [
         routerActions.USER_VIEW
-      ].includes(routeType)
+      ].includes(selectedRouteType)
     ) {
       routeEl = (
         <MainPanel {...this.props} routeType={selectedRouteType}>

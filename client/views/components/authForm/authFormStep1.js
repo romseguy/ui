@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 
 import { Field } from 'redux-form'
-import { confirmation, email, length, required } from 'utils/form/validators'
+import { AuthFormBreakpoints as breakpoints } from 'views/utils/form/responsive'
+import { confirmation, email, length, required } from 'views/utils/form/validators'
 
+import InputField from 'views/components/inputField'
 import {
   Button,
   Form as UIForm,
@@ -13,14 +15,13 @@ import {
   NoPadCol as Col
 } from 'views/components/layout'
 
-import { Input } from './authFormFields'
-
 
 const actions = {
   LOGIN: 'LOGIN',
   REGISTER: 'REGISTER',
   FORGOTTEN: 'FORGOTTEN'
 }
+
 
 class AuthFormStep1 extends Component {
   state = {currentAction: actions.LOGIN}
@@ -115,7 +116,7 @@ class AuthFormStep1 extends Component {
         onClick={onClick}
         positive={positive}
       >
-        {t(`accounts:${type}`)}
+        {t(`form:auth.${type}`)}
       </Button>
     )
   }
@@ -138,9 +139,10 @@ class AuthFormStep1 extends Component {
 
         <Field
           name="email"
-          component={Input}
+          component={InputField}
           type="text"
-          label={t('accounts:email')}
+          breakpoints={breakpoints}
+          label={t('form:auth.email')}
           ref={node => this.emailInput = node}
           withRef
           validate={[required({msg: t('errors:required')}), email({msg: t('errors:auth.email_invalid')})]}
@@ -149,9 +151,10 @@ class AuthFormStep1 extends Component {
         {isRegister && (
           <Field
             name="username"
-            component={Input}
+            component={InputField}
             type="text"
-            label={t('accounts:username')}
+            breakpoints={breakpoints}
+            label={t('form:auth.username')}
             ref={node => this.usernameInput = node}
             withRef
             validate={[required(), length({max: 40, msg: t('errors:register.username_too_long')})]}
@@ -161,9 +164,10 @@ class AuthFormStep1 extends Component {
         {!isForgotten && (
           <Field
             name="password"
-            component={Input}
+            component={InputField}
             type="password"
-            label={t('accounts:password')}
+            breakpoints={breakpoints}
+            label={t('form:auth.password')}
             ref={node => this.passwordInput = node}
             withRef
             validate={[required(), length({min: 6, msg: t('errors:auth.password_too_short')})]}
@@ -173,9 +177,10 @@ class AuthFormStep1 extends Component {
         {isRegister && (
           <Field
             name="password2"
-            component={Input}
+            component={InputField}
             type="password"
-            label={t('accounts:password2')}
+            breakpoints={breakpoints}
+            label={t('form:auth.password2')}
             ref={node => this.password2Input = node}
             withRef
             validate={[confirmation({field: 'password', msg: t('errors:register.passwordsNotMatch')}), required()]}

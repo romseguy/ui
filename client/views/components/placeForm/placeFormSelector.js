@@ -1,7 +1,7 @@
 import React from 'react'
 import { Field } from 'redux-form'
 import {
-  Col,
+  NoPadCol as Col,
   Form as UIForm,
   Grid,
   Radio,
@@ -9,7 +9,7 @@ import {
 } from 'views/components/layout'
 import Select from 'views/components/select'
 
-function RadioGroup(props) {
+function RadioGroup(props) {
   const {
     input,
     t
@@ -38,7 +38,7 @@ function RadioGroup(props) {
   )
 }
 
-function PlaceFormSelector(props) {
+function PlaceFormSelector(props) {
   const {disconnectedPlaces, formValues, t} = props
   const {action} = formValues
 

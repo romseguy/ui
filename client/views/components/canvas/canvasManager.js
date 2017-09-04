@@ -124,7 +124,9 @@ class CanvasManager extends Component {
   // TOOLBAR
   handleToolbarDeleteClick = (event, selectedNode) => {
     const {nodes, t, onDeleteSelectedNode, onNodesChange} = this.props
-    // todo: in parent component: proper modal to choose whether we want to delete the place as well or just user_place
+    // todo:
+    // in parent component: proper modal to choose whether we want to delete the place as well or just user_place
+    // also, warn the user that he wont be guardian anymore
     const confirmed = window.confirm(t('canvas:atoms.delete_confirm') + ' ' + selectedNode.name)
     if (confirmed) {
       const deletedNode = deleteSelectedNode(nodes, onNodesChange)()

@@ -11,8 +11,20 @@ import { getUserLocation } from 'core/settings'
 
 
 const handlers = {
+  onCanvasClick: props => () => {
+    props.unselectAllNodes()
+  },
+
   onDeleteSelectedNode: props => deletedNode => {
     props.unselectAllNodes()
+  },
+
+  onModeClick: props => () => {
+    const {routes, unselectAllNodes} = props
+    const {meRoute} = routes
+
+    unselectAllNodes()
+    meRoute({noReset: true})
   }
 }
 

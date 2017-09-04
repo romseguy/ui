@@ -47,7 +47,7 @@ class Me extends Component {
         disabled: false,
         iconId: 'search',
         onClick: () => {
-          this.setModeActive(modeTypes.DISCOVERY)
+          this.handleModeClick(modeTypes.DISCOVERY)
           this.setToolboxDisabled('atoms', true)
           this.setToolboxDisabled('symbols', true)
         }
@@ -62,7 +62,7 @@ class Me extends Component {
         disabled: false,
         iconId: 'edit',
         onClick: () => {
-          this.setModeActive(modeTypes.EDIT)
+          this.handleModeClick(modeTypes.EDIT)
           this.setToolboxDisabled('atoms', false)
           this.setToolboxDisabled('symbols', false)
         }
@@ -77,7 +77,7 @@ class Me extends Component {
         disabled: false,
         iconId: 'volume',
         onClick: () => {
-          this.setModeActive(modeTypes.NOTIFICATION)
+          this.handleModeClick(modeTypes.NOTIFICATION)
           this.setToolboxDisabled('atoms', true)
           this.setToolboxDisabled('symbols', true)
         }
@@ -143,8 +143,8 @@ class Me extends Component {
     }
   }
 
-  setModeActive = key => {
-    const {doUpdateUserPlaces, nodes, setNodes} = this.props
+  handleModeClick = key => {
+    const {doUpdateUserPlaces, nodes, setNodes, onModeClick} = this.props
     deselectAllNodes(nodes, setNodes)()
     doUpdateUserPlaces({nodes})
 
@@ -164,6 +164,8 @@ class Me extends Component {
         }
       })
     }))
+
+    typeof onModeClick === 'function' && onModeClick()
   }
 
   setToolboxDisabled = (key, disabled) => {
@@ -217,13 +219,15 @@ class Me extends Component {
   }
 
   handleCanvasClick = () => {
-    const {routes, routeType} = this.props
+    const {routes, routeType, onCanvasClick} = this.props
     const {meRoute} = routes
 
     if (routeType !== routerActions.ME) {
       meRoute({noReset: true})
     }
     this.setToolboxIsOpen('*', false)
+
+    typeof onCanvasClick === 'function' && onCanvasClick()
   }
 
   handleCanvasItemDrop = (item, x, y) => {
@@ -247,7 +251,13 @@ class Me extends Component {
     const {currentMode} = this.state
     const {mePlaceViewRoute, placeViewRoute} = routes
 
-    const clickedNode = nodes[clickedNodeId]
+    const clickedNode = nodes.find(node => node.id === clickedNodeId)
+
+    if (!clickedNode) {
+      console.error('clickedNode was undefined', clickedNodeId, nodes)
+      return
+    }
+
     const isNodeSelected = clickedNode.selected
 
     switch (currentMode) {
@@ -283,7 +293,10 @@ class Me extends Component {
 
   handleCanvasNodeDelete = deletedNode => {
     const {doDeleteUserPlace, onDeleteSelectedNode} = this.props
-    doDeleteUserPlace({placeId: deletedNode.idServer})
+
+    if (deletedNode.idServer) {
+      doDeleteUserPlace({placeId: deletedNode.idServer})
+    }
 
     typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(deletedNode)
   }

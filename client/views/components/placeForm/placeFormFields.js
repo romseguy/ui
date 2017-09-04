@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
 import { Field } from 'redux-form'
 
+import { PlaceFormBreakpoints as breakpoints } from 'views/utils/form/responsive'
 import { keepCities } from 'views/utils/geosuggest'
+import { required } from 'views/utils/form/validators'
 
 import GeosuggestField from 'views/components/geosuggestField'
-import {
-  Button,
-  Col,
-  Grid,
-  Row
-} from 'views/components/layout'
+import InputField from 'views/components/inputField'
+import { Grid } from 'views/components/layout'
 import MapField from 'views/components/mapField'
 
 
@@ -22,8 +20,12 @@ class PlaceFormFields extends Component {
     }
   }
 
-  componentWillReceiveProps(props) {
-    this.setState(p => ({center: this.getCenter(props)}))
+  componentDidMount() {
+    this.titleInput.getRenderedComponent().focusInput()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(p => ({center: this.getCenter(nextProps)}))
   }
 
   getCenter(props = this.props) {
@@ -59,91 +61,55 @@ class PlaceFormFields extends Component {
   }
 
   render() {
-    const {formValues, userLocation, readOnly, showSelector, t, onMapClick} = this.props
+    const {formValues, userLocation, readOnly, t, onMapClick} = this.props
     const {center, zoom} = this.state
-    const {action} = formValues
-
-    if (showSelector) {
-      if (!action) {
-        return null
-      }
-    }
 
     return (
       <Grid>
-        {action !== 'select' && (
-          <Row>
-            <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="name">{t('form:place.name')}</label>
-            </Col>
+        <Field
+          name="title"
+          component={InputField}
+          type="text"
+          breakpoints={breakpoints}
+          label={t('form:place.name')}
+          ref={node => this.titleInput = node}
+          withRef
+          validate={[required({msg: t('errors:required')})]}
+        />
 
-            <Col mobile={16} tablet={16} computer={11}>
-              <Field name="title" component="input" type="text" id="name" disabled={readOnly}/>
-            </Col>
-          </Row>
-        )}
+        <Field
+          name="city"
+          component={GeosuggestField}
+          breakpoints={breakpoints}
+          label={t('form:place.city')}
+          center={center}
+          disabled={readOnly}
+          placeholder={t('geosuggest_placeholder')}
+          skipSuggest={keepCities}
+          ref={node => this.cityInput = node}
+          withRef
+          validate={[required({msg: t('errors:required')})]}
+          onSuggestSelect={this.handleSuggestSelect}
+        />
 
-        {action !== 'select' && (
-          <Row>
-            <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="city">{t('form:place.city')}</label>
-            </Col>
-            <Col mobile={16} tablet={16} computer={11}>
-              <Field
-                name="city"
-                component={GeosuggestField}
-                id="city"
-                center={center}
-                disabled={readOnly}
-                skipSuggest={keepCities}
-                t={t}
-                onSuggestSelect={this.handleSuggestSelect}
-              />
-            </Col>
-          </Row>
-        )}
+        <Field
+          name="department"
+          component="input"
+          type="hidden"
+        />
 
-        {action !== 'select' && (
-          <Field
-            name="department"
-            component="input"
-            type="hidden"
-          />
-        )}
-
-        <Row>
-          {action !== 'select' && (
-            <Col mobile={16} tablet={16} computer={5}>
-              <label htmlFor="marker">{t('form:place.map')}</label>
-            </Col>
-          )}
-
-          {action !== 'select' && (
-            <Col
-              mobile={16}
-              tablet={16}
-              computer={11}
-            >
-              <Field
-                name="marker"
-                id="marker"
-                component={MapField}
-                center={center}
-                location={userLocation}
-                readOnly={readOnly}
-                zoom={zoom}
-                onBoundsChanged={this.handleBoundsChange}
-                onMapClick={onMapClick}
-              />
-            </Col>
-          )}
-        </Row>
-
-        <Row>
-          <Col>
-            <Button type="submit">{t('form:place.save')}</Button>
-          </Col>
-        </Row>
+        <Field
+          name="marker"
+          component={MapField}
+          breakpoints={breakpoints}
+          center={center}
+          label={t('form:place.map')}
+          location={userLocation}
+          readOnly={readOnly}
+          zoom={zoom}
+          onBoundsChanged={this.handleBoundsChange}
+          onMapClick={onMapClick}
+        />
 
       </Grid>
     )

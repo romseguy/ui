@@ -25,14 +25,14 @@ export function getGeocodedLocation(res) {
   return {lat, lng}
 }
 
-export function getReverseGeocodedDepartment(res) {
-  const context = getReverseGeocodedProperty(res, 'context')
+export function getGeocodedDepartment(res) {
+  const context = getGeocodedProperty(res, 'context')
   const matches = context.match(/[0-9]{2}, ([^,]+)/i)
 
   return matches[1]
 }
 
-export function getReverseGeocodedProperty(res, property) {
+export function getGeocodedProperty(res, property) {
   if (!apiResultIsValid(res)) {
     return undefined
   }

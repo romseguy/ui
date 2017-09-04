@@ -6,7 +6,7 @@ import { change } from 'redux-form'
 import { connect } from 'react-redux'
 
 import geo from 'utils/api/geo'
-import { getGeocodedLocation, getReverseGeocodedDepartment } from 'utils/geo'
+import { getGeocodedLocation, getGeocodedDepartment } from 'utils/geo'
 
 import { client } from 'core/apollo'
 import { authActions } from 'core/auth'
@@ -71,18 +71,18 @@ class HeaderContainer extends Component {
           size: 'small',
           closeIcon: null
         },
+
         onSubmit: function handleSetLocationFormSubmit(values, onClose) {
          let {city, department, marker} = values
 
           if (marker) {
             navigate(city, department, marker)
           }
-          // we didnt select a suggestion so location and department are still unknown
           else {
             geo.geocodeCity(city).then(res => {
               const {lat, lng} = getGeocodedLocation(res)
-              department = getReverseGeocodedDepartment(res)
               marker = [lat, lng]
+              department = getGeocodedDepartment(res)
               navigate(city, department, marker)
             })
           }
@@ -95,12 +95,13 @@ class HeaderContainer extends Component {
             typeof onClose === 'function' && onClose()
           }
         },
+
         onSuggestSelect: function handleSuggestSelect(suggest) {
           const {lat, lng} = suggest.location
           change('SetLocationForm', 'marker', [lat, lng])
 
           geo.getReverseGeocoding(lat, lng).then(res => {
-            const department = getReverseGeocodedDepartment(res)
+            const department = getGeocodedDepartment(res)
             change('SetLocationForm', 'department', department)
           })
         },
@@ -221,12 +222,12 @@ class HeaderContainer extends Component {
                 shouldDispatch={false}
                 onClick={this.handleLogout}
               >
-                {t('accounts:logout')}
+                {t('header:logout')}
               </HeaderLink>
             </div>
           ) : (
             <div>
-              <HeaderLink to={routerActions.authRoute()}>Connexion</HeaderLink>
+              <HeaderLink to={routerActions.authRoute()}>{t('header:login')}</HeaderLink>
             </div>
           )}
         </Col>

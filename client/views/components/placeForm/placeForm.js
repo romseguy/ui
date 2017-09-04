@@ -3,7 +3,11 @@ import React, { Component } from 'react'
 import scriptLoader from 'react-async-script-loader'
 import { reduxForm } from 'redux-form'
 
-import { Form as UIForm, Loader } from 'views/components/layout'
+import {
+  Button,
+  Form as UIForm,
+  Loader
+} from 'views/components/layout'
 
 import PlaceFormFields from './placeFormFields'
 import PlaceFormSelector from './placeFormSelector'
@@ -47,46 +51,39 @@ class PlaceForm extends Component {
     }
 
     let readOnly = false
-    let showSelector = false
 
-    switch (routeType) {
-      case routeTypes.ME_PLACES_ADD:
-        if (!mustCreate) {
-          showSelector = true
-        }
-        break
-    }
+    const showSelector = routeType === routeTypes.ME_PLACES_ADD && !mustCreate
+    const showFields = !showSelector || formValues.action === 'create'
+    const showSubmit = !showSelector || !!formValues.action
 
     return (
-      <div>
+      <UIForm
+        loading={false}
+        onSubmit={handleSubmit}
+      >
         {showSelector && (
-          <UIForm
-            loading={false}
-            onSubmit={handleSubmit}
-          >
-            <PlaceFormSelector
-              disconnectedPlaces={disconnectedPlaces}
-              formValues={formValues}
-              t={t}
-            />
-          </UIForm>
+          <PlaceFormSelector
+            disconnectedPlaces={disconnectedPlaces}
+            formValues={formValues}
+            t={t}
+          />
         )}
 
-        <UIForm
-          loading={false}
-          onSubmit={handleSubmit}
-        >
+        {showFields && (
           <PlaceFormFields
             userLocation={userLocation}
             formValues={formValues}
             readOnly={readOnly}
-            showSelector={showSelector}
             t={t}
             onMapClick={onMapClick}
             onSuggestSelect={onSuggestSelect}
           />
-        </UIForm>
-      </div>
+        )}
+
+        {showSubmit && (
+          <Button type="submit">{t('form:place.save')}</Button>
+        )}
+      </UIForm>
     )
   }
 }

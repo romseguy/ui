@@ -43,7 +43,7 @@ class AuthForm extends Component {
         )}
 
         {currentStep === steps.REGISTER_OK && (
-          <h1>{t('accounts:department_confirm')}</h1>
+          <h1>{t('form:auth.department_confirm')}</h1>
         )}
       </UIForm>
     )

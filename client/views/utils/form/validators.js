@@ -1,8 +1,9 @@
 import React from 'react'
 
+import { isNumber } from 'utils/number'
+
 import { i18n } from 'core/settings'
 
-import { isNumber } from '../number'
 import { prepare, regFormat } from './validators_helpers'
 
 

@@ -8,19 +8,19 @@ import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
 import geo from 'utils/api/geo'
-import { getReverseGeocodedDepartment, getReverseGeocodedProperty } from 'utils/geo'
+import { getGeocodedLocation, getGeocodedDepartment, getGeocodedProperty } from 'utils/geo'
 
 import { roleTypes } from 'core/constants'
-import { getCanvasNodes } from 'core/canvas'
+import { canvasActions, getCanvasNodes } from 'core/canvas'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'
 
 import { getSuggestedDepartment } from 'views/utils/geosuggest'
+import { placeToNode } from 'views/utils/nodes'
 
 import { meQuery } from 'views/dataContainers/me'
-import { Container } from 'views/components/layout'
-import PlaceForm, { PlaceFormHeader } from 'views/components/placeForm'
+import PlaceForm, { PlaceFormHeader, PlaceFormLayout } from 'views/components/placeForm'
 
 import placeFormQuery from './place.form.query.graphql'
 import createPlaceMutation from './createPlace.mutation.graphql'
@@ -31,54 +31,106 @@ const handlers = {
   onMapClick: props => ({event, latLng, pixel}) => {
     const [lat, lng] = latLng
     geo.getReverseGeocoding(lat, lng).then(res => {
-      const city = getReverseGeocodedProperty(res, 'city')
-      const department = getReverseGeocodedDepartment(res)
+      const city = getGeocodedProperty(res, 'city')
+      const department = getGeocodedDepartment(res)
       props.change('PlaceForm', 'city', city)
       props.change('PlaceForm', 'department', department)
     })
   },
 
-  onSubmit: props => formValues => {
+  onSubmit: props => async formValues => {
     const {
       doCreatePlace,
       doCreateUserPlace,
       doUpdatePlace,
+      nodes,
       routes,
-      nodes
+      routeType,
+      setNodes
     } = props
 
-    const {meRoute, mePlaceEditRoute} = routes
-
     const {
-      routeType,
+      mePlaceEditRoute,
+      meRoute
+    } = routes
 
-      action,
-      // select
-      placeId,
-      // create or update
-      city,
-      department,
-      marker,
-      title
-    } = formValues
+    switch (formValues.action) {
+      case 'create':
+        // required form fields
+        let place = {
+          city: formValues.city,
+          title: formValues.title,
+        }
 
-    let place = {
-      city,
-      department,
-      title
-    }
+        let geocodingResult = null
 
-    if (marker) {
-      const [latitude, longitude] = marker
-      place = {...place, latitude, longitude}
-    }
+        // optional form fields
+        if (formValues.marker) {
+          const [latitude, longitude] = formValues.marker
 
-    switch (action) {
+          place = {
+            ...place,
+            latitude,
+            longitude
+          }
+        } else {
+          geocodingResult = await geo.geocodeCity(formValues.city)
+
+          const {lat, lng} = getGeocodedLocation(geocodingResult)
+
+          place = {
+            ...place,
+            department: getGeocodedDepartment(geocodingResult),
+            latitude: lat,
+            longitude: lng
+          }
+        }
+
+        if (!formValues.department) {
+          if (!geocodingResult) {
+            geocodingResult = await geo.geocodeCity(formValues.city)
+          }
+
+          place = {
+            ...place,
+            department: getGeocodedDepartment(geocodingResult)
+          }
+        }
+
+        doCreatePlace({place}).then(({data}) => {
+          const {id, title} = data.createPlace
+
+          place = {
+            ...place,
+            id
+          }
+
+          let nodeWasCreated = false
+          let newNodes = nodes.map(node => {
+            if (node.selected) {
+              nodeWasCreated = true
+              return placeToNode(node.id, place, true)
+            }
+
+            return node
+          })
+
+          if (nodeWasCreated) {
+            setNodes(newNodes)
+          } else {
+            setNodes(nodes.concat([placeToNode(nodes.length, place, true)]))
+          }
+
+          mePlaceEditRoute(title)
+        })
+
+        break
+
       case 'select':
         const selectedNode = nodes.find(node => node.selected) || {}
-        const {x = 0, y = 0} = selectedNode
+        const {x, y} = selectedNode
         const userPlace = {
-          placeId: Number(placeId),
+          placeId: Number(formValues.placeId),
           roleId: roleTypes.FOLLOWER,
           x,
           y
@@ -86,12 +138,6 @@ const handlers = {
 
         doCreateUserPlace({userPlace}).then(({data}) => {
           meRoute()
-        })
-        break
-
-      case 'create':
-        doCreatePlace({place}).then(({data}) => {
-          mePlaceEditRoute(data.createPlace.title)
         })
         break
 
@@ -103,6 +149,7 @@ const handlers = {
         }
     }
   },
+
   onSuggestSelect: props => suggest => {
     const department = getSuggestedDepartment(suggest)
     props.change('PlaceForm', 'department', department)
@@ -130,7 +177,7 @@ function PlaceFormContainer(props) {
   } = props
 
   return (
-    <Container fluid>
+    <PlaceFormLayout fluid>
       <PlaceFormHeader
         routeType={routeType}
         routeTypes={routerActions}
@@ -151,7 +198,7 @@ function PlaceFormContainer(props) {
         onSubmit={onSubmit}
         onSuggestSelect={onSuggestSelect}
       />
-    </Container>
+    </PlaceFormLayout>
   )
 }
 
@@ -176,7 +223,8 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-  change
+  change,
+  setNodes: canvasActions.setNodes
 }
 
 const placeFormQueryConfig = {

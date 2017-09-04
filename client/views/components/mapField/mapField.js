@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import ContainerDimensions from 'react-container-dimensions'
 import Map from 'pigeon-maps'
 import Marker from 'pigeon-marker'
+
 import { providers } from 'views/utils/map'
+import {
+  NoPadCol as Col,
+  Row
+} from 'views/components/layout'
+
 
 class MapField extends Component {
   handleMapClick = click => {
@@ -16,8 +22,10 @@ class MapField extends Component {
 
   render() {
     const {
+      breakpoints,
       center,
       input,
+      label,
       zoom
     } = this.props
 
@@ -29,23 +37,34 @@ class MapField extends Component {
     }
 
     return (
-      <ContainerDimensions>
-        {
-          ({width}) => (
-            <Map
-              center={center}
-              zoom={zoom}
-              provider={providers['outdoors']}
-              height={200}
-              width={width - 30}
-              onBoundsChanged={this.handleBoundsChange}
-              onClick={this.handleMapClick}
-            >
-              {marker}
-            </Map>
-          )
-        }
-      </ContainerDimensions>
+      <Row>
+        <Col {...breakpoints.label}>
+          <label htmlFor={input.name}>
+            {label}
+          </label>
+        </Col>
+
+        <Col {...breakpoints.input}>
+          <ContainerDimensions>
+            {
+              ({width}) => (
+                <Map
+                  center={center}
+                  id={input.name}
+                  provider={providers['outdoors']}
+                  height={200}
+                  width={width - 30}
+                  zoom={zoom}
+                  onBoundsChanged={this.handleBoundsChange}
+                  onClick={this.handleMapClick}
+                >
+                  {marker}
+                </Map>
+              )
+            }
+          </ContainerDimensions>
+        </Col>
+      </Row>
     )
   }
 }
