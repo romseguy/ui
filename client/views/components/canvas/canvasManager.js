@@ -1,15 +1,5 @@
 import React, { Component } from 'react'
 
-import {
-  addNode,
-  deleteSelectedNode,
-  deselectAllNodes,
-  deselectNode,
-  hoverNode,
-  moveNode,
-  selectNode,
-  toggleNode
-} from 'views/utils/nodes'
 import withDragDropContext from 'views/utils/withDragDropContext'
 
 import Toolbar from 'views/components/toolbar'
@@ -45,97 +35,110 @@ class CanvasManager extends Component {
 
   // STATE TRANSITIONS
   zoomIn = () => {
-    const {zoomLevel, zoomIncrement, maxZoom} = this.state
+    this.setState(p => {
+      const level = (p.zoomLevel * 10 + p.zoomIncrement * 10) / 10
 
-    if (zoomLevel < maxZoom) {
-      const level = (zoomLevel * 10 + zoomIncrement * 10) / 10
-      this.setState({
+      return {
         zoomLevel: level,
-        zoomInDisabled: level === maxZoom,
+        zoomInDisabled: level === p.maxZoom,
         zoomOutDisabled: false
-      })
-    }
+      }
+    })
   }
   zoomOut = () => {
-    const {zoomLevel, zoomIncrement, minZoom} = this.state
+    this.setState(p => {
+      const level = (p.zoomLevel * 10 - p.zoomIncrement * 10) / 10
 
-    if (zoomLevel > minZoom) {
-      const level = (zoomLevel * 10 - zoomIncrement * 10) / 10
-      this.setState({
+      return {
         zoomLevel: level,
         zoomInDisabled: false,
-        zoomOutDisabled: level === minZoom
-      })
-    }
+        zoomOutDisabled: level === p.minZoom
+      }
+    })
   }
 
   // CANVAS
   handleClick = e => {
-    const {nodes, onCanvasClick, onNodesChange} = this.props
+    const {onCanvasClick} = this.props
 
     if (e.target === this.svg) {
-      deselectAllNodes(nodes, onNodesChange)()
       typeof onCanvasClick === 'function' && onCanvasClick(e)
     }
   }
-  handleItemDrop = (item, x, y) => {
-    const {nodes, onNodesChange, onCanvasItemDrop} = this.props
+  handleNodeAnchorClick = node => {
+    // NIY
+    const {onNodeAnchorClick} = this.props
+
+    typeof onNodeAnchorClick === 'function' && onNodeAnchorClick(node)
+  }
+  handleNodeAnchorMouseOut = node => {
+    // NIY
+    const {onNodeAnchorMouseOut} = this.props
+
+    typeof onNodeAnchorMouseOut === 'function' && onNodeAnchorMouseOut(node)
+  }
+  handleNodeAnchorMouseOver = node => {
+    // NIY
+    const {onNodeAnchorMouseOver} = this.props
+
+    typeof onNodeAnchorMouseOver === 'function' && onNodeAnchorMouseOver(node)
+  }
+  handleNodeDragEnd = (node, x, y) => {
+    // NIY
+    const {onNodeDragEnd} = this.props
+
+    typeof onNodeDragEnd === 'function' && onNodeDragEnd(node, x, y)
+  }
+  handleNodeHeaderClick = node => {
+    // NIY
+    const {onNodeHeaderClick} = this.props
+
+    typeof onNodeHeaderClick === 'function' && onNodeHeaderClick(node)
+  }
+  handleToolboxItemDrop = (item, x, y) => {
+    const {nodes, onToolboxItemDrop} = this.props
 
     const node = {
       ...item.itemAttributes,
       height: item.itemAttributes.height + 50,
       id: nodes.length,
       selected: true,
-      x: x,
-      y: y
+      x,
+      y
     }
 
-    addNode(deselectAllNodes(nodes)(), onNodesChange)(node)
-    typeof onCanvasItemDrop === 'function' && onCanvasItemDrop(item, x, y)
-  }
-  handleNodeAnchorClick = (id) => {
-    const {onNodeAnchorClick} = this.props
-    typeof onNodeAnchorClick === 'function' && onNodeAnchorClick(id)
-  }
-  handleNodeAnchorMouseOver = (id) => {
-    const {nodes, onNodesChange} = this.props
-    hoverNode(nodes, onNodesChange)(id, true)
-  }
-  handleNodeAnchorMouseOut = (id) => {
-    const {nodes, onNodesChange} = this.props
-    hoverNode(nodes, onNodesChange)(id, false)
-  }
-  handleNodeDragEnd = (id, x, y) => {
-    const {nodes, onNodesChange} = this.props
-    moveNode(nodes, onNodesChange)(id, x, y)
-  }
-  handleNodeHeaderClick = (id) => {
-    const {onNodeHeaderClick} = this.props
-    typeof onNodeHeaderClick === 'function' && onNodeHeaderClick(id)
+    typeof onToolboxItemDrop === 'function' && onToolboxItemDrop(node)
   }
   handleWheel = ({deltaX, deltaY}) => {
-    if (deltaY > 0) {
+    const {maxZoom, minZoom, zoomLevel} = this.state
+
+    if (deltaY > 0 && zoomLevel > minZoom) {
       this.zoomOut()
-    } else {
+    } else if (zoomLevel < maxZoom) {
       this.zoomIn()
     }
   }
 
   // TOOLBAR
-  handleToolbarDeleteClick = (event, selectedNode) => {
-    const {nodes, t, onDeleteSelectedNode, onNodesChange} = this.props
-    // todo:
-    // in parent component: proper modal to choose whether we want to delete the place as well or just user_place
-    // also, warn the user that he wont be guardian anymore
-    const confirmed = window.confirm(t('canvas:atoms.delete_confirm') + ' ' + selectedNode.name)
+  handleToolbarDeleteClick = node => {
+    const {t, onDeleteSelectedNode} = this.props
+    /*
+     todo:
+     in parent data container, display modal depending on user role:
+     - GUARDIAN: choose whether delete the place, just user_place, or both
+     - FOLLOWER: confirm user_place deletion
+     */
+    const confirmed = window.confirm(t('canvas:atoms.delete_confirm') + ' ' + node.name)
+
     if (confirmed) {
-      const deletedNode = deleteSelectedNode(nodes, onNodesChange)()
-      typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(deletedNode)
+      typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(node)
     }
   }
-  handleToolbarEditClick = (event, selectedNode) => {
+  handleToolbarEditClick = node => {
+    // NIY
     const {onEditSelectedNode} = this.props
-    typeof onEditSelectedNode === 'function' && onEditSelectedNode(selectedNode)
+
+    typeof onEditSelectedNode === 'function' && onEditSelectedNode(node)
   }
   handleToolbarZoomInClick = () => {
     this.zoomIn()
@@ -154,7 +157,8 @@ class CanvasManager extends Component {
       selectedNodeIds,
       nodes,
       t,
-      toolboxes
+      toolboxes,
+      onModeClick
     } = this.props
 
     const {
@@ -163,6 +167,7 @@ class CanvasManager extends Component {
       zoomInDisabled
     } = this.state
 
+    // todo: move to MainPanel?
     let selectedNode = null
 
     if (selectedNodeIds.length === 1) {
@@ -175,6 +180,7 @@ class CanvasManager extends Component {
         <ToolboxTooltips/>
 
         <Toolbar
+          currentMode={currentMode}
           deleteDisabled={selectedNodeIds.length !== 1 || readOnly}
           editDisabled={selectedNodeIds.length !== 1 || readOnly}
           modes={modes}
@@ -185,6 +191,7 @@ class CanvasManager extends Component {
           zoomOutDisabled={zoomOutDisabled}
           onDeleteClick={this.handleToolbarDeleteClick}
           onEditClick={this.handleToolbarEditClick}
+          onModeClick={onModeClick}
           onZoomInClick={this.handleToolbarZoomInClick}
           onZoomOutClick={this.handleToolbarZoomOutClick}
         />
@@ -201,7 +208,7 @@ class CanvasManager extends Component {
           setSvgReference={this.setSvgReference}
           toolboxes={toolboxes}
           zoomLevel={zoomLevel}
-          onCanvasItemDrop={this.handleItemDrop}
+          onToolboxItemDrop={this.handleToolboxItemDrop}
           onClick={this.handleClick}
           onNodeAnchorClick={this.handleNodeAnchorClick}
           onNodeAnchorMouseOver={this.handleNodeAnchorMouseOver}

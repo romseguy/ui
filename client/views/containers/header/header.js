@@ -9,19 +9,19 @@ import geo from 'utils/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'utils/geo'
 
 import { client } from 'core/apollo'
-import { authActions } from 'core/auth'
 import { getMeCentre } from 'core/me'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { settingsActions, getTitle, getUserLocation } from 'core/settings'
 
+import placeQuery from 'views/dataContainers/place/place.query.graphql'
+import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
+import logoutMutation from 'views/containers/auth/form/logout.mutation.graphql'
+
 import Atom from 'views/components/atom'
 import Icon from 'views/components/icon'
 import { Col } from 'views/components/layout'
 import { HeaderGrid, HeaderLink, HeaderTitle } from 'views/components/header'
-
-import placeQuery from 'views/dataContainers/place/place.query.graphql'
-import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
 
 
 class HeaderContainer extends Component {
@@ -73,7 +73,7 @@ class HeaderContainer extends Component {
         },
 
         onSubmit: function handleSetLocationFormSubmit(values, onClose) {
-         let {city, department, marker} = values
+          let {city, department, marker} = values
 
           if (marker) {
             navigate(city, department, marker)
@@ -133,10 +133,9 @@ class HeaderContainer extends Component {
   }
 
   handleLogout = event => {
-    const {doLogout, rootRoute, setIsAuthed} = this.props
+    const {doLogout, rootRoute} = this.props
 
     doLogout().then(() => {
-      setIsAuthed(false)
       rootRoute()
     })
   }
@@ -249,7 +248,6 @@ const mapDispatchToProps = {
   change,
   meRoute: routerActions.meRoute,
   rootRoute: routerActions.rootRoute,
-  setIsAuthed: authActions.setIsAuthed,
   setCity: settingsActions.setCity,
   setDepartment: settingsActions.setDepartment,
   setLocation: settingsActions.setLocation,
@@ -257,11 +255,13 @@ const mapDispatchToProps = {
 }
 
 const logoutMutationConfig = {
-  props({ownProps: {rootRoute, setIsAuthed}, mutate}) {
+  props({mutate}) {
     return {
       doLogout(){
         return mutate({
-          update: store => store.writeQuery({query: currentUserQuery, data: {currentUser: null}})
+          refetchQueries: [{
+            query: currentUserQuery
+          }]
         })
       }
     }
@@ -273,6 +273,6 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   ),
-  graphql(gql`mutation logout {logout{currentUser{id}}}`, logoutMutationConfig),
+  graphql(logoutMutation, logoutMutationConfig),
   translate()
 )(HeaderContainer)

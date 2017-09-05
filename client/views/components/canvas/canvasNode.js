@@ -46,8 +46,8 @@ function CanvasNode(props) {
     anchor = (
       <SVGOrigin
         name={getCanvasNodeAnchorTooltipName(currentMode, node.selected)}
-        onHover={e => onAnchorMouseOver(node.id)}
-        onLeave={e => onAnchorMouseOut(node.id)}
+        onHover={e => onAnchorMouseOver(node)}
+        onLeave={e => onAnchorMouseOut(node)}
       >
         <CanvasNodeImage
           id={`canvas-node__anchor-img-${node.id}`}
@@ -170,10 +170,10 @@ function CanvasNode(props) {
 
   return (
     <g className="canvas-node">
-      <g onClick={e => onAnchorClick(node.id)}>
+      <g onClick={e => onAnchorClick(node)}>
         {anchor}
       </g>
-      <g onClick={e => onHeaderClick(node.id)}>
+      <g onClick={e => onHeaderClick(node)}>
         {text}
       </g>
     </g>

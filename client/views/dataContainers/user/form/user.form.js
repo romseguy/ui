@@ -30,9 +30,7 @@ const handlers = {
     } = formValues
 
     if (action === 'select') {
-      props.doCreateUserUser({userId: selected, roleId: roleTypes.GUARDIAN}).then(data => {
-        props.meRoute()
-      })
+      props.doCreateUserUser({userId: selected, roleId: roleTypes.GUARDIAN})
     } else {
       const [latitude, longitude] = marker
       const user = {

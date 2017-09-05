@@ -56,7 +56,7 @@ export default {
   },
   [routerActions.ME_PLACE_VIEW]: {
     path: '/me/place/:name',
-    centre: centreTypes.LOCATION,
+    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_PLACE_EDIT]: {
@@ -72,7 +72,7 @@ export default {
   },
   [routerActions.ME_SYMBOL_VIEW]: {
     path: '/me/symbol/:name',
-    centre: centreTypes.LOCATION,
+    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_SYMBOL_EDIT]: {
@@ -88,7 +88,7 @@ export default {
   },
   [routerActions.ME_USER_VIEW]: {
     path: '/me/user/:name',
-    centre: centreTypes.LOCATION,
+    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_USER_EDIT]: {

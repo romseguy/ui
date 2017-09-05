@@ -38,10 +38,10 @@ export function* mePlaceEditSaga(payload, settings) {
   const selectedNode = nodes.find(node => node.name === placeName)
 
   // todo: 404 place
-  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`)
+  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`, {i18n: true})
 
   if (selectedNode) {
-    yield put(canvasActions.selectNode(selectedNode.id))
+    yield put(canvasActions.selectNode(true, selectedNode))
   }
 
 /*
@@ -87,7 +87,7 @@ export function* mePlaceViewSaga(payload, settings) {
     yield put(canvasActions.setNodes([]))
   }
 
-  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`)
+  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`, {i18n: true})
 
   /*
   try {

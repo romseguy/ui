@@ -2,7 +2,6 @@ import { delay } from 'redux-saga'
 import { call, spawn, put, select, all } from 'redux-saga/effects'
 
 import { apolloSaga } from './apollo'
-import { authSaga } from './auth'
 import { meSaga } from './me'
 import { modalSaga } from './modal'
 import { placesSaga } from './places'
@@ -15,7 +14,7 @@ const makeRestartable = saga => {
         try {
           yield call(saga)
 
-          if (!['authSaga', 'settingsSaga', 'placesSaga'].includes(saga.name)) {
+          if (!['settingsSaga', 'placesSaga'].includes(saga.name)) {
             console.error(`unexpected ${saga.name} termination`, saga)
           }
         } catch (e) {
@@ -29,7 +28,6 @@ const makeRestartable = saga => {
 
 const rootSagas = [
   apolloSaga,
-  authSaga,
   meSaga,
   modalSaga,
   placesSaga,

@@ -3,34 +3,15 @@ import { all, call, put, take, takeEvery } from 'redux-saga/effects'
 import { i18n, settingsActions } from 'core/settings'
 import { setErrorModalSaga } from 'utils/modal'
 
-import { authActions } from 'core/auth'
-
 
 function* startupSaga() {
-  let keepLooping = true
+  const {result = {}} = yield take('APOLLO_QUERY_RESULT')
 
-  while (keepLooping) {
-    const {operationName, result = {}} = yield take('APOLLO_QUERY_RESULT')
-
-    switch (operationName) {
-      case 'currentUser':
-        keepLooping = false
-
-        if (result.message === 'Failed to fetch') {
-          yield call(setErrorModalSaga, {
-            title: 'System error',
-            errors: ['Server is offline']
-          })
-        }
-
-        if (!result.data || !result.data.currentUser) {
-          yield put(authActions.setIsAuthed(false))
-          return
-        }
-
-        yield put(authActions.setIsAuthed(true))
-        break
-    }
+  if (result.message === 'Failed to fetch') {
+    yield call(setErrorModalSaga, {
+      title: 'System error',
+      errors: ['Server is offline']
+    })
   }
 }
 
@@ -39,7 +20,7 @@ function* mutationResultSaga({operationName, result}) {
 
   if (result) {
     if (result.stack) {
-      yield call(setErrorModalSaga, {title: i18n.t('errors:modal.unknown.title'), errors: [result /*i18n.t('errors:modal.unknown.content')*/]}) // todo send email
+      yield call(setErrorModalSaga, {title: i18n.t('errors:modal.unknown.title'), errors: [result /*i18n.t('errors:modal.unknown.content')*/]}) // todo: send email
       return
     }
     else if (result.data) {
@@ -52,6 +33,7 @@ function* mutationResultSaga({operationName, result}) {
 
   switch (operationName) {
     case 'login':
+    case 'register':
       yield call([localStorage, localStorage.setItem], 'token', body.token)
       break
 

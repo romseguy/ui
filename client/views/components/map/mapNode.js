@@ -8,6 +8,25 @@ const imageOffset = {
   top: 15
 }
 
+
+const handlers = {
+  onAnchorClick: props => () => {
+    props.onAnchorClick && props.onAnchorClick(props.node)
+  },
+
+  onHeaderClick: props => () => {
+    props.onHeaderClick && props.onHeaderClick(props.node)
+  },
+
+  onAnchorMouseOver: props => () => {
+    typeof props.onAnchorMouseOver === 'function' && props.onAnchorMouseOver(props.node)
+  },
+
+  onAnchorMouseOut: props => () => {
+    typeof props.onAnchorMouseOut === 'function' && props.onAnchorMouseOut(props.node)
+  }
+}
+
 function MapNode(props) {
   const {
     left,
@@ -60,24 +79,6 @@ function MapNode(props) {
       </Origin>
     </div>
   )
-}
-
-const handlers = {
-  onAnchorClick: props => () => {
-    props.onAnchorClick && props.onAnchorClick(props.node.id)
-  },
-
-  onHeaderClick: props => () => {
-    props.onHeaderClick && props.onHeaderClick(props.node.id)
-  },
-
-  onAnchorMouseOver: props => () => {
-    props.onAnchorMouseOver && props.onAnchorMouseOver(props.node.id)
-  },
-
-  onAnchorMouseOut: props => () => {
-    props.onAnchorMouseOut && props.onAnchorMouseOut(props.node.id)
-  }
 }
 
 export default compose(

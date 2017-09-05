@@ -1,28 +1,29 @@
 import { pipe } from 'ramda'
 import React from 'react'
 import { Helmet } from 'react-helmet'
+import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 
 import { getTitle } from 'core/settings'
 
 
-function HelmetContainer({title}) {
+function HelmetContainer({t, title}) {
   return (
     <Helmet>
       <meta charSet="utf-8"/>
       <link rel="canonical" href="http://mysite.com/example"/>
 
-      <title>{title}</title>
+      <title>{`${t('app_title')} | ${title || t('loading')}`}</title>
     </Helmet>
   )
 }
 
 
-const mapStateToProps = (state, {appTitle}) => {
+const mapStateToProps = (state) => {
   const title = getTitle(state)
 
   return {
-    title: `${appTitle} | ${title || 'Chargement...'}`
+    title
   }
 }
 
@@ -33,4 +34,5 @@ export default pipe(
     mapStateToProps,
     mapDispatchToProps
   ),
+  translate()
 )(HelmetContainer)

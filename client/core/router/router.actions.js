@@ -68,9 +68,9 @@ export const routerActions = {
     }
   }),
  
-  meRoute: (params) => ({
+  meRoute: (payload) => ({
     type: routerActions.ME,
-    payload: params
+    payload
   }),
   
   mePlacesAddRoute: () => ({
@@ -78,11 +78,9 @@ export const routerActions = {
     payload: {
     }
   }),
-  mePlaceViewRoute: (name) => ({
+  mePlaceViewRoute: (payload) => ({
     type: routerActions.ME_PLACE_VIEW,
-    payload: {
-      name
-    }
+    payload
   }),
   mePlaceEditRoute: (name) => ({
     type: routerActions.ME_PLACE_EDIT,
@@ -91,8 +89,11 @@ export const routerActions = {
     }
   }),
   
-  meSymbolsAddRoute: () => ({
+  meSymbolsAddRoute: (symbolType) => ({
     type: routerActions.ME_SYMBOLS_ADD,
+    payload: {
+      symbolType
+    }
   }),
   meSymbolViewRoute: (name) => ({
     type: routerActions.ME_SYMBOL_VIEW,

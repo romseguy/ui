@@ -18,15 +18,14 @@ class Places extends Component {
     return routePayload.center || [userLocation.lat, userLocation.lng]
   }
 
-  handleNodeAnchorClick = (clickedNodeId) => {
-    const {nodes, routes} = this.props
-    const clickedNode = nodes[clickedNodeId]
+  handleNodeAnchorClick = (node) => {
+    const {routes} = this.props
     const {mePlaceViewRoute, placeViewRoute} = routes
 
-    if (false /*clickedNode.mine*/) {
-      mePlaceViewRoute(clickedNode.name)
+    if (false /*node.mine*/) {
+      mePlaceViewRoute(node.name)
     } else {
-      placeViewRoute(clickedNode.name)
+      placeViewRoute(node.name)
     }
   }
 

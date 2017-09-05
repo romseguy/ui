@@ -23,7 +23,7 @@ class App extends Component {
 
     return (
       <div>
-        <Helmet appTitle="Paix Roquet"/>
+        <Helmet/>
 
         <Layout
           header={

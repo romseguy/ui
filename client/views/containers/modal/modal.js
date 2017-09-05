@@ -30,7 +30,10 @@ const modalComponents = {
   ),
   [modalConstants.ERROR]: ({modalProps, errors = [], title}) => (
     <Modal {...modalProps}>
-      <Header icon="warning sign" content={title}/>
+      <Header>
+        <Icon name="warning sign"/>
+        {title}
+      </Header>
       <Modal.Content>
         <ul>
           {errors.map((error, id) => <li key={`error-${id}`}>{error.message || error}</li>)}

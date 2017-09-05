@@ -6,7 +6,6 @@ import { createSelector } from 'reselect'
 import { MapTooltips } from 'views/components/tooltips'
 import { providers } from 'views/utils/map'
 
-import handlers from './mapManager.handlers'
 import MapNode from './mapNode'
 
 
@@ -50,10 +49,10 @@ class MapManager extends Component {
     const {
       mapHeight,
       mapWidth,
-      onAnchorClick,
-      onAnchorMouseOver,
-      onAnchorMouseOut,
-      onHeaderClick,
+      onNodeAnchorClick,
+      onNodeAnchorMouseOver,
+      onNodeAnchorMouseOut,
+      onNodeHeaderClick,
       onMapClick,
       nodes
     } = this.props
@@ -83,10 +82,10 @@ class MapManager extends Component {
                 node={node}
                 text={node.title}
                 zoom={zoom}
-                onAnchorClick={onAnchorClick}
-                onAnchorMouseOver={onAnchorMouseOver}
-                onAnchorMouseOut={onAnchorMouseOut}
-                onHeaderClick={onHeaderClick}
+                onAnchorClick={onNodeAnchorClick}
+                onAnchorMouseOver={onNodeAnchorMouseOver}
+                onAnchorMouseOut={onNodeAnchorMouseOut}
+                onHeaderClick={onNodeHeaderClick}
                 key={`map-node-${node.id}`}
               />
             )
@@ -97,4 +96,4 @@ class MapManager extends Component {
   }
 }
 
-export default withHandlers(handlers)(MapManager)
+export default MapManager

@@ -1,9 +1,11 @@
+import { compose } from 'ramda'
 import React from 'react'
+import { withHandlers } from 'recompose'
 import styled from 'styled-components'
 
 import { atomTypes } from 'views/utils/atoms'
 
-import { Button, Col as UICol, Grid, Segment } from 'views/components/layout'
+import { Col as UICol, Grid, Segment } from 'views/components/layout'
 
 import ToolbarIcon from './toolbarIcon'
 
@@ -11,29 +13,37 @@ const Col = styled(UICol)`
 width: auto !important;
 `
 
-const ToolbarButton = styled(Button)`
-`
+
+const handlers = {
+  onActionClick: props => (event, callback, disabled = false) => {
+    event.preventDefault()
+
+    if (!disabled && typeof callback === 'function') {
+      callback(props.selectedNode)
+    }
+  },
+
+  onModeClick: props => (event, modeKey, disabled = false) => {
+    if (!disabled && typeof props.onModeClick === 'function') {
+      props.onModeClick(modeKey)
+    }
+  }
+}
 
 function Toolbar(props) {
   const {
+    currentMode,
     editDisabled = false, deleteDisabled = false,
     modes,
     selectedNode,
     t,
     toolboxes,
     zoomOutDisabled = true, zoomInDisabled = false,
+    onActionClick,
     onDeleteClick, onEditClick,
+    onModeClick,
     onZoomOutClick, onZoomInClick
   } = props
-
-  /* todo: avoid fn creation */
-  const handleActionClick = (event, func, disabled = false) => {
-    event.preventDefault()
-
-    if (!disabled && func) {
-      func(event, selectedNode)
-    }
-  }
 
   const selectedNodeType = selectedNode && selectedNode.type
 
@@ -51,14 +61,14 @@ function Toolbar(props) {
         }}>
           {modes.map(mode => {
             const {
-              active,
               disabled,
               iconId,
               key,
               labels,
-              text,
-              onClick
+              text
             } = mode
+
+            const active = currentMode === key
 
             const title = disabled
               ? labels.disabled
@@ -73,7 +83,7 @@ function Toolbar(props) {
                 margin='0.4rem 0.4rem 0 0'
                 text={text}
                 title={title}
-                onClick={onClick}
+                onClick={e => onModeClick(e, key, disabled)}
               />
             )
           })}
@@ -103,7 +113,7 @@ function Toolbar(props) {
             id="trash"
             margin="0.4rem 0 0 0.4rem"
             title={t(`canvas:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'delete_selected_entity' : 'delete_selected_symbol'}`)}
-            onClick={(e) => handleActionClick(e, onDeleteClick, deleteDisabled)}
+            onClick={e => onActionClick(e, onDeleteClick, deleteDisabled)}
           />
 
           <ToolbarIcon
@@ -111,7 +121,7 @@ function Toolbar(props) {
             id="compose"
             margin="0.4rem 0 0 0.4rem"
             title={t(`canvas:buttons.${Object.keys(atomTypes).includes(selectedNodeType) ? 'edit_selected_entity' : 'edit_selected_symbol'}`)}
-            onClick={(e) => handleActionClick(e, onEditClick, editDisabled)}
+            onClick={e => onActionClick(e, onEditClick, editDisabled)}
           />
         </Segment>
       </Col>
@@ -130,14 +140,14 @@ function Toolbar(props) {
             id="minus"
             margin="0.4rem 0.4rem 0 0"
             title={t('canvas:buttons.zoom_out')}
-            onClick={(e) => handleActionClick(e, onZoomOutClick, zoomOutDisabled)}
+            onClick={e => onActionClick(e, onZoomOutClick, zoomOutDisabled)}
           />
 
           <ToolbarIcon
             disabled={zoomInDisabled}
             id="plus"
             title={t('canvas:buttons.zoom_in')}
-            onClick={(e) => handleActionClick(e, onZoomInClick, zoomInDisabled)}
+            onClick={e => onActionClick(e, onZoomInClick, zoomInDisabled)}
           />
         </Segment>
 
@@ -146,4 +156,6 @@ function Toolbar(props) {
   )
 }
 
-export default Toolbar
+export default compose(
+  withHandlers(handlers)
+)(Toolbar)

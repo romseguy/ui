@@ -4,7 +4,6 @@ import { graphql } from 'react-apollo'
 import { getFormSyncErrors } from 'redux-form'
 import { connect } from 'react-redux'
 
-import { authActions } from 'core/auth'
 import { modalActions, modalConstants } from 'core/modal'
 
 import { meQuery } from 'views/dataContainers/me'
@@ -21,7 +20,6 @@ const steps = {
   REGISTER_OK: 'REGISTER_OK'
 }
 
-const setToken = token => localStorage.setItem('token', token)
 
 class AuthFormContainer extends Component {
   state = {
@@ -42,33 +40,31 @@ class AuthFormContainer extends Component {
   }
 
   handleSubmit = (values, /*dispatch, props*/) => {
+    const {doLogin, doRegister, setModal} = this.props
+
     switch (this.state.currentStep) {
       case steps.FIRST:
         if (values.username) {
-          const {doRegister} = this.props
-
           doRegister(values)
             .then(result => {
               if (!result.stack) {
-                this.setState(p => ({currentStep: steps.REGISTER_OK}))
+                setModal(modalConstants.AUTH, {isOpen: false})
+                // todo: this.setState(p => ({currentStep: steps.REGISTER_OK}))
               }
             })
             .catch(error => this.handleError(error))
         }
         else {
-          const {doLogin, setModal, setIsAuthed} = this.props
-
           doLogin(values)
             .then(() => {
               setModal(modalConstants.AUTH, {isOpen: false})
-              setIsAuthed(true)
             })
             .catch(error => this.handleError(error))
         }
         break
 
       case steps.REGISTER_OK:
-        console.log('??', 'todo')
+        // todo
         break
     }
   }
@@ -102,7 +98,6 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-  setIsAuthed: authActions.setIsAuthed,
   setModal: modalActions.setModal
 }
 
@@ -113,9 +108,6 @@ const loginMutationConfig = {
       doLogin(variables){
         return mutate({
           variables,
-          update: (store, {data: {login: {token}}}) => {
-            setToken(token)
-          },
           refetchQueries: [{
             query: meQuery
           }],
@@ -131,9 +123,6 @@ const registerMutationConfig = {
       doRegister(variables){
         return mutate({
           variables,
-          update: (store, {data: {register: {token}}}) => {
-            setToken(token)
-          },
           refetchQueries: [{
             query: meQuery
           }],

@@ -1,26 +1,42 @@
-import { put, take, select } from 'redux-saga/effects'
+import { call, put, take, select } from 'redux-saga/effects'
 
-import { authActions, getIsAuthed } from 'core/auth'
+import { client } from 'core/apollo'
 import { meActions } from 'core/me'
-import { settingsActions, getCity, getDepartment } from 'core/settings'
+import { settingsActions, getCity, getDepartment, getI18nInitialized } from 'core/settings'
+
+import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
 
 
-export function* isAuthedSaga() {
-  let isAuthed = yield select(getIsAuthed)
+export function* getCurrentUserSaga() {
+  try {
+    const result = yield call([client, client.readQuery], {
+      query: currentUserQuery
+    })
 
-  if (isAuthed === null) {
-    const {payload} = yield take(authActions.SET_IS_AUTHED)
-    isAuthed = payload.isAuthed
+    return result ? result.currentUser : null
+  } catch (e) {
+    while (true) {
+      const {operationName, result} = yield take(['APOLLO_QUERY_RESULT', 'APOLLO_QUERY_RESULT_CLIENT'])
+      if (['currentUser'].includes(operationName)) {
+        return result.data ? result.data.currentUser : null
+      }
+    }
   }
-
-  return isAuthed
 }
 
 export function* setCentreSaga(c, params) {
   yield put(meActions.setCentre(c, params))
 }
 
-export function* setTitleSaga(title) {
+export function* setTitleSaga(title, {i18n} = {}) {
+  if (i18n) {
+    const initialized = yield select(getI18nInitialized)
+
+    if (!initialized) {
+      yield take(settingsActions.I18N_INITIALIZED)
+    }
+  }
+
   yield put(settingsActions.setTitle(title))
 }
 

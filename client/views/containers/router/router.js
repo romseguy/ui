@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 
 import { bindActionCreators } from 'utils/redux'
 
-import { getIsAuthed } from 'core/auth'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import routes from 'core/routes'
 

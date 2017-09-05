@@ -2,287 +2,126 @@ import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 
-import { roleTypes } from 'core/constants'
+import { centreTypes, roleTypes } from 'core/constants'
 
-import { AtomsToolbox, SymbolsToolbox } from 'views/containers/toolbox'
 
 import { Loader } from 'views/components/layout'
-import { ToolboxButton } from 'views/components/toolbox'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { deselectAllNodes, personToNode } from 'views/utils/nodes'
+import { personToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
-import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
 import placeQuery from './place.query.graphql'
 
 
 class Place extends Component {
 
-  constructor(props) {
-    super(props)
-    const {t} = props
-    const currentMode = modeTypes.DISCOVERY
-
-    this.state = {
-      currentMode,
-      modes: [{
-        key: modeTypes.DISCOVERY,
-        active: currentMode === modeTypes.DISCOVERY,
-        disabled: false,
-        iconId: 'search',
-        labels: {
-          active: t('canvas:modes.discovery.labels.active'),
-          disabled: t('canvas:modes.discovery.labels.disabled'),
-          inactive: t('canvas:modes.discovery.labels.inactive')
-        },
-        onClick: () => {
-          this.setModeActive(modeTypes.DISCOVERY)
-          this.setToolboxDisabled('atoms', true)
-          this.setToolboxDisabled('symbols', true)
-        }
-      }, {
-        key: modeTypes.EDIT,
-        active: currentMode === modeTypes.EDIT,
-        disabled: false,
-        iconId: 'edit',
-        labels: {
-          active: t('canvas:modes.edit.labels.active'),
-          disabled: t('canvas:modes.edit.labels.disabled'),
-          inactive: t('canvas:modes.edit.labels.inactive')
-        },
-        onClick: () => {
-          if (this.props.mine) {
-            this.setModeActive(modeTypes.EDIT)
-            this.setToolboxDisabled('atoms', false)
-            this.setToolboxDisabled('symbols', false)
-          }
-        }
-      }, {
-        key: modeTypes.NOTIFICATION,
-        active: currentMode === modeTypes.NOTIFICATION,
-        disabled: false,
-        iconId: 'volume',
-        labels: {
-          active: t('canvas:modes.notification.labels.active'),
-          disabled: t('canvas:modes.notification.labels.disabled'),
-          inactive: t('canvas:modes.notification.labels.inactive')
-        },
-        onClick: () => {
-          this.setModeActive(modeTypes.NOTIFICATION)
-          this.setToolboxDisabled('atoms', true)
-          this.setToolboxDisabled('symbols', true)
-        }
-      }],
-      toolboxes: [{
-        key: 'atoms',
-        button: ToolboxButton,
-        buttonProps: {
-          active: false,
-          disabled: currentMode !== modeTypes.EDIT,
-          label: t('canvas:atoms.label') + 's',
-          title: t('canvas:atoms.add'),
-          toggle: true,
-          onClick: () => this.setToolboxIsOpen('atoms')
-        },
-        component: AtomsToolbox,
-        props: {
-          isOpen: false,
-          key: 'canvas-atoms-toolbox',
-          onClose: () => this.setToolboxIsOpen('atoms', false)
-        }
-      }, {
-        key: 'symbols',
-        button: ToolboxButton,
-        buttonProps: {
-          active: false,
-          disabled: currentMode !== modeTypes.EDIT,
-          label: t('canvas:symbols.label') + 's',
-          title: t('canvas:symbols.add'),
-          toggle: true,
-          onClick: () => this.setToolboxIsOpen('symbols')
-        },
-        component: SymbolsToolbox,
-        props: {
-          isOpen: false,
-          key: 'canvas-symbols-toolbox',
-          onClose: () => this.setToolboxIsOpen('atoms', false)
-        }
-      }]
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
-    const {isLoading, mine, nodes, setNodes} = nextProps
+    const {canvasActions, isLoading, nodes} = nextProps
 
     if (!isLoading && isLoading !== this.props.isLoading) {
-      setNodes(nodes)
+      canvasActions.setNodes(nodes)
     }
   }
 
-  setEditRoute = (node) => {
-    const {routes} = this.props
-    const {mePlaceEditRoute, meSymbolEditRoute, meUserEditRoute} = routes
-
-    if (node.type === atomTypes.LOCATION) {
-      mePlaceEditRoute(node.name)
-    }
-    else if (node.type === atomTypes.PERSON) {
-      meUserEditRoute(node.name)
-    }
-    else if (symbolTypes[node.type]) {
-      meSymbolEditRoute(node.name)
-    }
-  }
-
-  setModeActive = key => {
-    const {nodes, setNodes} = this.props
-    deselectAllNodes(nodes, setNodes)()
-
-    this.setState(p => ({
-      currentMode: key,
-      modes: p.modes.map(mode => {
-        if (mode.key === key) {
-          return {...mode, active: true}
-        }
-        return {...mode, active: false}
-      })
-    }))
-  }
-
-  setToolboxDisabled = (key, disabled) => {
-    this.setState(p => ({
-      toolboxes: p.toolboxes.map(toolbox => {
-        if (key === '*' || toolbox.key === key) {
-          return {
-            ...toolbox,
-            buttonProps: {
-              ...toolbox.buttonProps,
-              disabled
-            }
-          }
-        }
-        return toolbox
-      })
-    }))
-  }
-
-  setToolboxIsOpen = (key, isOpen) => {
-    this.setState(p => ({
-      toolboxes: p.toolboxes.map(toolbox => {
-        if (key === '*' || toolbox.key === key) {
-          const active = isOpen === undefined ? !toolbox.props.isOpen : isOpen
-          return {
-            ...toolbox,
-            props: {
-              ...toolbox.props,
-              isOpen: active
-            },
-            buttonProps: {
-              ...toolbox.buttonProps,
-              active
-            }
-          }
-        }
-
-        return {
-          ...toolbox,
-          props: {
-            ...toolbox.props,
-            isOpen: false
-          },
-          buttonProps: {
-            ...toolbox.buttonProps,
-            active: false
-          }
-        }
-      })
-    }))
+  setEditRoute = node => {
+    // NIY
   }
 
   handleCanvasClick = () => {
-    this.setToolboxIsOpen('*', false)
+    // NIY
+    const {onCanvasClick} = this.props
+
+    typeof onCanvasClick === 'function' && onCanvasClick()
   }
 
-  handleCanvasItemDrop = (item, x, y) => {
-    const {routes} = this.props
-    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
-    const {type} = item.itemAttributes
+  handleToolboxItemDrop = node => {
+    // NIY
+    const {onToolboxItemDrop} = this.props
 
-    if (type === atomTypes.LOCATION) {
-      mePlacesAddRoute()
-    }
-    else if (type === atomTypes.PERSON) {
-      meUsersAddRoute()
-    }
-    else if (symbolTypes[type]) {
-      meSymbolsAddRoute()
-    }
+    typeof onToolboxItemDrop === 'function' && onToolboxItemDrop(node)
   }
 
-  handleNodeAnchorClick = clickedNodeId => {
-    const {hideTooltip, nodes, routes, selectNode, showTooltip, unselectNode} = this.props
-    const {currentMode} = this.state
-    const {mePlaceViewRoute, placeViewRoute, userViewRoute} = routes
+  handleDeleteSelectedNode = node => {
+    // NIY
+    // todo: delete place_place relation if deletedNode.type === LOCATION
+  }
 
-    const clickedNode = nodes[clickedNodeId]
-    const isNodeSelected = clickedNode.selected
+  handleEditSelectedNode = node => {
+    this.setEditRoute(node)
+  }
+
+  handleModeClick = key => {
+    const {centre, nodes, routePayload, routes, onModeClick} = this.props
+    const {mePlaceViewRoute, placeViewRoute} = routes
+
+    Promise.all([
+      // todo: doUpdatePlacePlaces({nodes})
+      // todo: doUpdatePlaceUsers({nodes})
+    ]).then(() => {
+      const payload = {...routePayload, noReset: true}
+      if (centre === centreTypes.PERSON) {
+        mePlaceViewRoute(payload)
+      } else {
+        placeViewRoute(payload)
+      }
+    })
+
+    typeof onModeClick === 'function' && onModeClick(key)
+  }
+
+  handleNodeAnchorClick = node => {
+    const {canvasActions, currentMode, currentUser, routes, toggleNodeAnchorTooltip, onNodeAnchorClick} = this.props
+    const {selectNode} = canvasActions
+    const {meRoute, mePlaceViewRoute, placeViewRoute, userViewRoute} = routes
 
     switch (currentMode) {
       case modeTypes.DISCOVERY:
-        if (clickedNode.type === atomTypes.LOCATION) {
-          if (false /*clickedNode.mine*/) {
-            mePlaceViewRoute(clickedNode.name)
+        if (node.type === atomTypes.LOCATION) {
+          if (false /*node.mine*/) {
+            mePlaceViewRoute(node.name)
           } else {
-            placeViewRoute(clickedNode.name)
+            placeViewRoute(node.name)
           }
         }
-        else if (clickedNode.type === atomTypes.PERSON) {
-          userViewRoute(clickedNode.name)
+        else if (node.type === atomTypes.PERSON) {
+          if (node.name === currentUser.username) {
+            meRoute()
+          } else {
+            userViewRoute(node.name)
+          }
         }
         break
 
       case modeTypes.EDIT:
-        hideTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, isNodeSelected)})
-        showTooltip({name: getCanvasNodeAnchorTooltipName(currentMode, !isNodeSelected), origin: `canvas-node__anchor-img-${clickedNodeId}`})
+        toggleNodeAnchorTooltip(node)
 
-        if (isNodeSelected) {
-          unselectNode(clickedNodeId)
+        if (node.selected) {
+          selectNode(false, node)
         } else {
-          selectNode(clickedNodeId)
+          selectNode(true, node)
         }
         break
     }
+
+    typeof onNodeAnchorClick === 'function' && onNodeAnchorClick(node)
   }
 
-  handleNodeDelete = deletedNode => {
-    // todo: delete place_place relation if deletedNode.type === LOCATION
-  }
-
-  handleNodeEdit = () => {
-    const {nodes} = this.props
-    const selectedNode = nodes.find(node => node.selected)
-    //this.setEditRoute(selectedNode)
-  }
-
-  handleNodeHeaderClick = clickedNodeId => {
+  handleNodeHeaderClick = node => {
+    // NIY
   }
 
   render() {
     const {
+      canvasActions,
+      currentMode,
       children,
       isLoading,
       mine,
-      setNodes,
+      modes,
       ...props
     } = this.props
-
-    const {
-      currentMode,
-      modes,
-      ...state
-    } = this.state
 
     if (isLoading) {
       return <Loader active inline="centered"/>
@@ -290,7 +129,6 @@ class Place extends Component {
 
     return React.cloneElement(children, {
       ...props,
-      ...state,
       currentMode,
       modes: modes.map(mode => {
         if (mode.key === modeTypes.EDIT) {
@@ -300,12 +138,13 @@ class Place extends Component {
       }),
       readOnly: currentMode !== modeTypes.EDIT,
       onCanvasClick: this.handleCanvasClick,
-      onDeleteSelectedNode: this.handleNodeDelete,
-      onEditSelectedNode: this.handleNodeEdit,
+      onDeleteSelectedNode: this.handleDeleteSelectedNode,
+      onEditSelectedNode: this.handleEditSelectedNode,
+      onModeClick: this.handleModeClick,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
-      onNodesChange: setNodes,
-      onCanvasItemDrop: this.handleCanvasItemDrop
+      onNodesChange: canvasActions.setNodes,
+      onToolboxItemDrop: this.handleToolboxItemDrop
     })
   }
 }

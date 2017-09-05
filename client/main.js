@@ -23,16 +23,12 @@ const store = configureStore()
 render(Root)
 
 function render(Component) {
-  if (module.hot) {
-    ReactDOM.render(
-      <HotReloadable>
-        <Component store={store}/>
-      </HotReloadable>,
-      document.getElementById('root')
-    )
-  } else {
-    ReactDOM.render(<Component store={store}/>, document.getElementById('root'))
-  }
+  ReactDOM.render(
+    <HotReloadable>
+      <Component store={store}/>
+    </HotReloadable>,
+    document.getElementById('root')
+  )
 }
 
 if (module.hot) {

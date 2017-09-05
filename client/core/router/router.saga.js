@@ -3,11 +3,10 @@ import { all, call, fork, put, select, spawn, take, takeEvery } from 'redux-saga
 import { delay } from 'redux-saga'
 
 import routes from 'core/routes'
-import { modalActions, modalConstants } from 'core/modal'
 
 import { routerActions } from './router.actions'
 import routeSagas from './sub'
-import { isAuthedSaga } from './sub/router.sub.saga'
+import { getCurrentUserSaga } from './sub/router.sub.saga'
 
 
 function* locationChangedSaga({type: routeType, payload, meta}) {
@@ -18,18 +17,17 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
     return
   }
 
-  const isAuthed = yield call(isAuthedSaga)
+  const currentUser = yield call(getCurrentUserSaga)
 
   if (currentRoute.requiresAuth) {
-    if (!isAuthed) {
+    if (!currentUser) {
       yield put(routerActions.authRoute())
-      yield put(modalActions.setModal(modalConstants.AUTH, {isOpen: true}))
       return
     }
   }
 
   if (routeSagas[routeType]) {
-    const settings = {isAuthed, centre: currentRoute.centre}
+    const settings = {currentUser, centre: currentRoute.centre}
     yield spawn(routeSagas[routeType], payload, settings)
   }
 }

@@ -1,7 +1,8 @@
 import { routerActions } from '../'
-import { authSaga } from './router.auth.saga'
 
 import {
+  authSaga,
+  logoutSaga,
   rootSaga,
   placesAddSaga,
   placeViewSaga,
@@ -21,6 +22,7 @@ import {
 export default {
   [routerActions.NOT_FOUND]: notFoundSaga,
   [routerActions.AUTH]: authSaga,
+  [routerActions.LOGOUT]: logoutSaga,
 
   [routerActions.ROOT]: rootSaga,
   [routerActions.PLACES_ADD]: placesAddSaga,
