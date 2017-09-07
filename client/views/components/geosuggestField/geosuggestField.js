@@ -32,7 +32,7 @@ class GeosuggestField extends Component {
 
   render() {
     const {
-      breakpoints,
+      breakpoints = {label: {}, input: {}},
       disabled,
       input,
       label,

@@ -1,14 +1,14 @@
 function apiResultIsValid(res) {
   if (!res) {
-    console.error('getReverseGeocodedCity: no result from api')
+    console.error('no result from api')
     return false
   }
   else if (!res.body) {
-    console.error('getReverseGeocodedCity: no body')
+    console.error('no body')
     return false
   }
   else if (!res.body.features || !res.body.features.length) {
-    console.error('getReverseGeocodedCity: no features')
+    console.error('no features')
     return false
   }
 

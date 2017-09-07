@@ -4,12 +4,10 @@ import { graphql } from 'react-apollo'
 
 import { centreTypes, roleTypes } from 'core/constants'
 
-
 import { Loader } from 'views/components/layout'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { personToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
 
 import placeQuery from './place.query.graphql'
@@ -17,12 +15,8 @@ import placeQuery from './place.query.graphql'
 
 class Place extends Component {
 
-  componentWillReceiveProps(nextProps) {
-    const {canvasActions, isLoading, nodes} = nextProps
-
-    if (!isLoading && isLoading !== this.props.isLoading) {
-      canvasActions.setNodes(nodes)
-    }
+  componentDidMount() {
+    this.props.canvasActions.setNodes([])
   }
 
   setEditRoute = node => {
@@ -53,22 +47,21 @@ class Place extends Component {
   }
 
   handleModeClick = key => {
-    const {centre, nodes, routePayload, routes, onModeClick} = this.props
+    const {centre, nodes, routePayload, routes, onModeChange} = this.props
     const {mePlaceViewRoute, placeViewRoute} = routes
 
     Promise.all([
       // todo: doUpdatePlacePlaces({nodes})
       // todo: doUpdatePlaceUsers({nodes})
     ]).then(() => {
-      const payload = {...routePayload, noReset: true}
       if (centre === centreTypes.PERSON) {
-        mePlaceViewRoute(payload)
+        mePlaceViewRoute(routePayload)
       } else {
-        placeViewRoute(payload)
+        placeViewRoute(routePayload)
       }
     })
 
-    typeof onModeClick === 'function' && onModeClick(key)
+    typeof onModeChange === 'function' && onModeChange(key)
   }
 
   handleNodeAnchorClick = node => {
@@ -114,9 +107,8 @@ class Place extends Component {
 
   render() {
     const {
-      canvasActions,
+      control,
       currentMode,
-      children,
       isLoading,
       mine,
       modes,
@@ -127,7 +119,7 @@ class Place extends Component {
       return <Loader active inline="centered"/>
     }
 
-    return React.cloneElement(children, {
+    return React.createElement(control, {
       ...props,
       currentMode,
       modes: modes.map(mode => {
@@ -140,10 +132,9 @@ class Place extends Component {
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleDeleteSelectedNode,
       onEditSelectedNode: this.handleEditSelectedNode,
-      onModeClick: this.handleModeClick,
+      onModeChange: this.handleModeChange,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
-      onNodesChange: canvasActions.setNodes,
       onToolboxItemDrop: this.handleToolboxItemDrop
     })
   }
@@ -161,38 +152,11 @@ const placeQueryConfig = {
     }
   },
   props({ownProps, data: {loading, myPlaces, place}}) {
-    let {
-      nodes = []
-    } = ownProps
-
-    let mine = null
-
-    if (!loading) {
-      const userPlace = myPlaces.find(myPlace => myPlace.place.id === place.id)
-      mine = userPlace && userPlace.role.id === roleTypes.GUARDIAN
-
-      if (!nodes.length) {
-        nodes = place.users.map((person, i) => personToNode(i, person))
-      } else {
-        nodes = nodes.map((node, i) => {
-          const user = place.users.find(person => node.type === atomTypes.PERSON && person.id === node.idServer)
-
-          if (user) {
-            return {
-              ...personToNode(i, user),
-              ...node
-            }
-          }
-
-          return node
-        })
-      }
-    }
-
     return {
       isLoading: loading,
-      mine,
-      nodes
+      mine: false, // todo
+      myPlaces,
+      place
     }
   }
 }

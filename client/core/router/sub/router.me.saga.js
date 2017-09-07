@@ -13,19 +13,16 @@ import { setCentreSaga, setTitleSaga } from './router.sub.saga'
 
 export function* meSaga(payload, settings) {
   const {centre} = settings
-  const {noReset} = payload
 
   yield call(setCentreSaga, centre)
 
-  if (!noReset) {
-    yield put(canvasActions.setNodes([]))
-  }
+  /*
+   const {currentUser: {username}} = yield call([client, client.readQuery], {
+   query: currentUserQuery
+   })
 
-  const {currentUser: {username}} = yield call([client, client.readQuery], {
-    query: currentUserQuery
-  })
-
-  yield call(setTitleSaga, username)
+   yield call(setTitleSaga, username)
+   */
 }
 
 export function* mePlaceEditSaga(payload, settings) {
@@ -44,101 +41,110 @@ export function* mePlaceEditSaga(payload, settings) {
     yield put(canvasActions.selectNode(true, selectedNode))
   }
 
-/*
-  try {
-    const {place: {city, department}} = yield call([client, client.readQuery], {
-      query: placeQuery,
-      variables: {title: placeName},
-    })
+  /*
+   try {
+   const {place: {city, department}} = yield call([client, client.readQuery], {
+   query: placeQuery,
+   variables: {title: placeName},
+   })
 
-    yield call(setTitleSaga, `${placeName} à ${city}, ${department}`)
-  } catch (e) {
-    let keepLooping = true
+   yield call(setTitleSaga, `${placeName} à ${city}, ${department}`)
+   } catch (e) {
+   let keepLooping = true
 
-    while (keepLooping) {
-      const {operationName, result} = yield take(['APOLLO_QUERY_RESULT', 'APOLLO_QUERY_RESULT_CLIENT'])
+   while (keepLooping) {
+   const {operationName, result} = yield take(['APOLLO_QUERY_RESULT', 'APOLLO_QUERY_RESULT_CLIENT'])
 
-      if (['placeForm', 'place'].includes(operationName)) {
-        keepLooping = false
+   if (['placeForm', 'place'].includes(operationName)) {
+   keepLooping = false
 
-        if (!result.data || !result.data.place) {
-          yield put(routerActions.meRoute())
-        } else {
-          const {city, department} = result.data.place
-          yield call(setTitleSaga, `${placeName} à ${city}, ${department}`)
-        }
-      }
-    }
-  }*/
+   if (!result.data || !result.data.place) {
+   yield put(routerActions.meRoute())
+   } else {
+   const {city, department} = result.data.place
+   yield call(setTitleSaga, `${placeName} à ${city}, ${department}`)
+   }
+   }
+   }
+   }*/
 }
 
 export function* mePlacesAddSaga(payload, settings) {
   const {centre} = settings
+
   yield call(setCentreSaga, centre)
+
+  /*
+   const {currentUser: {username}} = yield call([client, client.readQuery], {
+   query: currentUserQuery
+   })
+
+   yield call(setTitleSaga, username)
+   */
 }
 
+// NIY
 export function* mePlaceViewSaga(payload, settings) {
-  const {name: placeName, noReset} = payload
+  const {name: placeName} = payload
   const {centre} = settings
 
   yield call(setCentreSaga, centre)
-
-  if (!noReset) {
-    yield put(canvasActions.setNodes([]))
-  }
-
   yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`, {i18n: true})
 
   /*
-  try {
-    const {
-      myPlaces,
-      place: {city, department}
-    } = yield call([client, client.readQuery], {
-      query: placeQuery,
-      variables: {title: placeName},
-    })
+   try {
+   const {
+   myPlaces,
+   place: {city, department}
+   } = yield call([client, client.readQuery], {
+   query: placeQuery,
+   variables: {title: placeName},
+   })
 
-     const myPlace = myPlaces.find(({place}) => place.title === placeName)
+   const myPlace = myPlaces.find(({place}) => place.title === placeName)
 
-     yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
-  } catch (e) {
-    let keepLooping = true
+   yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
+   } catch (e) {
+   let keepLooping = true
 
-    while (keepLooping) {
-      const {operationName, result} = yield take('APOLLO_QUERY_RESULT')
+   while (keepLooping) {
+   const {operationName, result} = yield take('APOLLO_QUERY_RESULT')
 
-      if (operationName === 'place') {
-        keepLooping = false
+   if (operationName === 'place') {
+   keepLooping = false
 
-        if (!result.data || !result.data.place) {
-          yield put(routerActions.meRoute())
-          return
-        }
+   if (!result.data || !result.data.place) {
+   yield put(routerActions.meRoute())
+   return
+   }
 
-        const {
-          data: {
-            myPlaces,
-            place: {city, department}
-          }
-        } = result
+   const {
+   data: {
+   myPlaces,
+   place: {city, department}
+   }
+   } = result
 
-        const myPlace = myPlaces.find(({place}) => place.title === placeName)
-        yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
-      }
-    }
-  }
-  */
+   const myPlace = myPlaces.find(({place}) => place.title === placeName)
+   yield call(setTitleSaga, `${i18n.t(`header:role.${myPlace.role.id}`)} "${placeName}" à ${city}, ${department}`)
+   }
+   }
+   }
+   */
 }
 
+// NIY
 export function* meUsersAddSaga(payload, settings) {
   const {centre} = settings
   const {} = payload
 
   yield call(setCentreSaga, centre)
-/*  const {currentUser: {username}} = yield call([client, client.readQuery], {
-    query: currentUserQuery
-  })
 
-  yield call(setTitleSaga, username)*/
+  /*
+   const {currentUser: {username}} = yield call([client, client.readQuery], {
+   query: currentUserQuery
+   })
+
+   yield call(setTitleSaga, username)
+   */
 }

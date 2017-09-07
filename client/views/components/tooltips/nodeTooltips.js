@@ -88,7 +88,7 @@ export function NodeAnchorTooltips() {
 export function NodeHeaderTooltips({t}) {
   return (
     <div>
-      <Tooltip name={getCanvasNodeHeaderTooltipName(true)}>
+      <Tooltip name={getCanvasNodeHeaderTooltipName({mine: true})}>
         <Grid style={{width: '105px'}}>
           <Row>
             <Col width={5}>
@@ -99,15 +99,32 @@ export function NodeHeaderTooltips({t}) {
               />
             </Col>
             <Col width={11}>
-              {`modifier`}
+              {t('canvas:tooltips.node_header_mine')}
             </Col>
           </Row>
         </Grid>
       </Tooltip>
 
-      <Tooltip name={getCanvasNodeHeaderTooltipName(false)}>
+      <Tooltip name={getCanvasNodeHeaderTooltipName({isNew: true, mine: true})}>
+        <Grid style={{width: '105px'}}>
+          <Row>
+            <Col width={5}>
+              <Icon
+                name="mouseLeftClick"
+                width={16}
+                height={16}
+              />
+            </Col>
+            <Col width={11}>
+              {t('canvas:tooltips.node_header_mine_new')}
+            </Col>
+          </Row>
+        </Grid>
+      </Tooltip>
+
+      <Tooltip name={getCanvasNodeHeaderTooltipName({mine: false})}>
         <div style={{padding: '10px'}}>
-          {t('canvas:tooltips.place_edit_disabled')}
+          {t('canvas:tooltips.node_header')}
         </div>
       </Tooltip>
     </div>

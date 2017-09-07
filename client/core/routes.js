@@ -9,17 +9,22 @@ export default {
     path: '/notFound'
   },
 
+  [routerActions.ROOT]: {
+    path: '/',
+    centre: centreTypes.DEPARTMENT
+  },
+
+  [routerActions.ABOUT]: {
+    path: '/about'
+  },
+
   [routerActions.AUTH]: {
     path: '/auth',
     modalRouteType: routerActions.ROOT
   },
+
   [routerActions.LOGOUT]: {
     path: '/logout'
-  },
-
-  [routerActions.ROOT]: {
-    path: '/',
-    centre: centreTypes.DEPARTMENT
   },
 
   [routerActions.PLACES_ADD]: {

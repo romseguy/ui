@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { atoms as atomImages } from 'views/assets/img'
+import { atoms as atomImages, entities } from 'views/assets/img'
 import { Image } from 'views/components/layout'
 import { atomTypes } from 'views/utils/atoms'
 
 
 const map = {
   [atomTypes.DEPARTMENT]: atomImages.black,
-  [atomTypes.LOCATION]: atomImages.green,
+  [atomTypes.LOCATION]: entities.place,
   [atomTypes.PERSON]: atomImages.yellow
 }
 

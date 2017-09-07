@@ -21,7 +21,7 @@ cursor: pointer;
 color: blue;
 `
 
-const titleMaxLength = 30
+const titleMaxLength = 100
 
 
 function HeaderTitle({children, iconTitle, isLoading, title, titleIcon, onClick, onIconClick}) {

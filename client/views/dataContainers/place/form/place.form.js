@@ -10,6 +10,7 @@ import { merge } from 'ramda'
 import geo from 'utils/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment, getGeocodedProperty } from 'utils/geo'
 
+import { client } from 'core/apollo'
 import { roleTypes } from 'core/constants'
 import { canvasActions, getCanvasNodes } from 'core/canvas'
 import { getTitle, getUserLocation } from 'core/settings'
@@ -19,12 +20,59 @@ import { getMeCentre } from 'core/me'
 import { getSuggestedDepartment } from 'views/utils/geosuggest'
 import { placeToNode } from 'views/utils/nodes'
 
-import { meQuery } from 'views/dataContainers/me'
 import PlaceForm, { PlaceFormHeader, PlaceFormLayout } from 'views/components/placeForm'
 
+import placeQuery from '../place.query.graphql'
 import placeFormQuery from './place.form.query.graphql'
 import createPlaceMutation from './createPlace.mutation.graphql'
 import createUserPlaceMutation from './createUserPlace.mutation.graphql'
+
+
+async function getPlace(formValues) {
+  // required form fields
+  let place = {
+    city: formValues.city,
+    title: formValues.title,
+  }
+
+  let geocodingResult = null
+
+  // optional form fields
+  if (formValues.marker) {
+    const [latitude, longitude] = formValues.marker
+
+    place = {
+      ...place,
+      latitude,
+      longitude
+    }
+  } else {
+    geocodingResult = await geo.geocodeCity(formValues.city)
+
+    const {lat, lng} = getGeocodedLocation(geocodingResult)
+
+    place = {
+      ...place,
+      department: getGeocodedDepartment(geocodingResult),
+      latitude: lat,
+      longitude: lng
+    }
+  }
+
+  // marker was selected but API roundtrip was too long for department to be geocoded
+  if (!formValues.department) {
+    if (!geocodingResult) {
+      geocodingResult = await geo.geocodeCity(formValues.city)
+    }
+
+    place = {
+      ...place,
+      department: getGeocodedDepartment(geocodingResult)
+    }
+  }
+
+  return place
+}
 
 
 const handlers = {
@@ -43,7 +91,6 @@ const handlers = {
       doCreatePlace,
       doCreateUserPlace,
       doUpdatePlace,
-      nodes,
       routes,
       routeType,
       setNodes
@@ -54,99 +101,80 @@ const handlers = {
       meRoute
     } = routes
 
-    switch (formValues.action) {
-      case 'create':
-        // required form fields
-        let place = {
-          city: formValues.city,
-          title: formValues.title,
+    let {nodes} = props
+    const selectedNode = nodes.find(node => node.selected)
+
+    if (formValues.action === 'create') {
+      let place = await getPlace(formValues)
+
+      const {data} = await doCreatePlace({place})
+      const {id, title} = data.createPlace
+
+      if (selectedNode) {
+        place = {
+          ...place,
+          id,
+          x: selectedNode.x,
+          y: selectedNode.y
         }
-
-        let geocodingResult = null
-
-        // optional form fields
-        if (formValues.marker) {
-          const [latitude, longitude] = formValues.marker
-
-          place = {
-            ...place,
-            latitude,
-            longitude
+        nodes = nodes.map(node => {
+          if (node.id === selectedNode.id) {
+            return placeToNode(nodes.length, place, true)
           }
-        } else {
-          geocodingResult = await geo.geocodeCity(formValues.city)
-
-          const {lat, lng} = getGeocodedLocation(geocodingResult)
-
-          place = {
-            ...place,
-            department: getGeocodedDepartment(geocodingResult),
-            latitude: lat,
-            longitude: lng
-          }
-        }
-
-        if (!formValues.department) {
-          if (!geocodingResult) {
-            geocodingResult = await geo.geocodeCity(formValues.city)
-          }
-
-          place = {
-            ...place,
-            department: getGeocodedDepartment(geocodingResult)
-          }
-        }
-
-        doCreatePlace({place}).then(({data}) => {
-          const {id, title} = data.createPlace
-
-          place = {
-            ...place,
-            id
-          }
-
-          let nodeWasCreated = false
-          let newNodes = nodes.map(node => {
-            if (node.selected) {
-              nodeWasCreated = true
-              return placeToNode(node.id, place, true)
-            }
-
-            return node
-          })
-
-          if (nodeWasCreated) {
-            setNodes(newNodes)
-          } else {
-            setNodes(nodes.concat([placeToNode(nodes.length, place, true)]))
-          }
-
-          mePlaceEditRoute(title)
+          return node
         })
+      } else {
+        nodes = nodes.concat([placeToNode(nodes.length, place, true)])
+      }
 
-        break
+      setNodes(nodes)
+      mePlaceEditRoute(title)
+    }
+    else if (formValues.action === 'select') {
+      let {data: {place}} = await client.query({
+        query: placeQuery,
+        variables: {title: formValues.selectedPlaceTitle},
+      })
 
-      case 'select':
-        const selectedNode = nodes.find(node => node.selected) || {}
-        const {x, y} = selectedNode
-        const userPlace = {
-          placeId: Number(formValues.placeId),
-          roleId: roleTypes.FOLLOWER,
-          x,
-          y
+      let userPlace = {
+        placeId: Number(place.id),
+        roleId: roleTypes.FOLLOWER,
+      }
+
+      if (selectedNode) {
+        place = {
+          ...place,
+          x: selectedNode.x,
+          y: selectedNode.y
         }
-
-        doCreateUserPlace({userPlace}).then(({data}) => {
-          meRoute()
+        userPlace = {
+          ...userPlace,
+          x: selectedNode.x,
+          y: selectedNode.y
+        }
+        nodes = nodes.map(node => {
+          if (node.id === selectedNode.id) {
+            return placeToNode(nodes.length, place, false)
+          }
+          return node
         })
-        break
+      } else {
+        nodes = nodes.concat([placeToNode(nodes.length, place, false)])
+      }
 
-      default:
-        if (routeType === routerActions.ME_PLACE_EDIT) {
-          doUpdatePlace({place}).then(({data}) => {
-            mePlaceEditRoute(data.title)
-          })
-        }
+      setNodes(nodes)
+
+      await doCreateUserPlace({userPlace})
+      meRoute()
+    }
+    else {
+      if (routeType === routerActions.ME_PLACE_EDIT) {
+        const place = await getPlace(formValues)
+
+        // todo
+        const {data} = await doUpdatePlace({place})
+        mePlaceEditRoute(data.title)
+      }
     }
   },
 
@@ -257,6 +285,7 @@ const placeFormQueryConfig = {
 
     if (places) {
       props = merge(props, {
+        // filters out places already belonging to myPlaces
         disconnectedPlaces: myPlaces ? places.filter(place => {
           return !myPlaces.find(userPlace => userPlace.place.id === place.id)
         }) : places
@@ -274,10 +303,7 @@ const createPlaceMutationConfig = {
         return mutate({
           variables: {
             place
-          },
-          refetchQueries: [{
-            query: meQuery
-          }]
+          }
         })
       }
     }
@@ -292,9 +318,9 @@ const createUserPlaceMutationConfig = {
           variables: {
             userPlace
           },
-          refetchQueries: [{
-            query: meQuery
-          }]
+          /*          refetchQueries: [{
+           query: meQuery
+           }]*/
         })
       }
     }

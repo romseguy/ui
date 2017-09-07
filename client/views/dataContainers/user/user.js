@@ -8,21 +8,15 @@ import { Loader } from 'views/components/layout'
 
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { placeToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
-import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
 
 import userQuery from './user.query.graphql'
 
 
 class User extends Component {
 
-  componentWillReceiveProps(nextProps) {
-    const {canvasActions, isLoading, nodes} = nextProps
-
-    if (!isLoading && isLoading !== this.props.isLoading) {
-      canvasActions.setNodes(nodes)
-    }
+  componentDidMount() {
+    this.props.canvasActions.setNodes([])
   }
 
   setEditRoute = node => {
@@ -51,10 +45,10 @@ class User extends Component {
     this.setEditRoute(node)
   }
 
-  handleModeClick = key => {
+  handleModechange = key => {
     // NIY
-    const {onModeClick} = this.props
-    typeof onModeClick === 'function' && onModeClick(key)
+    const {onModechange} = this.props
+    typeof onModechange === 'function' && onModechange(key)
   }
 
   handleNodeAnchorClick = node => {
@@ -83,11 +77,10 @@ class User extends Component {
 
   render() {
     const {
-      children,
+      control,
       currentMode,
       isLoading,
       modes,
-      setNodes,
       ...props
     } = this.props
 
@@ -95,7 +88,7 @@ class User extends Component {
       return <Loader active inline="centered"/>
     }
 
-    return React.cloneElement(children, {
+    return React.createElement(control, {
       ...props,
       currentMode,
       modes: modes.map(mode => {
@@ -108,10 +101,9 @@ class User extends Component {
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleDeleteSelectedNode,
       onEditSelectedNode: this.handleEditSelectedNode,
-      onModeClick: this.handleModeClick,
+      onModechange: this.handleModechange,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
-      onNodesChange: setNodes,
       onToolboxItemDrop: this.handleToolboxItemDrop
     })
   }
@@ -129,41 +121,10 @@ const userQueryConfig = {
     }
   },
   props({ownProps, data: {loading, myPlaces, user}}) {
-    let {
-      nodes = []
-    } = ownProps
-
-    if (myPlaces) {
-      if (!nodes.length) {
-        nodes = myPlaces.map((myPlace, id) => {
-          const {place, role, x, y} = myPlace
-          const mine = Number(role.id) === roleTypes.GUARDIAN
-
-          return placeToNode(
-            id,
-            {...place, x, y},
-            mine
-          )
-        })
-      } else {
-        nodes = nodes.map((node, i) => {
-          const myPlace = myPlaces.find(({place}) => node.type === atomTypes.LOCATION && place.id === node.idServer)
-
-          if (myPlace) {
-            return {
-              ...placeToNode(i, myPlace),
-              ...node
-            }
-          }
-
-          return node
-        })
-      }
-    }
-
     return {
       isLoading: loading,
-      nodes
+      myPlaces,
+      user
     }
   }
 }

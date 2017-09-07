@@ -5,6 +5,7 @@ import { translate } from 'react-i18next'
 import { reduxForm, Field } from 'redux-form'
 
 import { keepCities } from 'views/utils/geosuggest'
+import { LocationFormBreakpoints as breakpoints } from 'views/utils/form/responsive'
 
 import GeosuggestField from 'views/components/geosuggestField'
 import {
@@ -76,16 +77,14 @@ class SetLocationForm extends Component {
           ) : (
             <Grid>
               <Row>
-                <Col mobile={16} tablet={16} computer={5}>
-                  <label htmlFor="city">{t('form:setLocation.city')}</label>
-                </Col>
-
                 <Col mobile={16} tablet={16} computer={11}>
                   <Field
                     name="city"
                     component={GeosuggestField}
+                    breakpoints={breakpoints}
                     id="city"
                     center={center}
+                    label={t('form:setLocation.city')}
                     skipSuggest={keepCities}
                     t={t}
                     onSuggestSelect={this.handleSuggestSelect}

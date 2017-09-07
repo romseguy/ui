@@ -11,7 +11,6 @@ export const canvasState = {
 
 export function canvasReducer(state = canvasState, {payload, type}) {
   switch (type) {
-    // ACTION
     case canvasActions.ADD_NODE:
       return updateIn(state, ['nodes'], nodes => push(nodes, {
         ...payload.node,
@@ -43,14 +42,17 @@ export function canvasReducer(state = canvasState, {payload, type}) {
           return {...node, selected: payload.selected}
         }
 
-        return node
+        //return node
+        return {...node, selected: false}
       }))
 
       state = updateIn(state, ['selectedNodeIds'], selectedNodeIds => {
         if (payload.selected) {
-          return push(selectedNodeIds, payload.node.id)
+          //return push(selectedNodeIds, payload.node.id)
+          return [payload.node.id]
         } else {
-          return selectedNodeIds.filter(selectedNodeId => selectedNodeId !== payload.node.id)
+          //return selectedNodeIds.filter(selectedNodeId => selectedNodeId !== payload.node.id)
+          return []
         }
       })
 

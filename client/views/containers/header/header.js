@@ -9,10 +9,10 @@ import geo from 'utils/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'utils/geo'
 
 import { client } from 'core/apollo'
-import { getMeCentre } from 'core/me'
+import { meActions, getMeCentre } from 'core/me'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
-import { settingsActions, getTitle, getUserLocation } from 'core/settings'
+import { settingsActions, getCity, getDepartment, getTitle, getUserLocation } from 'core/settings'
 
 import placeQuery from 'views/dataContainers/place/place.query.graphql'
 import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
@@ -44,7 +44,6 @@ class HeaderContainer extends Component {
   }
 
   handleTitleClick = event => {
-    event.preventDefault()
     const {
       change,
       rootRoute,
@@ -53,6 +52,7 @@ class HeaderContainer extends Component {
       setCity,
       setDepartment,
       setLocation,
+      setMeCenter,
       setModal,
       t,
       userLocation
@@ -72,28 +72,25 @@ class HeaderContainer extends Component {
           closeIcon: null
         },
 
-        onSubmit: function handleSetLocationFormSubmit(values, onClose) {
+        onSubmit: async function handleSetLocationFormSubmit(values, onClose) {
           let {city, department, marker} = values
 
-          if (marker) {
-            navigate(city, department, marker)
-          }
-          else {
-            geo.geocodeCity(city).then(res => {
-              const {lat, lng} = getGeocodedLocation(res)
-              marker = [lat, lng]
-              department = getGeocodedDepartment(res)
-              navigate(city, department, marker)
-            })
+          if (!marker) {
+            const res = await geo.geocodeCity(city)
+            const {lat, lng} = getGeocodedLocation(res)
+            marker = [lat, lng]
+            department = getGeocodedDepartment(res)
+          } else if (!department) {
+            const res = await geo.geocodeCity(city)
+            department = getGeocodedDepartment(res)
           }
 
-          function navigate(city, department, marker) {
-            setCity(city)
-            setDepartment(department)
-            setLocation(marker[0], marker[1])
-            rootRoute({center: marker})
-            typeof onClose === 'function' && onClose()
-          }
+          setCity(city)
+          setDepartment(department)
+          setLocation(marker[0], marker[1])
+          setMeCenter(marker)
+
+          typeof onClose === 'function' && onClose()
         },
 
         onSuggestSelect: function handleSuggestSelect(suggest) {
@@ -108,6 +105,7 @@ class HeaderContainer extends Component {
         title: t('form:setLocation.header')
       })
     }
+    // move map to place location
     else if (placeRouteTypes.includes(routeType) && routePayload.name) {
       const {name: placeName} = routePayload
       const {place: {latitude, longitude}} = client.readQuery({
@@ -115,20 +113,22 @@ class HeaderContainer extends Component {
         variables: {title: placeName},
       })
 
-      rootRoute({center: [latitude, longitude]})
+      setMeCenter([latitude, longitude])
+      rootRoute()
     }
   }
 
   handleTitleIconClick = event => {
     const {
-      rootRoute,
+      setMeCenter,
       userLocation,
       onTitleIconClick
     } = this.props
 
     const {lat, lng} = userLocation
     const center = [lat, lng]
-    rootRoute({center})
+    setMeCenter(center)
+
     typeof onTitleIconClick === 'function' && onTitleIconClick(event)
   }
 
@@ -143,7 +143,9 @@ class HeaderContainer extends Component {
   render() {
     const {
       centre,
+      city,
       currentUser,
+      department,
       routeType,
       t
     } = this.props
@@ -157,9 +159,11 @@ class HeaderContainer extends Component {
     if (routeType === routerActions.ROOT) {
       titleIcon = <Icon name="location arrow"/>
     }
+    else if (routeType === routerActions.ABOUT) {
+      titleIcon = null
+    }
 
     let {title} = this.props
-    let isLoading = title === null
 
     if ([
         routerActions.ME,
@@ -171,9 +175,19 @@ class HeaderContainer extends Component {
       isLoading = false
       title = `${t('header:my_profile')}`
     }
-    else if ([routerActions.ROOT].includes(routeType) && title) {
-      title = `${title}`
+    else if ([routerActions.ROOT].includes(routeType)) {
+      if (city === null) {
+        title = t('loading')
+      }
+      else if (city === false) {
+        title = t('header:title')
+      }
+      else {
+        title = city
+      }
     }
+
+    let isLoading = title === null
 
     return (
       <HeaderGrid
@@ -235,22 +249,30 @@ class HeaderContainer extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  centre: getMeCentre(state),
-  routePayload: getPayload(state),
-  routeType: getRouteType(state),
-  title: getTitle(state),
-  userLocation: getUserLocation(state)
-})
+const mapStateToProps = state => {
+  const city = getCity(state)
+  const department = getDepartment(state)
+  const routeType = getRouteType(state)
+  const title = getTitle(state)
+
+  return {
+    centre: getMeCentre(state),
+    city,
+    department,
+    routePayload: getPayload(state),
+    routeType,
+    title,
+    userLocation: getUserLocation(state)
+  }
+}
 
 const mapDispatchToProps = {
-  authRoute: routerActions.authRoute,
   change,
-  meRoute: routerActions.meRoute,
   rootRoute: routerActions.rootRoute,
   setCity: settingsActions.setCity,
   setDepartment: settingsActions.setDepartment,
   setLocation: settingsActions.setLocation,
+  setMeCenter: meActions.setCenter,
   setModal: modalActions.setModal
 }
 

@@ -30,7 +30,7 @@ const i18nOptions = {
   },
 
   // have a common namespace used around the full app
-  ns: ['common', 'errors', 'form', 'canvas', 'header'],
+  ns: ['common', 'canvas', 'errors', 'form', 'header'],
   defaultNS: 'common',
 
   backend: {
@@ -101,20 +101,14 @@ export function* settingsSaga() {
       yield put(settingsActions.setCity(city))
     }
   } catch (error) {
-    if (error.name === 't1') {
-      // todo: open modal for custom city selection
-      yield put(settingsActions.setLocation(44.2167, 4.2667))
-      yield put(settingsActions.setDepartment('Gard'))
-      yield put(settingsActions.setCity('Uzès'))
+    if (error.name === 't1' || error.code === getCurrentPositionErrorCodes.USER_DENIED_GEOLOCATION) {
+      yield put(settingsActions.setLocation(48.8566, 2.3522))
+      yield put(settingsActions.setDepartment(false))
+      yield put(settingsActions.setCity(false))
     }
     else if (error.name === 't2') {
-      // todo: open modal for custom city selection
-      yield put(settingsActions.setDepartment('Gard'))
-      yield put(settingsActions.setCity('Uzès'))
-    }
-    else if (error.code === getCurrentPositionErrorCodes.USER_DENIED_GEOLOCATION) {
-      // todo: open modal for custom city selection
-      console.info('todo: open modal for custom location selection')
+      yield put(settingsActions.setDepartment(false))
+      yield put(settingsActions.setCity(false))
     }
     else if (error.code === getCurrentPositionErrorCodes.USER_IS_OFFLINE) {
       if (process.env.NODE_ENV !== 'development') {
@@ -123,9 +117,10 @@ export function* settingsSaga() {
           errors: [i18n.t('errors:modal.offline.content')]
         })
       }
-      yield put(settingsActions.setLocation(44.2167, 4.2667))
-      yield put(settingsActions.setDepartment('Gard'))
-      yield put(settingsActions.setCity('Uzès'))
+
+      yield put(settingsActions.setLocation(48.8566, 2.3522))
+      yield put(settingsActions.setDepartment(false))
+      yield put(settingsActions.setCity(false))
     }
     else {
       console.error(error)

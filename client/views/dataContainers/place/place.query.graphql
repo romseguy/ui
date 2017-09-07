@@ -15,6 +15,7 @@ query place($title: String) {
     department
     latitude
     longitude
+    title
     users {
       id
       username

@@ -1,7 +1,11 @@
-import { all, call, put, take, takeEvery } from 'redux-saga/effects'
+import { all, call, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { i18n, settingsActions } from 'core/settings'
+import { getBodySaga } from 'utils/apollo'
 import { setErrorModalSaga } from 'utils/modal'
+
+import { routerActions, getRouteType } from 'core/router'
+
+import { mergePlaceIntoPersonNodesSaga, mergeUserPlacesIntoLocationNodesSaga } from './sub/apollo.sub.saga'
 
 
 function* startupSaga() {
@@ -15,31 +19,74 @@ function* startupSaga() {
   }
 }
 
-function* mutationResultSaga({operationName, result}) {
-  let body = {}
+function* mutationResultSaga(payload) {
+  const {operationName, result} = payload
 
-  if (result) {
-    if (result.stack) {
-      yield call(setErrorModalSaga, {title: i18n.t('errors:modal.unknown.title'), errors: [result /*i18n.t('errors:modal.unknown.content')*/]}) // todo: send email
-      return
-    }
-    else if (result.data) {
-      body = result.data[operationName]
-    }
-    else if (result[operationName]) {
-      body = result[operationName]
+  if (['login', 'register'].includes(operationName)) {
+    const body = yield call(getBodySaga, payload)
+    yield call([localStorage, localStorage.setItem], 'token', body.token)
+  }
+  else if (operationName === 'logout') {
+    const body = yield call(getBodySaga, payload)
+    yield call([localStorage, localStorage.setItem], 'token', null)
+  }
+}
+
+function* queryResultSaga(payload) {
+  const {operationName} = payload
+
+  if (operationName === 'me') {
+    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
+    const routeType = yield select(getRouteType)
+
+    if ([routerActions.ME, routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
+      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
     }
   }
+  else if (operationName === 'place') {
+    const place = yield call(getBodySaga, payload)
+    const routeType = yield select(getRouteType)
 
-  switch (operationName) {
-    case 'login':
-    case 'register':
-      yield call([localStorage, localStorage.setItem], 'token', body.token)
-      break
+    if (routeType === routerActions.PLACE_VIEW) {
+      yield call(mergePlaceIntoPersonNodesSaga, place)
+    }
+  }
+  else if (operationName === 'user') {
+    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
+    const routeType = yield select(getRouteType)
 
-    case 'logout':
-      yield call([localStorage, localStorage.setItem], 'token', null)
-      break
+    if (routeType === routerActions.USER_VIEW) {
+      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
+    }
+  }
+}
+
+function* queryResultClientSaga(payload) {
+  const {operationName} = payload
+
+  if (operationName === 'me') {
+    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
+    const routeType = yield select(getRouteType)
+
+    if ([routerActions.ME, routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
+      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
+    }
+  }
+  else if (operationName === 'place') {
+    const place = yield call(getBodySaga, payload)
+    const routeType = yield select(getRouteType)
+
+    if (routeType === routerActions.PLACE_VIEW) {
+      yield call(mergePlaceIntoPersonNodesSaga, place)
+    }
+  }
+  else if (operationName === 'user') {
+    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
+    const routeType = yield select(getRouteType)
+
+    if (routeType === routerActions.USER_VIEW) {
+      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
+    }
   }
 }
 
@@ -57,6 +104,8 @@ export function* apolloSaga() {
     //------------------------------------
 
     //takeEvery('APOLLO_MUTATION_ERROR', mutationErrorSaga),
-    takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga)
+    takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga),
+    takeEvery('APOLLO_QUERY_RESULT', queryResultSaga),
+    takeEvery('APOLLO_QUERY_RESULT_CLIENT', queryResultClientSaga)
   ])
 }

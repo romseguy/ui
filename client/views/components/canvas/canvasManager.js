@@ -120,6 +120,14 @@ class CanvasManager extends Component {
   }
 
   // TOOLBAR
+  handleModeClick = key => {
+    const {currentMode, onModeChange} = this.props
+
+    if (currentMode !== key) {
+      typeof onModeChange === 'function' && onModeChange(key)
+    }
+  }
+
   handleToolbarDeleteClick = node => {
     const {t, onDeleteSelectedNode} = this.props
     /*
@@ -157,8 +165,7 @@ class CanvasManager extends Component {
       selectedNodeIds,
       nodes,
       t,
-      toolboxes,
-      onModeClick
+      toolboxes
     } = this.props
 
     const {
@@ -191,7 +198,7 @@ class CanvasManager extends Component {
           zoomOutDisabled={zoomOutDisabled}
           onDeleteClick={this.handleToolbarDeleteClick}
           onEditClick={this.handleToolbarEditClick}
-          onModeClick={onModeClick}
+          onModeClick={this.handleModeClick}
           onZoomInClick={this.handleToolbarZoomInClick}
           onZoomOutClick={this.handleToolbarZoomOutClick}
         />

@@ -61,13 +61,13 @@ function PlaceFormSelector(props) {
           </Col>
           <Col mobile={16} tablet={16} computer={11}>
             <Field
-              name="placeId"
+              name="selectedPlaceTitle"
               component={Select}
               placeholder={t('form:place.select')}
               options={Array.isArray(disconnectedPlaces) ? disconnectedPlaces.map(place => {
                 const option = {
                   key: place.id,
-                  value: place.id,
+                  value: place.title,
                   text: place.title
                 }
 

@@ -16,18 +16,26 @@ import SidePanel from 'views/components/sidePanel'
 import { SymbolForm } from 'views/containers/symbol'
 import User, { UserForm } from 'views/dataContainers/user'
 
+import About from 'views/components/about'
 import { CanvasManager } from 'views/components/canvas'
 import { Loader } from 'views/components/layout'
 import { MapManager } from 'views/components/map'
 
 
 function Route404({t}) {
-  return <span>{t('not_found')}</span>
+  return <div>{t('not_found')}</div>
 }
 
 class RouterContainer extends Component {
   render() {
-    const {currentRoute = {}, isAuthed, routeType, t} = this.props
+    const {
+      currentRoute = {},
+      currentUser,
+      routeType,
+      routePayload,
+      t
+    } = this.props
+
 
     if (routeType === routerActions.NOT_FOUND) {
       return <Route404 t={t}/>
@@ -38,7 +46,7 @@ class RouterContainer extends Component {
       requiresAuth
     } = currentRoute
 
-    if (requiresAuth && routeType !== routerActions.AUTH && !isAuthed) {
+    if (requiresAuth && routeType !== routerActions.AUTH && !currentUser) {
       return <Loader indeterminate/>
     }
 
@@ -50,22 +58,25 @@ class RouterContainer extends Component {
       selectedRouteType = modalRouteType
     }
 
-    if (
+    if (selectedRouteType === routerActions.ABOUT) {
+      routeEl = (
+        <About/>
+      )
+    }
+    else if (
       [
         routerActions.ROOT,
         routerActions.PLACES_ADD,
         routerActions.PLACE_EDIT
       ].includes(selectedRouteType)
     ) {
-      // MainPanel: container
-      // Places: data container
-      // MapManager: presentational component
       routeEl = (
-        <MainPanel {...this.props} routeType={selectedRouteType}>
-          <Places>
-            <MapManager/>
-          </Places>
-        </MainPanel>
+        <MainPanel
+          {...this.props}
+          dataContainer={Places}
+          control={MapManager}
+          routeType={selectedRouteType}
+        />
       )
     }
     else if (
@@ -80,11 +91,12 @@ class RouterContainer extends Component {
       ].includes(selectedRouteType)
     ) {
       routeEl = (
-        <MainPanel {...this.props} routeType={selectedRouteType}>
-          <Me>
-            <CanvasManager/>
-          </Me>
-        </MainPanel>
+        <MainPanel
+          {...this.props}
+          dataContainer={Me}
+          control={CanvasManager}
+          routeType={selectedRouteType}
+        />
       )
 
       if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(selectedRouteType)) {
@@ -104,11 +116,12 @@ class RouterContainer extends Component {
       ].includes(selectedRouteType)
     ) {
       routeEl = (
-        <MainPanel {...this.props} routeType={selectedRouteType}>
-          <Place>
-            <CanvasManager/>
-          </Place>
-        </MainPanel>
+        <MainPanel
+          {...this.props}
+          dataContainer={Place}
+          control={CanvasManager}
+          routeType={selectedRouteType}
+        />
       )
     }
     else if (
@@ -117,11 +130,12 @@ class RouterContainer extends Component {
       ].includes(selectedRouteType)
     ) {
       routeEl = (
-        <MainPanel {...this.props} routeType={selectedRouteType}>
-          <User>
-            <CanvasManager/>
-          </User>
-        </MainPanel>
+        <MainPanel
+          {...this.props}
+          dataContainer={User}
+          control={CanvasManager}
+          routeType={selectedRouteType}
+        />
       )
     }
     else {
@@ -138,15 +152,13 @@ class RouterContainer extends Component {
 }
 
 
-const mapStateToProps = (state, {currentUser}) => {
+const mapStateToProps = (state) => {
   const routeType = getRouteType(state)
   const routePayload = getPayload(state)
   const currentRoute = routes[routeType]
-  const isAuthed = currentUser !== null
 
   return {
     currentRoute,
-    isAuthed,
     routePayload,
     routeType
   }

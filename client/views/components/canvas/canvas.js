@@ -44,7 +44,7 @@ class Canvas extends React.Component {
     e.preventDefault()
 
     if (e.target !== this.svg) {
-      return;
+      return
     }
 
     const {clientX, clientY} = getClientPosition(e)
@@ -118,13 +118,13 @@ class Canvas extends React.Component {
         width={canvasWidth}
         xlinkHref=''
         onClick={onClick}
-        onWheel={onWheel}
         onMouseDown={this.onDragStart}
         onTouchStart={this.onDragStart}
         onMouseMove={this.onDragMove}
         onTouchMove={this.onDragMove}
         onMouseUp={this.onDragEnd}
         onTouchEnd={this.onDragEnd}
+        onWheel={onWheel}
       >
 
         <g transform={`matrix(${this.state.matrix.join(' ')})`}>

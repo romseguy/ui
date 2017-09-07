@@ -1,5 +1,4 @@
 export const modalActions = {
-  // ACTIONS
   SET_MODAL: 'SET_MODAL',
 
   setModal: (modalType, modalProps) => ({
@@ -8,9 +7,6 @@ export const modalActions = {
       modalType,
       modalProps
     }
-  }),
-  
-  // SAGA EVENTS
-  // UI EVENTS
+  })
 
 }

@@ -13,17 +13,12 @@ export const ModalState = {
 
 export function modalReducer(state = ModalState, {payload, type}) {
   switch (type) {
-    // ACTION
     case modalActions.SET_MODAL:
       return {
         modals: merge(state.modals, {
           [payload.modalType]: payload.modalProps
         })
       }
-
-    // SAGA EVENTS
-
-    // UI EVENTS
 
     default:
       return state

@@ -5,13 +5,11 @@ import { graphql } from 'react-apollo'
 import { roleTypes } from 'core/constants'
 import { routerActions } from 'core/router'
 
-import { Loader } from 'views/components/layout'
-
 import { atomTypes } from 'views/utils/atoms'
 import { modeTypes } from 'views/utils/canvas'
-import { placeToNode } from 'views/utils/nodes'
 import { symbolTypes } from 'views/utils/symbols'
-import { getCanvasNodeAnchorTooltipName } from 'views/utils/tooltips'
+
+import { Loader } from 'views/components/layout'
 
 import meQuery from './me.query.graphql'
 import deleteUserPlaceMutation from './deleteUserPlace.mutation.graphql'
@@ -20,12 +18,8 @@ import updateUserPlacesMutation from './updateUserPlaces.mutation.graphql'
 
 class Me extends Component {
 
-  componentWillReceiveProps(nextProps) {
-    const {canvasActions, isLoading, nodes} = nextProps
-
-    if (!isLoading && isLoading !== this.props.isLoading) {
-      canvasActions.setNodes(nodes)
-    }
+  componentDidMount() {
+    this.props.canvasActions.setNodes([])
   }
 
   setEditRoute = node => {
@@ -48,7 +42,7 @@ class Me extends Component {
     const {meRoute} = routes
 
     if (routeType !== routerActions.ME) {
-      meRoute({noReset: true})
+      meRoute()
     }
 
     typeof onCanvasClick === 'function' && onCanvasClick()
@@ -86,18 +80,18 @@ class Me extends Component {
     this.setEditRoute(node)
   }
 
-  handleModeClick = key => {
-    const {doUpdateUserPlaces, nodes, routes, onModeClick} = this.props
-    const {meRoute} = routes
+  handleModeChange = async key => {
+    const {doUpdateUserPlaces, nodes, routes, onModeChange} = this.props
+    const { meRoute } = routes
 
-    Promise.all([
+    meRoute()
+
+    await Promise.all([
       doUpdateUserPlaces({nodes}),
       // todo: doUpdateUserUsers({nodes})
-    ]).then(() => {
-      meRoute({noReset: true})
-    })
+    ])
 
-    typeof onModeClick === 'function' && onModeClick(key)
+    typeof onModeChange === 'function' && onModeChange(key)
   }
 
   handleNodeAnchorClick = node => {
@@ -118,7 +112,7 @@ class Me extends Component {
 
       case modeTypes.EDIT:
         toggleNodeAnchorTooltip(node)
-        
+
         if (node.selected) {
           selectNode(false, node)
         } else {
@@ -135,8 +129,7 @@ class Me extends Component {
   }
 
   handleNodeHeaderClick = node => {
-    const {canvasActions, nodes} = this.props
-    const {currentMode} = this.state
+    const {canvasActions, currentMode} = this.props
     const {selectNode} = canvasActions
 
     if (!node.mine) {
@@ -153,8 +146,7 @@ class Me extends Component {
 
   render() {
     const {
-      canvasActions,
-      children,
+      control,
       currentMode,
       isLoading,
       ...props
@@ -164,17 +156,16 @@ class Me extends Component {
       return <Loader active inline="centered"/>
     }
 
-    return React.cloneElement(children, {
+    return React.createElement(control, {
       ...props,
       currentMode,
       readOnly: currentMode !== modeTypes.EDIT,
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleDeleteSelectedNode,
       onEditSelectedNode: this.handleEditSelectedNode,
-      onModeClick: this.handleModeClick,
+      onModeChange: this.handleModeChange,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeHeaderClick: this.handleNodeHeaderClick,
-      onNodesChange: canvasActions.setNodes,
       onToolboxItemDrop: this.handleToolboxItemDrop
     })
   }
@@ -183,54 +174,9 @@ class Me extends Component {
 
 const meQueryConfig = {
   props({ownProps, data: {loading, myPlaces, /*refetch*/}}) {
-    let {
-      nodes = []
-    } = ownProps
-
-    if (myPlaces) {
-      if (!nodes.length) {
-        nodes = myPlaces.map((myPlace, id) => {
-          const {place, role, x, y} = myPlace
-          const mine = Number(role.id) === roleTypes.GUARDIAN
-
-          return placeToNode(
-            id,
-            {...place, x, y},
-            mine
-          )
-        })
-      } else {
-        /*
-         FIXME:
-         myPlaces.forEach(myPlace => {
-         let node = nodes.find(node => node.idServer === myPlace.place.id)
-
-         if (!node) {
-         node = placeToNode(nodes.length, myPlace.place)
-         console.log('??', 'FOUND A MYPLACE WITHOUT CORRESPONDING NODE => CREATING IT', myPlace, node)
-         nodes.push(node)
-         }
-         })
-         */
-
-        nodes = nodes.map((node, i) => {
-          const myPlace = myPlaces.find(({place}) => node.type === atomTypes.LOCATION && place.id === node.idServer)
-
-          if (myPlace) {
-            return {
-              ...placeToNode(i, myPlace),
-              ...node
-            }
-          }
-
-          return node
-        })
-      }
-    }
-
     return {
       isLoading: loading,
-      nodes
+      myPlaces
     }
   }
 }
@@ -242,10 +188,7 @@ const deleteUserPlaceMutationConfig = {
         return mutate({
           variables: {
             placeId: Number(placeId)
-          },
-          refetchQueries: [{
-            query: meQuery
-          }]
+          }
         })
       }
     }
@@ -257,7 +200,7 @@ const updateUserPlacesMutationConfig = {
     return {
       doUpdateUserPlaces({nodes}){
         const userPlaces = nodes
-          .filter(node => node.type === atomTypes.LOCATION)
+          .filter(node => node.type === atomTypes.LOCATION && !node.isNew)
           .map(({idServer, x, y}) => ({
             placeId: Number(idServer),
             x: parseFloat(x),
@@ -267,10 +210,7 @@ const updateUserPlacesMutationConfig = {
         return mutate({
           variables: {
             userPlaces
-          },
-          refetchQueries: [{
-            query: meQuery
-          }]
+          }
         })
       }
     }

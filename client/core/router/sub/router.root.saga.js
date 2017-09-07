@@ -13,6 +13,17 @@ import userQuery from 'views/dataContainers/user/user.query.graphql'
 import { setCentreSaga, setDepartmentTitle, setTitleSaga } from './router.sub.saga'
 
 
+export function* rootSaga(payload, settings) {
+  const {centre} = settings
+
+  yield call(setCentreSaga, centre)
+  yield call(setDepartmentTitle)
+}
+
+export function* aboutSaga(payload, settings) {
+  yield call(setTitleSaga, i18n.t('about'), {i18n: true})
+}
+
 export function* authSaga(payload, settings) {
   const {currentUser} = settings
 
@@ -44,34 +55,25 @@ export function* logoutSaga(payload, settings) {
   yield put(routerActions.rootRoute())
 }
 
-export function* rootSaga(payload, settings) {
-  const {centre} = settings
-  yield call(setCentreSaga, centre)
-  yield call(setDepartmentTitle)
-}
-
 // NIY
 export function* placeEditSaga(payload, settings) {
   const {centre} = settings
+
   yield call(setCentreSaga, centre)
 }
 
 // NIY
 export function* placesAddSaga(payload, settings) {
   const {centre} = settings
+
   yield call(setCentreSaga, centre)
 }
 
 export function* placeViewSaga(payload, settings) {
-  const {name: placeName, noReset} = payload
+  const {name: placeName} = payload
   const {centre} = settings
 
   yield call(setCentreSaga, centre)
-
-  if (!noReset) {
-    yield put(canvasActions.setNodes([]))
-  }
-
   yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`, {i18n: true})
 
   /*
@@ -119,12 +121,9 @@ export function* placeViewSaga(payload, settings) {
 export function* userViewSaga(payload, settings) {
   const {name: username, noReset} = payload
   const {centre} = settings
+
   yield call(setTitleSaga, `${i18n.t('header:user_profile')} ${username}`, {i18n: true})
   yield call(setCentreSaga, centre)
-
-  if (!noReset) {
-    yield put(canvasActions.setNodes([]))
-  }
 }
 
 export function* notFoundSaga() {

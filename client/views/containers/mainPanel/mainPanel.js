@@ -7,7 +7,7 @@ import { actions as tooltipActions } from 'redux-tooltip'
 import { bindActionCreators } from 'utils/redux'
 
 import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
-import { getMeCentre } from 'core/me'
+import { meActions, getMeCenter, getMeCentre } from 'core/me'
 import { routerActions } from 'core/router'
 import { getUserLocation } from 'core/settings'
 
@@ -23,12 +23,12 @@ class MainPanelContainer extends Component {
 
   static getDimensions() {
     const {innerHeight, innerWidth} = window
-    let mapHeight = innerHeight - 47
-    let canvasHeight = innerHeight - 112
+    let mapHeight = innerHeight - 42
+    let canvasHeight = innerHeight - 106
     let canvasWidth = innerWidth - 30
 
     if (innerWidth < 767) {
-      mapHeight = innerHeight - 109
+      mapHeight = innerHeight - 139
       canvasHeight = innerHeight - 260
       canvasWidth = innerWidth
     }
@@ -216,7 +216,7 @@ class MainPanelContainer extends Component {
     console.log('NIY: MainPanel.handleMapClick', args)
   }
 
-  handleModeClick = modeKey => {
+  handleModeChange = modeKey => {
     const {canvasActions} = this.props
     const {selectAllNodes} = canvasActions
     selectAllNodes(false)
@@ -267,6 +267,8 @@ class MainPanelContainer extends Component {
           y
         }
       }
+
+      return n
     }))
   }
 
@@ -282,7 +284,7 @@ class MainPanelContainer extends Component {
 
   render() {
     const {
-      children,
+      dataContainer,
       ...props
     } = this.props
 
@@ -290,20 +292,31 @@ class MainPanelContainer extends Component {
       ...state
     } = this.state
 
-    return React.cloneElement(children, {
-      ...state,
+    if (this.props.routeType === routerActions.ROOT) {
+      return React.createElement(dataContainer, {
+        ...props,
+        mapHeight: state.mapHeight,
+        mapWidth: state.mapWidth,
+        toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
+        onMapClick: this.handleMapClick,
+        onNodeAnchorClick: this.handleNodeAnchorClick,
+        onNodeHeaderClick: this.handleNodeHeaderClick,
+      })
+    }
+
+    return React.createElement(dataContainer, {
       ...props,
+      ...state,
       toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
       onCanvasClick: this.handleCanvasClick,
-      onToolboxItemDrop: this.handleToolboxItemDrop,
       onDeleteSelectedNode: this.handleDeleteSelectedNode,
-      onMapClick: this.handleMapClick,
-      onModeClick: this.handleModeClick,
+      onModeChange: this.handleModeChange,
       onNodeAnchorClick: this.handleNodeAnchorClick,
       onNodeAnchorMouseOver: this.handleNodeAnchorMouseOver,
       onNodeAnchorMouseOut: this.handleNodeAnchorMouseOut,
       onNodeDragEnd: this.handleNodeDragEnd,
-      onNodeHeaderClick: this.handleNodeHeaderClick
+      onNodeHeaderClick: this.handleNodeHeaderClick,
+      onToolboxItemDrop: this.handleToolboxItemDrop,
     })
   }
 }
@@ -317,18 +330,26 @@ const mapStateToProps = (state, {routeType}) => {
   }
 
   if (routeType === routerActions.ROOT) {
+    props.center = getMeCenter(state)
     props.userLocation = getUserLocation(state)
   }
 
   return props
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    canvasActions: bindActionCreators(canvasActions, dispatch),
+const mapDispatchToProps = (dispatch, {routeType}) => {
+  const actions = {
     hideTooltip: bindActionCreators(tooltipActions.hide, dispatch),
     showTooltip: bindActionCreators(tooltipActions.show, dispatch)
   }
+
+  if (routeType === routerActions.ROOT) {
+    actions.setMeCenter = bindActionCreators(meActions.setCenter, dispatch)
+  } else {
+    actions.canvasActions = bindActionCreators(canvasActions, dispatch)
+  }
+
+  return actions
 }
 
 export default compose(

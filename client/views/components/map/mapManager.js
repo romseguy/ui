@@ -1,6 +1,5 @@
 import Map from 'pigeon-maps'
 import React, { Component } from 'react'
-import { withHandlers } from 'recompose'
 import { createSelector } from 'reselect'
 
 import { MapTooltips } from 'views/components/tooltips'
@@ -15,50 +14,47 @@ const getAnchor = createSelector(
   (latitude, longitude) => [latitude, longitude]
 )
 
+const getCenter = createSelector(
+  r => r.center,
+  r => r.userLocation,
+  (center, userLocation) => center.length ? center : [userLocation.lat, userLocation.lng]
+)
+
+
 class MapManager extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      center: props.center,
       zoom: 14,
       provider: 'outdoors'
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const [lat, lng] = this.state.center
+  handleBoundsChange = data => {
+    const {onBoundsChange} = this.props
+    const {center, zoom, bounds, initial} = data
 
-    if (nextProps.center) {
-      const [lat2, lng2] = nextProps.center
+    this.setState(p => ({zoom}))
 
-      if (lat !== lat2 || lng !== lng2) {
-        this.setState(p => ({center: nextProps.center}))
-      }
-    }
-  }
-
-  handleBoundsChange = ({center, zoom, bounds, initial}) => {
-    if (initial) {
-      //console.log('Got initial bounds: ', bounds)
-    }
-    this.setState(p => ({center, zoom}))
+    typeof onBoundsChange === 'function' && onBoundsChange(data)
   }
 
   render() {
     const {
+      center,
       mapHeight,
       mapWidth,
+      nodes,
+      userLocation,
       onNodeAnchorClick,
       onNodeAnchorMouseOver,
       onNodeAnchorMouseOut,
       onNodeHeaderClick,
-      onMapClick,
-      nodes
+      onMapClick
     } = this.props
 
     const {
-      center,
       provider,
       zoom
     } = this.state
@@ -67,7 +63,7 @@ class MapManager extends Component {
       <div>
         <MapTooltips/>
         <Map
-          center={center}
+          center={getCenter({center, userLocation})}
           zoom={zoom}
           provider={providers[provider]}
           onBoundsChanged={this.handleBoundsChange}

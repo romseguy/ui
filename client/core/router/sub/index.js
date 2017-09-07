@@ -1,9 +1,10 @@
 import { routerActions } from '../'
 
 import {
+  rootSaga,
+  aboutSaga,
   authSaga,
   logoutSaga,
-  rootSaga,
   placesAddSaga,
   placeViewSaga,
   placeEditSaga,
@@ -21,10 +22,11 @@ import {
 
 export default {
   [routerActions.NOT_FOUND]: notFoundSaga,
+  [routerActions.ROOT]: rootSaga,
+  [routerActions.ABOUT]: aboutSaga,
   [routerActions.AUTH]: authSaga,
   [routerActions.LOGOUT]: logoutSaga,
 
-  [routerActions.ROOT]: rootSaga,
   [routerActions.PLACES_ADD]: placesAddSaga,
   [routerActions.PLACE_VIEW]: placeViewSaga,
   [routerActions.PLACE_EDIT]: placeEditSaga,

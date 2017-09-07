@@ -26,6 +26,7 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
     }
   }
 
+  // equivalent to React Router onEnter callback
   if (routeSagas[routeType]) {
     const settings = {currentUser, centre: currentRoute.centre}
     yield spawn(routeSagas[routeType], payload, settings)
@@ -42,7 +43,7 @@ export function* routerSaga() {
     const action = yield take('*')
 
     if (isLocationAction(action)) {
-      yield delay(100) // can be removed when duplicate redux-first-router actions are fixed
+      yield delay(100) // needed because when a route param contains special characters or spaces, it's escaped by the browser (e.g into %20 for a space) and the route saga will be spawned twice
       yield fork(locationChangedSaga, action)
     }
   }

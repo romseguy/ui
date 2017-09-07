@@ -1,6 +1,8 @@
 import black from './atoms/black.png'
 import green from './atoms/green.png'
 import green_selected from './atoms/green_selected.png'
+import place from './atoms/place.png'
+import place_selected from './atoms/place_selected.png'
 import pink from './atoms/pink.png'
 import pink_selected from './atoms/pink_selected.png'
 import red from './atoms/red.png'
@@ -15,4 +17,8 @@ export const atoms = {
   pink, pink_selected,
   red, red_selected,
   yellow, yellow_selected
+}
+
+export const entities = {
+  place, place_selected
 }

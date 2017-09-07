@@ -2,16 +2,12 @@ import React from 'react'
 import { Origin } from 'redux-tooltip'
 import cx from 'classnames'
 import { pure } from 'recompose'
-import styled from 'styled-components'
 
 import { modeTypes } from 'views/utils/canvas'
 import { getCanvasNodeAnchorTooltipName, getCanvasNodeHeaderTooltipName } from 'views/utils/tooltips'
 
+import CanvasNodeImage from './canvasNodeImage'
 
-const CanvasNodeImage = styled.image`
-cursor: ${props => props.currentMode === modeTypes.DISCOVERY ? 'zoom-in' : 'pointer'};
-outline: ${props => props.node.hovered || props.node.selected ? '1px solid blue' : '0'} 
-`
 
 const SVGOrigin = Origin.wrapBy('g')
 
@@ -37,29 +33,27 @@ function CanvasNode(props) {
   // anchor
   // image
   if (node.image) {
-    const className = cx({
-      'canvas-node__anchor-img': true
-    })
     const imageHeight = node.imageHeight || defaultImageHeight
     const imageWidth = node.imageWidth || defaultImageWidth
+    let tooltipName = getCanvasNodeAnchorTooltipName(currentMode, node.selected)
+
+    if (currentMode === modeTypes.DISCOVERY && node.isNew) {
+      tooltipName = null
+    }
 
     anchor = (
       <SVGOrigin
-        name={getCanvasNodeAnchorTooltipName(currentMode, node.selected)}
+        name={tooltipName}
         onHover={e => onAnchorMouseOver(node)}
         onLeave={e => onAnchorMouseOut(node)}
       >
         <CanvasNodeImage
           id={`canvas-node__anchor-img-${node.id}`}
-          alt=""
-          className={className}
-          currentMode={currentMode}
           height={imageHeight}
-          href={node.image}
           node={node}
           width={imageWidth}
           x={(nodeWidth - imageWidth) / 2}
-          xlinkHref={node.image}
+          xlinkHref={node.selected ? node.imageSelected : node.image}
           y="0"
         />
       </SVGOrigin>
@@ -67,15 +61,11 @@ function CanvasNode(props) {
   }
   // icon
   else if (node.icon && foreignObjectSupport) {
-    const className = cx({
-      'canvas-node__anchor-img-icon': true
-    })
     const iconWidth = node.iconWidth
     const fontSize = node.fontSize || '76px'
 
     anchor = (
       <foreignObject
-        className={className}
         x={(nodeWidth - iconWidth) / 2}
         y={(nodeHeight / 2) - 54}
         height={fontSize}
@@ -111,7 +101,7 @@ function CanvasNode(props) {
   // text
   if (node.name) {
     if (foreignObjectSupport) {
-      let tooltipName = getCanvasNodeHeaderTooltipName(node.mine)
+      let tooltipName = getCanvasNodeHeaderTooltipName(node)
       let cursor = 'pointer'
 
       if (currentMode === modeTypes.DISCOVERY) {

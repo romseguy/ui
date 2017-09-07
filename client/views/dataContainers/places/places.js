@@ -9,16 +9,15 @@ import placesQuery from './places.query.graphql'
 
 
 class Places extends Component {
-  getCenter() {
-    const {
-      routePayload,
-      userLocation
-    } = this.props
 
-    return routePayload.center || [userLocation.lat, userLocation.lng]
+  handleBoundsChange = data => {
+    const {center, zoom, bounds, initial} = data
+    const {setMeCenter} = this.props
+
+    setMeCenter(center)
   }
 
-  handleNodeAnchorClick = (node) => {
+  handleNodeAnchorClick = node => {
     const {routes} = this.props
     const {mePlaceViewRoute, placeViewRoute} = routes
 
@@ -31,8 +30,9 @@ class Places extends Component {
 
   render() {
     const {
-      children,
+      control,
       isLoading,
+      routePayload,
       ...props
     } = this.props
 
@@ -40,12 +40,11 @@ class Places extends Component {
       return <Loader active inline="centered"/>
     }
 
-    const center = this.getCenter()
-
-    return React.cloneElement(children, {
+    return React.createElement(control, {
       ...props,
-      center,
-      onNodeAnchorClick: this.handleNodeAnchorClick,
+      routePayload,
+      onBoundsChange: this.handleBoundsChange,
+      onNodeAnchorClick: this.handleNodeAnchorClick
     })
   }
 }
@@ -54,9 +53,10 @@ class Places extends Component {
 const placesQueryConfig = {
   props({ownProps, data: {loading, currentUser, myPlaces, places = []}}) {
     let {
-      nodes = [],
       userLocation
     } = ownProps
+
+    let nodes = []
 
     if (currentUser) {
       nodes = places.map((place, i) => {

@@ -8,30 +8,14 @@ import reducers from 'core/reducers'
 import rootSaga from 'core/saga'
 import routes from 'core/routes'
 
+import { devToolsOptipns } from './devToolsOptions'
 import { loggerMiddleware } from './logger.middleware'
 import { sagaMiddleware } from './saga.middleware'
 
 
 export function configureStore() {
   // Redux DevTools
-  const rdtOptions = {
-    actionsBlacklist: [
-      'rrf/blur',
-      'rrf/focus',
-      'rrf/clearIntents',
-      'rrf/setValidity'
-    ],
-    predicate: (state, {type}) => {
-      if (typeof type.startsWith === 'function') {
-        if (type.startsWith('redux-tooltip')) {
-          return false
-        }
-
-        return true
-      }
-    }
-  }
-  const composeEnhancers = composeWithDevTools(rdtOptions)
+  const composeEnhancers = composeWithDevTools(devToolsOptipns)
 
   // router
   const history = createHistory()

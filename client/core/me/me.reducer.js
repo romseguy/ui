@@ -4,17 +4,17 @@ import { meActions } from './me.actions'
 
 
 export const MeState = {
+  center: [],
   centre: centreTypes.DEPARTMENT
 }
 
 export function meReducer(state = MeState, {payload, type}) {
   switch (type) {
+    case meActions.SET_CENTER:
+      return set(state, 'center', payload.center)
 
-    // ACTIONS
     case meActions.SET_CENTRE:
       return set(state, 'centre', payload.centre)
-
-    // SAGA EVENTS
 
     default:
       return state

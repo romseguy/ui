@@ -30,4 +30,8 @@ export const NoPadCol = styled(Col) `
 padding: 0 !important;
 `
 
+export const NoPadRow = styled(UIGrid.Row)`
+padding: 0 !important;
+`
+
 export const Row = UIGrid.Row

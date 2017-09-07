@@ -1,8 +1,9 @@
 export const routerActions = {
+  ROOT: 'ROOT',
+
+  ABOUT: 'ABOUT',
   AUTH: 'AUTH',
   LOGOUT: 'LOGOUT',
-
-  ROOT: 'ROOT',
 
   PLACES_ADD: 'PLACES_ADD',
   PLACE_VIEW: 'PLACE_VIEW',
@@ -30,6 +31,15 @@ export const routerActions = {
     type: routerActions.NOT_FOUND
   }),
 
+  rootRoute: (payload) => ({
+    type: routerActions.ROOT,
+    payload
+  }),
+
+  aboutRoute: () => ({
+    type: routerActions.ABOUT
+  }),
+
   authRoute: () => ({
     type: routerActions.AUTH
   }),
@@ -37,12 +47,7 @@ export const routerActions = {
   logoutRoute: () => ({
     type: routerActions.LOGOUT
   }),
-  
-  rootRoute: (payload) => ({
-    type: routerActions.ROOT,
-    payload
-  }),
-  
+
   placesAddRoute: () => ({
     type: routerActions.PLACES_ADD,
     payload: {

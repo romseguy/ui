@@ -22,10 +22,15 @@ $icons-font-path: '~semantic-ui-sass/icons' !default;
 
 body {
   font-size: 1.6rem;
+  line-height: normal !important;
 }
 
 #root, #portal {
   font-size: 62.5%;
+}
+
+img.ui.image {
+  display: inline-block !important;
 }
 
 .ui.loading.segment:before {

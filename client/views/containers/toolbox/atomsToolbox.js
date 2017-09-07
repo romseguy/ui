@@ -7,7 +7,7 @@ import { Origin } from 'redux-tooltip'
 import { centreTypes } from 'core/constants'
 import { getMeCentre } from 'core/me'
 
-import { atoms as atomImages } from 'views/assets/img'
+import { atoms as atomImages, entities } from 'views/assets/img'
 
 import Atom from 'views/components/atom'
 import DraggableToolboxItem from 'views/components/draggableToolboxItem'
@@ -65,26 +65,30 @@ const mapStateToProps = (state, props) => {
   const centre = getMeCentre(state)
 
   const atoms = [{
-    name: t('canvas:places.new'),
-    type: atomTypes.LOCATION,
-    image: atomImages.green,
     backgroundColor: 'transparent',
+    height: 50,
+    image: entities.place,
+    isNew: true,
+    mine: true,
+    name: t('canvas:places.new'),
     selected: false,
     titleYOffset: 50,
-    width: 50,
-    height: 50
+    type: atomTypes.LOCATION,
+    width: 50
   }]
 
   if (centre === centreTypes.PERSON) {
     atoms.push({
-      name: t('canvas:persons.new'),
-      type: atomTypes.PERSON,
-      image: atomImages.yellow,
       backgroundColor: 'transparent',
+      height: 50,
+      image: atomImages.yellow,
+      isNew: true,
+      mine: true,
+      name: t('canvas:persons.new'),
       selected: false,
       titleYOffset: 50,
-      width: 50,
-      height: 50
+      type: atomTypes.PERSON,
+      width: 50
     })
   }
 
