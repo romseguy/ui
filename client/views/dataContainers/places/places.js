@@ -61,7 +61,7 @@ const placesQueryConfig = {
     if (currentUser) {
       nodes = places.map((place, i) => {
         const mine = !!myPlaces.find(myPlace => myPlace.place.id === place.id)
-        return placeToNode(i, place, mine)
+        return placeToNode(i, place, {mine})
       })
     } else {
       nodes = places.map((place, i) => placeToNode(i, place))

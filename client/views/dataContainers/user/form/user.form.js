@@ -1,7 +1,6 @@
 import { compose } from 'ramda'
 import React from 'react'
 import { graphql } from 'react-apollo'
-import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
@@ -190,5 +189,4 @@ export default compose(
   graphql(createUserMutation, createUserMutationConfig),
   graphql(createUserUserMutation, createUserUserMutationConfig),
   withHandlers(handlers),
-  translate()
 )(UserFormContainer)

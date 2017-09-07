@@ -183,8 +183,8 @@ class CanvasManager extends Component {
 
     return (
       <CanvasLayout>
-        <NodeTooltips/>
-        <ToolboxTooltips/>
+        <NodeTooltips t={t}/>
+        <ToolboxTooltips t={t}/>
 
         <Toolbar
           currentMode={currentMode}
@@ -213,6 +213,7 @@ class CanvasManager extends Component {
           nodes={nodes}
           readOnly={readOnly}
           setSvgReference={this.setSvgReference}
+          t={t}
           toolboxes={toolboxes}
           zoomLevel={zoomLevel}
           onToolboxItemDrop={this.handleToolboxItemDrop}

@@ -1,7 +1,6 @@
 import { compose } from 'ramda'
 import React from 'react'
 import { graphql } from 'react-apollo'
-import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
@@ -189,6 +188,5 @@ export default compose(
   /*graphql(symbolFormQuery, symbolFormQueryConfig),
   graphql(createSymbolMutation, createSymbolMutationConfig),
   graphql(createUserSymbolMutation, createUserSymbolMutationConfig),*/
-  withHandlers(handlers),
-  translate()
+  withHandlers(handlers)
 )(SymbolFormContainer)

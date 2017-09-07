@@ -49,6 +49,7 @@ function CanvasNode(props) {
       >
         <CanvasNodeImage
           id={`canvas-node__anchor-img-${node.id}`}
+          currentMode={currentMode}
           height={imageHeight}
           node={node}
           width={imageWidth}

@@ -24,6 +24,7 @@
     "i18next-xhr-backend": "1.4.2",
     "pigeon-maps": "0.8.2",
     "pigeon-marker": "0.3.2",
+    "prop-types": "15.5.10",
     "ramda": "0.24.1",
     "react": "15.4.2",
     "react-apollo": "1.4.3",
@@ -128,10 +129,10 @@
     "testEnvironment": "node",
     "testURL": "http://localhost",
     "transform": {
-      "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
+      "\\.(gql|graphql)$": "jest-transform-graphql",
       "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
       "^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js",
-      "\\.(gql|graphql)$": "<rootDir>/node_modules/jest-transform-graphql"
+      ".*": "babel-jest"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"

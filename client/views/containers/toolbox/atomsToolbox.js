@@ -1,7 +1,6 @@
 import { compose } from 'ramda'
 import React from 'react'
 import { connect } from 'react-redux'
-import { translate } from 'react-i18next'
 import { Origin } from 'redux-tooltip'
 
 import { centreTypes } from 'core/constants'
@@ -17,7 +16,7 @@ import Toolbox, { ToolboxMenu } from 'views/components/toolbox'
 import { atomTypeToName, atomTypes } from 'views/utils/atoms'
 
 
-function AtomsToolbox({atoms, isOpen, onClose}) {
+function AtomsToolbox({toolboxAtoms, isOpen, onClose}) {
   if (!isOpen) {
     return null
   }
@@ -29,8 +28,8 @@ function AtomsToolbox({atoms, isOpen, onClose}) {
       onClose={onClose}
     >
       <ToolboxMenu>
-        {atoms.map(atom => {
-          const tooltipName = `toolbox__atom-${atom.type}`
+        {toolboxAtoms.map(toolboxAtom => {
+          const tooltipName = `toolbox__atom-${toolboxAtom.type}`
 
           return (
             <Origin
@@ -39,16 +38,16 @@ function AtomsToolbox({atoms, isOpen, onClose}) {
             >
               <DraggableToolboxItem
                 id={tooltipName}
-                itemAttributes={atom}
+                itemAttributes={toolboxAtom}
               >
                 <Label basic image>
                   <Atom
-                    height={atom.height}
-                    image={atom.image}
-                    type={atom.type}
-                    width={atom.width}
+                    height={toolboxAtom.height}
+                    image={toolboxAtom.image}
+                    type={toolboxAtom.type}
+                    width={toolboxAtom.width}
                   />
-                  {atomTypeToName[atom.type]()}
+                  {atomTypeToName[toolboxAtom.type]()}
                 </Label>
               </DraggableToolboxItem>
             </Origin>
@@ -64,10 +63,11 @@ const mapStateToProps = (state, props) => {
   const {t} = props
   const centre = getMeCentre(state)
 
-  const atoms = [{
+  const toolboxAtoms = [{
     backgroundColor: 'transparent',
     height: 50,
     image: entities.place,
+    imageSelected: entities.place_selected,
     isNew: true,
     mine: true,
     name: t('canvas:places.new'),
@@ -78,7 +78,7 @@ const mapStateToProps = (state, props) => {
   }]
 
   if (centre === centreTypes.PERSON) {
-    atoms.push({
+    toolboxAtoms.push({
       backgroundColor: 'transparent',
       height: 50,
       image: atomImages.yellow,
@@ -93,14 +93,13 @@ const mapStateToProps = (state, props) => {
   }
 
   return {
-    atoms
+    toolboxAtoms
   }
 }
 
 const mapDispatchToProps = {}
 
 export default compose(
-  translate(),
   connect(
     mapStateToProps,
     mapDispatchToProps

@@ -2,6 +2,7 @@ import 'views/assets/scss/modal.scss'
 
 import { compose } from 'ramda'
 import React from 'react'
+import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 
 import { modalActions, modalConstants, getModals } from 'core/modal'
@@ -23,9 +24,9 @@ const withModal = (modalProps, modalComponentProps) => {
 }
 
 const modalComponents = {
-  [modalConstants.AUTH]: ({modalProps}) => (
+  [modalConstants.AUTH]: ({modalProps, t}) => (
     <Modal {...modalProps}>
-      <AuthForm/>
+      <AuthForm t={t}/>
     </Modal>
   ),
   [modalConstants.ERROR]: ({modalProps, errors = [], title}) => (
@@ -46,7 +47,7 @@ const modalComponents = {
       </Modal.Actions>
     </Modal>
   ),
-  [modalConstants.SET_LOCATION]: ({modalProps, center, title, onSubmit, onSuggestSelect}) => {
+  [modalConstants.SET_LOCATION]: ({modalProps, center, t, title, onSubmit, onSuggestSelect}) => {
     const handleSubmit = values => onSubmit(values, modalProps.onClose)
 
     return (
@@ -57,6 +58,7 @@ const modalComponents = {
         />
         <SetLocationForm
           center={center}
+          t={t}
           onSubmit={handleSubmit}
           onSuggestSelect={onSuggestSelect}
         />
@@ -65,7 +67,7 @@ const modalComponents = {
   }
 }
 
-function ModalContainer({modals, onClose}) {
+function ModalContainer({modals, t, onClose}) {
   const modalTypes = Object.keys(modals)
 
   if (!modalTypes.length) {
@@ -82,17 +84,22 @@ function ModalContainer({modals, onClose}) {
     <div>
       {modalTypes.map(modalType => {
         const modalComponent = modalComponents[modalType]
-        const {modalProps, ...modalComponentProps} = modals[modalType]
+        let {modalProps, ...modalComponentProps} = modals[modalType]
 
-        return withModal({
+        modalProps = {
           closeIcon,
           onClose: () => onClose(modalType, {isOpen: false}),
           open: modalComponentProps.isOpen,
           ...modalProps
-        }, {
+        }
+
+        modalComponentProps = {
           key: `modal-${modalType}`,
+          t,
           ...modalComponentProps
-        })(modalComponent)
+        }
+
+        return withModal(modalProps, modalComponentProps)(modalComponent)
       })}
     </div>
   )
@@ -108,6 +115,7 @@ const mapDispatchToProps = {
 }
 
 export default compose(
+  translate(),
   connect(
     mapStateToProps,
     mapDispatchToProps

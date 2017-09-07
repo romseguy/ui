@@ -4,7 +4,7 @@ import { atomTypes, atomTypeToName } from 'views/utils/atoms'
 import { symbolTypes, symbolTypeToName } from 'views/utils/symbols'
 
 
-export function ToolboxTooltip({tooltipName, width, label}) {
+export function ToolboxTooltip({label, t, tooltipName, width}) {
   return (
     <Tooltip
       name={tooltipName}
@@ -14,13 +14,13 @@ export function ToolboxTooltip({tooltipName, width, label}) {
         //width: `${width}px`,
         padding: '5px'
       }}>
-        Glissez-déposez le badge sur le canevas pour ajouter {label}
+        {`${t('canvas:tooltips.toolbox_item')} ${label}`}
       </div>
     </Tooltip>
   )
 }
 
-export function AtomsToolboxTooltips() {
+export function AtomsToolboxTooltips({t}) {
   return (
     <div>
       {Object.keys(atomTypes).map(type => {
@@ -30,8 +30,9 @@ export function AtomsToolboxTooltips() {
         return (
           <ToolboxTooltip
             key={tooltipName}
-            tooltipName={tooltipName}
             label={label}
+            t={t}
+            tooltipName={tooltipName}
           />
         )
       })}
@@ -39,7 +40,7 @@ export function AtomsToolboxTooltips() {
   )
 }
 
-export function SymbolsToolboxTooltips() {
+export function SymbolsToolboxTooltips({t}) {
   return (
     <div>
       {Object.keys(symbolTypes).map(type => {
@@ -49,8 +50,9 @@ export function SymbolsToolboxTooltips() {
         return (
           <ToolboxTooltip
             key={tooltipName}
-            tooltipName={tooltipName}
             label={label}
+            t={t}
+            tooltipName={tooltipName}
           />
         )
       })}
@@ -58,11 +60,11 @@ export function SymbolsToolboxTooltips() {
   )
 }
 
-export default function ToolboxTooltips() {
+export default function ToolboxTooltips({t}) {
   return (
     <div>
-      <AtomsToolboxTooltips/>
-      <SymbolsToolboxTooltips/>
+      <AtomsToolboxTooltips t={t}/>
+      <SymbolsToolboxTooltips t={t}/>
     </div>
   )
 }

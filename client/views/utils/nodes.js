@@ -35,7 +35,7 @@ export const personToNode = (id, person) => {
   }
 }
 
-export const placeToNode = (id, place, mine = false) => {
+export const placeToNode = (id, place, {mine = false} = {}) => {
   const {
     distance,
     latitude,
@@ -88,5 +88,5 @@ export const userPlaceToLocationNode = (id, userPlace) => {
 
   const mine = roleId === roleTypes.GUARDIAN
 
-  return placeToNode(id, {...place, x, y}, mine)
+  return placeToNode(id, {...place, x, y}, {mine})
 }

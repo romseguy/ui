@@ -60,7 +60,7 @@ class RouterContainer extends Component {
 
     if (selectedRouteType === routerActions.ABOUT) {
       routeEl = (
-        <About/>
+        <About {...this.props}/>
       )
     }
     else if (

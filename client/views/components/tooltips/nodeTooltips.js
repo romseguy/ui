@@ -1,6 +1,4 @@
-import { compose } from 'ramda'
 import React from 'react'
-import { translate } from 'react-i18next'
 import { Tooltip } from 'redux-tooltip'
 import styled from 'styled-components'
 
@@ -140,6 +138,4 @@ function NodeTooltips({t}) {
   )
 }
 
-export default compose(
-  translate()
-)(NodeTooltips)
+export default NodeTooltips

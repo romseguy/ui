@@ -46,7 +46,7 @@ class Place extends Component {
     this.setEditRoute(node)
   }
 
-  handleModeClick = key => {
+  handleModeChange = key => {
     const {centre, nodes, routePayload, routes, onModeChange} = this.props
     const {mePlaceViewRoute, placeViewRoute} = routes
 

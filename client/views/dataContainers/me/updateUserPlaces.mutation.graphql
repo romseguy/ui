@@ -1,5 +1,5 @@
-mutation updateUserPlaces($userId: ID, $userPlaces: [UpdateUserPlacesAttrs]!) {
-  updateUserPlaces(id: $userId, userPlaces: $userPlaces) {
+mutation updateUserPlaces($userPlaces: [UpdateUserPlacesAttrs]!) {
+  updateUserPlaces(userPlaces: $userPlaces) {
     id
   }
 }

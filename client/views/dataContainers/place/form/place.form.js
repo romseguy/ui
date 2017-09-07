@@ -1,8 +1,10 @@
+import PropTypes from 'prop-types'
 import { compose } from 'ramda'
 import React from 'react'
 import { graphql } from 'react-apollo'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
+import { getContext } from 'recompose'
 import { change } from 'redux-form'
 import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
@@ -10,7 +12,6 @@ import { merge } from 'ramda'
 import geo from 'utils/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment, getGeocodedProperty } from 'utils/geo'
 
-import { client } from 'core/apollo'
 import { roleTypes } from 'core/constants'
 import { canvasActions, getCanvasNodes } from 'core/canvas'
 import { getTitle, getUserLocation } from 'core/settings'
@@ -26,41 +27,33 @@ import placeQuery from '../place.query.graphql'
 import placeFormQuery from './place.form.query.graphql'
 import createPlaceMutation from './createPlace.mutation.graphql'
 import createUserPlaceMutation from './createUserPlace.mutation.graphql'
+import updatePlaceMutation from './updateUserPlace.mutation.graphql'
 
 
-async function getPlace(formValues) {
-  // required form fields
+async function formValuesToPlace(formValues) {
   let place = {
     city: formValues.city,
+    department: formValues.department,
+    latitude: formValues.marker && formValues.marker[0],
+    longitude: formValues.marker && formValues.marker[1],
     title: formValues.title,
   }
 
   let geocodingResult = null
 
-  // optional form fields
-  if (formValues.marker) {
-    const [latitude, longitude] = formValues.marker
-
-    place = {
-      ...place,
-      latitude,
-      longitude
-    }
-  } else {
+  if (!place.latitude || !place.longitude) {
     geocodingResult = await geo.geocodeCity(formValues.city)
 
     const {lat, lng} = getGeocodedLocation(geocodingResult)
 
     place = {
       ...place,
-      department: getGeocodedDepartment(geocodingResult),
       latitude: lat,
       longitude: lng
     }
   }
 
-  // marker was selected but API roundtrip was too long for department to be geocoded
-  if (!formValues.department) {
+  if (!place.department) {
     if (!geocodingResult) {
       geocodingResult = await geo.geocodeCity(formValues.city)
     }
@@ -75,7 +68,7 @@ async function getPlace(formValues) {
 }
 
 
-const handlers = {
+export const handlers = {
   onMapClick: props => ({event, latLng, pixel}) => {
     const [lat, lng] = latLng
     geo.getReverseGeocoding(lat, lng).then(res => {
@@ -88,6 +81,7 @@ const handlers = {
 
   onSubmit: props => async formValues => {
     const {
+      client,
       doCreatePlace,
       doCreateUserPlace,
       doUpdatePlace,
@@ -105,7 +99,7 @@ const handlers = {
     const selectedNode = nodes.find(node => node.selected)
 
     if (formValues.action === 'create') {
-      let place = await getPlace(formValues)
+      let place = await formValuesToPlace(formValues)
 
       const {data} = await doCreatePlace({place})
       const {id, title} = data.createPlace
@@ -119,12 +113,16 @@ const handlers = {
         }
         nodes = nodes.map(node => {
           if (node.id === selectedNode.id) {
-            return placeToNode(nodes.length, place, true)
+            return placeToNode(selectedNode.id, place, {mine: true})
           }
           return node
         })
       } else {
-        nodes = nodes.concat([placeToNode(nodes.length, place, true)])
+        place = {
+          ...place,
+          id
+        }
+        nodes = nodes.concat([placeToNode(nodes.length, place, {mine: true})])
       }
 
       setNodes(nodes)
@@ -154,12 +152,12 @@ const handlers = {
         }
         nodes = nodes.map(node => {
           if (node.id === selectedNode.id) {
-            return placeToNode(nodes.length, place, false)
+            return placeToNode(nodes.length, place, {mine: false})
           }
           return node
         })
       } else {
-        nodes = nodes.concat([placeToNode(nodes.length, place, false)])
+        nodes = nodes.concat([placeToNode(nodes.length, place, {mine: false})])
       }
 
       setNodes(nodes)
@@ -169,7 +167,7 @@ const handlers = {
     }
     else {
       if (routeType === routerActions.ME_PLACE_EDIT) {
-        const place = await getPlace(formValues)
+        const place = await formValuesToPlace(formValues)
 
         // todo
         const {data} = await doUpdatePlace({place})
@@ -188,16 +186,18 @@ function PlaceFormContainer(props) {
   const {
     // state
     centre,
+    disconnectedPlaces,
     formValues,
     initialValues,
-    userLocation,
-    disconnectedPlaces,
+    isLoading,
+    mustCreate,
     routeType,
     t,
     title,
+    userLocation,
+
     // options
-    isLoading,
-    mustCreate,
+
     // handlers
     onMapClick,
     onSubmit,
@@ -235,7 +235,6 @@ const mapStateToProps = state => {
   const {name: placeName} = getPayload(state)
   const centre = getMeCentre(state)
   const nodes = getCanvasNodes(state)
-  const routeType = getRouteType(state)
   const title = getTitle(state)
   const userLocation = getUserLocation(state)
 
@@ -245,7 +244,6 @@ const mapStateToProps = state => {
     userLocation,
     placeName,
     nodes,
-    routeType,
     title
   }
 }
@@ -299,7 +297,7 @@ const placeFormQueryConfig = {
 const createPlaceMutationConfig = {
   props({ownProps, mutate}) {
     return {
-      doCreatePlace({place}){
+      doCreatePlace({place}) {
         return mutate({
           variables: {
             place
@@ -313,14 +311,23 @@ const createPlaceMutationConfig = {
 const createUserPlaceMutationConfig = {
   props({ownProps, mutate}) {
     return {
-      doCreateUserPlace({userPlace}){
+      doCreateUserPlace({userPlace}) {
         return mutate({
           variables: {
             userPlace
-          },
-          /*          refetchQueries: [{
-           query: meQuery
-           }]*/
+          }
+        })
+      }
+    }
+  }
+}
+
+const updatePlaceMutationConfig = {
+  props({ownProps, mutate}) {
+    return {
+      doUpdatePlace({place}) {
+        return mutate({
+          variables: {}
         })
       }
     }
@@ -332,6 +339,8 @@ export default compose(
   graphql(placeFormQuery, placeFormQueryConfig),
   graphql(createPlaceMutation, createPlaceMutationConfig),
   graphql(createUserPlaceMutation, createUserPlaceMutationConfig),
+  graphql(updatePlaceMutation, updatePlaceMutationConfig),
+  getContext({client: PropTypes.object}),
   withHandlers(handlers),
-  translate()
+  translate(),
 )(PlaceFormContainer)

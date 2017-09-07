@@ -89,14 +89,15 @@ class Canvas extends React.Component {
   render() {
     const {
       canvasClass = 'canvas',
-      readOnly = false,
       canvasHeight = 756,
       canvasWidth = 1396,
-      zoomLevel,
-      nodes,
       connectDropTarget,
       currentMode,
+      nodes,
+      readOnly = false,
+      t,
       toolboxes,
+      zoomLevel,
       onClick,
       onNodeAnchorClick,
       onNodeAnchorMouseOver,
@@ -152,7 +153,7 @@ class Canvas extends React.Component {
 
     return (
       <div className='canvas-toolbox-container'>
-        {toolboxes.map(toolbox => React.createElement(toolbox.component, toolbox.props))}
+        {toolboxes.map(toolbox => React.createElement(toolbox.component, {...toolbox.props, t}))}
         <div>
           {connectDropTarget(svg)}
         </div>

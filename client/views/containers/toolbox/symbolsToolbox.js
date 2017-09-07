@@ -1,7 +1,6 @@
 import { compose } from 'ramda'
 import React from 'react'
 import { connect } from 'react-redux'
-import { translate } from 'react-i18next'
 import { Origin } from 'redux-tooltip'
 
 import { atoms as atomImages } from 'views/assets/img'
@@ -57,9 +56,7 @@ function SymbolsToolbox({symbols, isOpen, onClose}) {
 }
 
 
-const mapStateToProps = (state, props) => {
-  const {t} = props
-
+const mapStateToProps = (state, {t}) => {
   const symbols = [{
     name: t('canvas:symbols.new_service'),
     type: symbolTypes.SERVICE,
@@ -80,7 +77,6 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = {}
 
 export default compose(
-  translate(),
   connect(
     mapStateToProps,
     mapDispatchToProps

@@ -3,7 +3,6 @@ import 'views/assets/scss/geosuggest.scss'
 import React, { Component } from 'react'
 import Geosuggest from 'react-geosuggest'
 
-import { getSuggestedCity } from 'views/utils/geosuggest'
 import { createLatLngObject } from 'views/utils/google'
 
 import {
@@ -12,6 +11,12 @@ import {
   NoPadCol as Col,
   Row
 } from 'views/components/layout'
+
+
+const getSuggestLabel = suggest => {
+  return suggest.description.replace(/([^,]+).+/, (match, p1) => p1)
+}
+
 
 class GeosuggestField extends Component {
   componentWillReceiveProps(nextProps) {
@@ -26,7 +31,7 @@ class GeosuggestField extends Component {
   }
 
   handleSuggestSelect = suggest => {
-    this.props.input.onChange(getSuggestedCity(suggest))
+    this.props.input.onChange(suggest.label)
     this.props.onSuggestSelect(suggest)
   }
 
@@ -60,7 +65,11 @@ class GeosuggestField extends Component {
         <Col {...breakpoints.input}>
           <Form.Field error={touched && error !== undefined}>
             <Geosuggest
+              {...input}
               ref={node => this.input = node}
+              autoActivateFirstSuggest
+              country="fr"
+              getSuggestLabel={getSuggestLabel}
               id={input.name}
               initialValue={input.value}
               location={createLatLngObject(center[0], center[1])}

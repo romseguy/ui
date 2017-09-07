@@ -1,6 +1,5 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
-import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { actions as tooltipActions } from 'redux-tooltip'
 
@@ -353,7 +352,6 @@ const mapDispatchToProps = (dispatch, {routeType}) => {
 }
 
 export default compose(
-  translate(),
   connect(
     mapStateToProps,
     mapDispatchToProps

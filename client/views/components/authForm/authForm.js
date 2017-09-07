@@ -1,7 +1,6 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { reduxForm } from 'redux-form'
-import { translate } from 'react-i18next'
 
 import { Form as UIForm } from 'views/components/layout'
 
@@ -53,6 +52,5 @@ class AuthForm extends Component {
 export default compose(
   reduxForm({
     form: 'AuthForm'
-  }),
-  translate(),
+  })
 )(AuthForm)

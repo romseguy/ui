@@ -1,6 +1,4 @@
-import { compose } from 'ramda'
 import React from 'react'
-import { translate } from 'react-i18next'
 
 import { Segment } from 'views/components/layout'
 
@@ -18,4 +16,4 @@ function About({t}) {
   )
 }
 
-export default compose(translate())(About)
+export default About

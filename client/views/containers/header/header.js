@@ -74,15 +74,21 @@ class HeaderContainer extends Component {
 
         onSubmit: async function handleSetLocationFormSubmit(values, onClose) {
           let {city, department, marker} = values
+          let geocodingResult = null
 
           if (!marker) {
-            const res = await geo.geocodeCity(city)
-            const {lat, lng} = getGeocodedLocation(res)
+            geocodingResult = await geo.geocodeCity(city)
+
+            const {lat, lng} = getGeocodedLocation(geocodingResult)
             marker = [lat, lng]
-            department = getGeocodedDepartment(res)
-          } else if (!department) {
-            const res = await geo.geocodeCity(city)
-            department = getGeocodedDepartment(res)
+          }
+
+          if (!department) {
+            if (!geocodingResult) {
+              geocodingResult = await geo.geocodeCity(city)
+            }
+
+            department = getGeocodedDepartment(geocodingResult)
           }
 
           setCity(city)
@@ -93,14 +99,13 @@ class HeaderContainer extends Component {
           typeof onClose === 'function' && onClose()
         },
 
-        onSuggestSelect: function handleSuggestSelect(suggest) {
+        onSuggestSelect: async function handleSuggestSelect(suggest) {
           const {lat, lng} = suggest.location
           change('SetLocationForm', 'marker', [lat, lng])
 
-          geo.getReverseGeocoding(lat, lng).then(res => {
-            const department = getGeocodedDepartment(res)
-            change('SetLocationForm', 'department', department)
-          })
+          const res = await geo.getReverseGeocoding(lat, lng)
+          const department = getGeocodedDepartment(res)
+          change('SetLocationForm', 'department', department)
         },
         title: t('form:setLocation.header')
       })

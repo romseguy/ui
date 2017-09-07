@@ -10,14 +10,9 @@ import Icon from 'views/components/icon'
 import { Grid, NoPadCol as Col } from 'views/components/layout'
 
 
-/*const Parrot = styled(Icon)`
+const Parrot = styled(Icon)`
  display: inline-block !important;
  `
- <Parrot
- height={14}
- name="parrot"
- width={14}
- />*/
 
 
 function FooterContainer({t}) {
@@ -28,8 +23,14 @@ function FooterContainer({t}) {
       verticalAlign="middle"
     >
       <Col computer={14}>
-        {/* <Icon name="flag outline" />{t('app_title')}{' '}<Icon name="leaf"/> */}
-        {t('app_title')} | {' '}
+        {t('app_title')}
+        {' '}
+        <Parrot
+          height={14}
+          name="parrot"
+          width={14}
+        />
+        {' '}
 
         <FooterLink to={routerActions.aboutRoute()}>
           {t('about')}

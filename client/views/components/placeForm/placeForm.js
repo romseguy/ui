@@ -14,28 +14,45 @@ import PlaceFormSelector from './placeFormSelector'
 
 
 class PlaceForm extends Component {
-  state = {isLoading: true}
 
-  componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed}) {
-    if (isScriptLoaded && !this.props.isScriptLoaded) { // load finished
-      if (isScriptLoadSucceed) {
-        this.setState(p => ({isLoading: false}))
+  state = {
+    isLoading: true
+  }
+
+  componentDidMount() {
+    const {isLoading, isScriptLoaded, isScriptLoadSucceed} = this.props
+
+    if (!isLoading) { // parent data container finished loading
+      if (isScriptLoaded) {
+        if (isScriptLoadSucceed) {
+          this.setIsLoading(false)
+        } else {
+          this.setIsLoading(null)
+        }
       }
     }
   }
 
-  componentDidMount() {
-    const {isScriptLoaded, isScriptLoadSucceed} = this.props
-    if (isScriptLoaded && isScriptLoadSucceed) {
-      this.setState(p => ({isLoading: false}))
+  componentWillReceiveProps({isLoading, isScriptLoaded, isScriptLoadSucceed}) {
+    if (!isLoading) { // parent data container finished loading
+      if (isScriptLoaded) { // script finished loading
+        if (isScriptLoadSucceed) {
+          this.setIsLoading(false)
+        } else {
+          this.setIsLoading(null)
+        }
+      }
     }
+  }
+
+  setIsLoading(isLoading) {
+    this.setState(p => ({isLoading}))
   }
 
   render() {
     const {
       disconnectedPlaces,
       formValues,
-      isLoading,
       mustCreate,
       routeType,
       routeTypes,
@@ -46,8 +63,14 @@ class PlaceForm extends Component {
       onSuggestSelect
     } = this.props
 
-    if (this.state.isLoading || isLoading) {
+    const {
+      isLoading
+    } = this.state
+
+    if (isLoading) {
       return <Loader active inline="centered"/>
+    } else if (process.env.NODE_ENV !== 'development' && isLoading === null) {
+      return <span>{t('form:failed_loading')}</span>
     }
 
     let readOnly = false

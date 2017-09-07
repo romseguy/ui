@@ -1,5 +1,5 @@
 query userForm($username: String!) {
-  myFollowees {
+  myRelatives {
     id
   }
   user(username: $username) {
