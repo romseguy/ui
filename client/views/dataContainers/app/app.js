@@ -14,11 +14,6 @@ import currentUserQuery from './currentUser.query.graphql'
 
 
 class App extends Component {
-
-  handleTitleIconClick = event => {
-    this.forceUpdate()
-  }
-
   render() {
     const {currentUserQuery: {currentUser}} = this.props
 
@@ -30,7 +25,7 @@ class App extends Component {
           header={
             <Header
               currentUser={currentUser}
-              onTitleIconClick={this.handleTitleIconClick}
+              forceUpdate={() => this.forceUpdate()}
             />
           }
           footer={

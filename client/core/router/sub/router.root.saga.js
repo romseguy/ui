@@ -74,7 +74,8 @@ export function* placeViewSaga(payload, settings) {
   const {centre} = settings
 
   yield call(setCentreSaga, centre)
-  yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`, {i18n: true})
+  //yield call(setTitleSaga, `${i18n.t('header:place_profile')} ${placeName}`, {i18n: true})
+  yield call(setTitleSaga, `${placeName}`, {i18n: true})
 
   /*
   try {

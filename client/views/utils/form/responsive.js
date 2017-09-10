@@ -24,8 +24,8 @@ export const LocationFormBreakpoints = {
     widescreen: 4
   },
   input: {
-    mobile: 16,
-    tablet: 16,
+    mobile: 15,
+    tablet: 15,
     computer: 11,
     largeScreen: 11,
     widescreen: 11
@@ -41,8 +41,8 @@ export const PlaceFormBreakpoints = {
     widescreen: 4
   },
   input: {
-    mobile: 16,
-    tablet: 16,
+    mobile: 15,
+    tablet: 15,
     computer: 11,
     largeScreen: 11,
     widescreen: 11

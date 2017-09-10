@@ -39,6 +39,7 @@ function AtomsToolbox({toolboxAtoms, isOpen, onClose}) {
               <DraggableToolboxItem
                 id={tooltipName}
                 itemAttributes={toolboxAtom}
+                style={{cursor: 'move', padding: '0.5rem 0'}}
               >
                 <Label basic image>
                   <Atom
@@ -81,7 +82,8 @@ const mapStateToProps = (state, props) => {
     toolboxAtoms.push({
       backgroundColor: 'transparent',
       height: 50,
-      image: atomImages.yellow,
+      image: entities.monad,
+      imageSelected: entities.monad_selected,
       isNew: true,
       mine: true,
       name: t('canvas:persons.new'),

@@ -22,8 +22,8 @@ class MainPanelContainer extends Component {
 
   static getDimensions() {
     const {innerHeight, innerWidth} = window
-    let mapHeight = innerHeight - 42
-    let canvasHeight = innerHeight - 106
+    let mapHeight = innerHeight - 48
+    let canvasHeight = innerHeight - 112
     let canvasWidth = innerWidth - 30
 
     if (innerWidth < 767) {

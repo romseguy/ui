@@ -1,6 +1,7 @@
 import { compose } from 'ramda'
 import React, { Component } from 'react'
 import scriptLoader from 'react-async-script-loader'
+import { translate } from 'react-i18next'
 import { reduxForm } from 'redux-form'
 
 import {
@@ -10,6 +11,7 @@ import {
 } from 'views/components/layout'
 
 import PlaceFormFields from './placeFormFields'
+import PlaceFormSelectFields from './placeFormSelectFields'
 import PlaceFormSelector from './placeFormSelector'
 
 
@@ -49,6 +51,24 @@ class PlaceForm extends Component {
     this.setState(p => ({isLoading}))
   }
 
+  handleSaveClick = event => {
+    const {
+      onSubmit,
+      handleSubmit
+    } = this.props
+
+    handleSubmit(event, values => onSubmit(values))
+  }
+
+  handleViewClick = event => {
+    const {
+      formValues,
+      onViewClick
+    } = this.props
+
+    typeof onViewClick === 'function' && onViewClick(formValues)
+  }
+
   render() {
     const {
       disconnectedPlaces,
@@ -56,10 +76,12 @@ class PlaceForm extends Component {
       mustCreate,
       routeType,
       routeTypes,
+      submitting,
       t,
       userLocation,
       handleSubmit,
       onMapClick,
+      onSubmit,
       onSuggestSelect
     } = this.props
 
@@ -75,20 +97,26 @@ class PlaceForm extends Component {
 
     let readOnly = false
 
-    const showSelector = routeType === routeTypes.ME_PLACES_ADD && !mustCreate
-    const showFields = !showSelector || formValues.action === 'create'
-    const showSubmit = !showSelector || !!formValues.action
+    const showSelector = routeType === routeTypes.ME_PLACES_ADD && !mustCreate && disconnectedPlaces.length > 0
+    const showSelectFields = formValues.action === 'select'
+    const showFields = formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || !disconnectedPlaces.length
 
     return (
       <UIForm
         loading={false}
-        onSubmit={handleSubmit}
       >
         {showSelector && (
-          <PlaceFormSelector
+          <PlaceFormSelector t={t}/>
+        )}
+
+        {showSelectFields && (
+          <PlaceFormSelectFields
             disconnectedPlaces={disconnectedPlaces}
             formValues={formValues}
+            submitting={submitting}
             t={t}
+            onSaveClick={this.handleSaveClick}
+            onViewClick={this.handleViewClick}
           />
         )}
 
@@ -99,12 +127,9 @@ class PlaceForm extends Component {
             readOnly={readOnly}
             t={t}
             onMapClick={onMapClick}
+            onSubmit={onSubmit}
             onSuggestSelect={onSuggestSelect}
           />
-        )}
-
-        {showSubmit && (
-          <Button type="submit">{t('form:place.save')}</Button>
         )}
       </UIForm>
     )
@@ -116,5 +141,6 @@ export default compose(
   reduxForm({
     form: 'PlaceForm',
     enableReinitialize: true
-  })
+  }),
+  translate()
 )(PlaceForm)

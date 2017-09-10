@@ -9,11 +9,12 @@ class DraggableToolboxItem extends React.Component {
     const {
       dropEffect,
       connectDragSource,
-      children
+      children,
+      style,
     } = this.props
 
     const content = (
-      <li style={{cursor: 'move'}}>
+      <li style={style}>
         {children}
       </li>
     )

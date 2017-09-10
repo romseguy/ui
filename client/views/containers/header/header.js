@@ -1,14 +1,15 @@
+import PropTypes from 'prop-types'
 import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { gql, graphql } from 'react-apollo'
+import { getContext } from 'recompose'
 import { change } from 'redux-form'
 import { connect } from 'react-redux'
 
 import geo from 'utils/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'utils/geo'
 
-import { client } from 'core/apollo'
 import { meActions, getMeCentre } from 'core/me'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
@@ -43,11 +44,56 @@ class HeaderContainer extends Component {
     })
   }
 
+  handleConnectIconClick = event => {
+    // todo: route /me/place/:name/connect
+    // todo: check wheter user is connected to the place already and display unlinkify icon -> confirm modal -> delete userplace
+  }
+
+  handleLocationIconClick = event => {
+    const {
+      client,
+      forceUpdate,
+      rootRoute,
+      routePayload,
+      routeType,
+      setMeCenter,
+      userLocation
+    } = this.props
+
+    if ([routerActions.ROOT].includes(routeType)) {
+      setMeCenter([userLocation.lat, userLocation.lng])
+      typeof forceUpdate === 'function' && forceUpdate()
+    }
+    else if ([routerActions.ME].includes(routeType)) {
+      setMeCenter([userLocation.lat, userLocation.lng])
+      rootRoute()
+    }
+    else if ([
+        routerActions.ME_PLACE_VIEW,
+        routerActions.PLACE_VIEW
+      ].includes(routeType) && routePayload.name) {
+      const {name: placeName} = routePayload
+      const {place} = client.readQuery({
+        query: placeQuery,
+        variables: {title: placeName},
+      })
+
+      setMeCenter([place.latitude, place.longitude])
+      rootRoute()
+    }
+  }
+
+  handleLogout = event => {
+    const {doLogout, rootRoute} = this.props
+
+    doLogout().then(() => {
+      rootRoute()
+    })
+  }
+
   handleTitleClick = event => {
     const {
       change,
-      rootRoute,
-      routePayload,
       routeType,
       setCity,
       setDepartment,
@@ -58,12 +104,7 @@ class HeaderContainer extends Component {
       userLocation
     } = this.props
 
-    const placeRouteTypes = [
-      routerActions.ME_PLACE_VIEW,
-      routerActions.PLACE_VIEW
-    ]
-
-    if (routeType === routerActions.ROOT) {
+    if ([routerActions.ROOT].includes(routeType)) {
       setModal(modalConstants.SET_LOCATION, {
         isOpen: true,
         center: [userLocation.lat, userLocation.lng],
@@ -110,39 +151,6 @@ class HeaderContainer extends Component {
         title: t('form:setLocation.header')
       })
     }
-    // move map to place location
-    else if (placeRouteTypes.includes(routeType) && routePayload.name) {
-      const {name: placeName} = routePayload
-      const {place: {latitude, longitude}} = client.readQuery({
-        query: placeQuery,
-        variables: {title: placeName},
-      })
-
-      setMeCenter([latitude, longitude])
-      rootRoute()
-    }
-  }
-
-  handleTitleIconClick = event => {
-    const {
-      setMeCenter,
-      userLocation,
-      onTitleIconClick
-    } = this.props
-
-    const {lat, lng} = userLocation
-    const center = [lat, lng]
-    setMeCenter(center)
-
-    typeof onTitleIconClick === 'function' && onTitleIconClick(event)
-  }
-
-  handleLogout = event => {
-    const {doLogout, rootRoute} = this.props
-
-    doLogout().then(() => {
-      rootRoute()
-    })
   }
 
   render() {
@@ -159,16 +167,17 @@ class HeaderContainer extends Component {
       isStacked
     } = this.state
 
-    let titleIcon = <Atom type={centre} height={16} width={16}/>
-
-    if (routeType === routerActions.ROOT) {
-      titleIcon = <Icon name="location arrow"/>
-    }
-    else if (routeType === routerActions.ABOUT) {
-      titleIcon = null
-    }
-
+    let atomIcon = <Atom type={centre} height={16} width={16}/>
+    let connectIcon = <Icon name="linkify"/>
+    let connectIconTitle = t('header:connect.title.place')
+    let locationIcon = <Icon name="location arrow"/>
+    let locationIconTitle = t('header:location.title.default')
     let {title} = this.props
+    let subtitle = ''
+
+    let onLocationIconClick = this.handleLocationIconClick
+    let onTitleClick = this.handleTitleClick
+    let onConnectIconClick = this.handleConnectIconClick
 
     if ([
         routerActions.ME,
@@ -177,10 +186,25 @@ class HeaderContainer extends Component {
         routerActions.ME_USERS_ADD,
         routerActions.ME_USER_EDIT
       ].includes(routeType)) {
-      isLoading = false
       title = `${t('header:my_profile')}`
+
+      onTitleClick = null
     }
-    else if ([routerActions.ROOT].includes(routeType)) {
+
+    if (![routerActions.ME_PLACE_VIEW, routerActions.PLACE_VIEW].includes(routeType)) {
+      connectIcon = null
+    } else {
+      locationIconTitle = t('header:location.title.place')
+      onTitleClick = null
+    }
+
+    if (routeType === routerActions.ABOUT) {
+      locationIcon = null
+    }
+
+    if (routeType === routerActions.ROOT) {
+      atomIcon = null
+
       if (city === null) {
         title = t('loading')
       }
@@ -189,10 +213,9 @@ class HeaderContainer extends Component {
       }
       else {
         title = city
+        subtitle = t('header:title')
       }
     }
-
-    let isLoading = title === null
 
     return (
       <HeaderGrid
@@ -202,9 +225,7 @@ class HeaderContainer extends Component {
         verticalAlign="middle"
       >
         <Col computer={3}>
-          <HeaderLink
-            to={routerActions.rootRoute()}
-          >
+          <HeaderLink to={routerActions.rootRoute()}>
             {t('header:map')}
           </HeaderLink>
         </Col>
@@ -214,12 +235,15 @@ class HeaderContainer extends Component {
           textAlign={isStacked ? 'left' : 'center'}
         >
           <HeaderTitle
-            isLoading={isLoading}
-            iconTitle={t('header:icon_title')}
-            title={t('header:title')}
-            titleIcon={titleIcon}
-            onClick={this.handleTitleClick}
-            onIconClick={this.handleTitleIconClick}
+            atomIcon={atomIcon}
+            connectIcon={connectIcon}
+            connectIconTitle={connectIconTitle}
+            locationIcon={locationIcon}
+            locationIconTitle={locationIconTitle}
+            title={subtitle}
+            onLocationIconClick={onLocationIconClick}
+            onClick={onTitleClick}
+            onConnectIconClick={onConnectIconClick}
           >
             {title}
           </HeaderTitle>
@@ -301,5 +325,6 @@ export default compose(
     mapDispatchToProps
   ),
   graphql(logoutMutation, logoutMutationConfig),
-  translate()
+  translate(),
+  getContext({client: PropTypes.object})
 )(HeaderContainer)

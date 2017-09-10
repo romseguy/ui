@@ -52,7 +52,7 @@ class GeosuggestField extends Component {
       error
     } = meta
 
-    const isError = touched && error
+    const isError = touched && !!error
 
     return (
       <Row>
@@ -63,7 +63,7 @@ class GeosuggestField extends Component {
         </Col>
 
         <Col {...breakpoints.input}>
-          <Form.Field error={touched && error !== undefined}>
+          <Form.Field error={isError}>
             <Geosuggest
               {...input}
               ref={node => this.input = node}

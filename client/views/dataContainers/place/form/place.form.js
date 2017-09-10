@@ -10,16 +10,17 @@ import { withHandlers } from 'recompose'
 import { merge } from 'ramda'
 
 import geo from 'utils/api/geo'
-import { getGeocodedLocation, getGeocodedDepartment, getGeocodedProperty } from 'utils/geo'
+import { getGeocodedDepartment, getGeocodedProperty } from 'utils/geo'
 
 import { roleTypes } from 'core/constants'
 import { canvasActions, getCanvasNodes } from 'core/canvas'
+import { getPlaceFormValues } from 'core/form'
+import { routerActions } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
-import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getMeCentre } from 'core/me'
 
+import { formValuesToPlace, placeToNode } from 'views/utils/transformers'
 import { getSuggestedDepartment } from 'views/utils/geosuggest'
-import { placeToNode } from 'views/utils/nodes'
 
 import PlaceForm, { PlaceFormHeader, PlaceFormLayout } from 'views/components/placeForm'
 
@@ -27,45 +28,7 @@ import placeQuery from '../place.query.graphql'
 import placeFormQuery from './place.form.query.graphql'
 import createPlaceMutation from './createPlace.mutation.graphql'
 import createUserPlaceMutation from './createUserPlace.mutation.graphql'
-import updatePlaceMutation from './updateUserPlace.mutation.graphql'
-
-
-async function formValuesToPlace(formValues) {
-  let place = {
-    city: formValues.city,
-    department: formValues.department,
-    latitude: formValues.marker && formValues.marker[0],
-    longitude: formValues.marker && formValues.marker[1],
-    title: formValues.title,
-  }
-
-  let geocodingResult = null
-
-  if (!place.latitude || !place.longitude) {
-    geocodingResult = await geo.geocodeCity(formValues.city)
-
-    const {lat, lng} = getGeocodedLocation(geocodingResult)
-
-    place = {
-      ...place,
-      latitude: lat,
-      longitude: lng
-    }
-  }
-
-  if (!place.department) {
-    if (!geocodingResult) {
-      geocodingResult = await geo.geocodeCity(formValues.city)
-    }
-
-    place = {
-      ...place,
-      department: getGeocodedDepartment(geocodingResult)
-    }
-  }
-
-  return place
-}
+import updatePlaceMutation from './updatePlace.mutation.graphql'
 
 
 export const handlers = {
@@ -85,6 +48,8 @@ export const handlers = {
       doCreatePlace,
       doCreateUserPlace,
       doUpdatePlace,
+      mine,
+      placeId,
       routes,
       routeType,
       setNodes
@@ -105,15 +70,13 @@ export const handlers = {
       const {id, title} = data.createPlace
 
       if (selectedNode) {
-        place = {
-          ...place,
-          id,
-          x: selectedNode.x,
-          y: selectedNode.y
-        }
         nodes = nodes.map(node => {
           if (node.id === selectedNode.id) {
-            return placeToNode(selectedNode.id, place, {mine: true})
+            return placeToNode(selectedNode.id, date.createPlace.place, {
+              mine: true,
+              x: selectedNode.x,
+              y: selectedNode.y
+            })
           }
           return node
         })
@@ -140,11 +103,6 @@ export const handlers = {
       }
 
       if (selectedNode) {
-        place = {
-          ...place,
-          x: selectedNode.x,
-          y: selectedNode.y
-        }
         userPlace = {
           ...userPlace,
           x: selectedNode.x,
@@ -152,7 +110,11 @@ export const handlers = {
         }
         nodes = nodes.map(node => {
           if (node.id === selectedNode.id) {
-            return placeToNode(nodes.length, place, {mine: false})
+            return placeToNode(selectedNode.id, place, {
+              mine: false,
+              x: selectedNode.x,
+              y: selectedNode.y
+            })
           }
           return node
         })
@@ -169,9 +131,23 @@ export const handlers = {
       if (routeType === routerActions.ME_PLACE_EDIT) {
         const place = await formValuesToPlace(formValues)
 
-        // todo
-        const {data} = await doUpdatePlace({place})
-        mePlaceEditRoute(data.title)
+        const {data: {updatePlace: updatedPlace}} = await doUpdatePlace({placeId, place})
+
+        if (selectedNode) {
+          nodes = nodes.map(node => {
+            if (node.id === selectedNode.id) {
+              return placeToNode(selectedNode.id, updatedPlace, {
+                mine,
+                x: selectedNode.x,
+                y: selectedNode.y
+              })
+            }
+            return node
+          })
+
+          setNodes(nodes)
+        }
+        mePlaceEditRoute(updatedPlace.title)
       }
     }
   },
@@ -180,11 +156,14 @@ export const handlers = {
     const department = getSuggestedDepartment(suggest)
     props.change('PlaceForm', 'department', department)
     props.change('PlaceForm', 'marker', null)
+  },
+
+  onViewClick: props => formValues => {
+    props.routes.placeViewRoute(formValues.selectedPlaceTitle)
   }
 }
 function PlaceFormContainer(props) {
   const {
-    // state
     centre,
     disconnectedPlaces,
     formValues,
@@ -195,13 +174,10 @@ function PlaceFormContainer(props) {
     t,
     title,
     userLocation,
-
-    // options
-
-    // handlers
     onMapClick,
     onSubmit,
-    onSuggestSelect
+    onSuggestSelect,
+    onViewClick
   } = props
 
   return (
@@ -225,6 +201,7 @@ function PlaceFormContainer(props) {
         onMapClick={onMapClick}
         onSubmit={onSubmit}
         onSuggestSelect={onSuggestSelect}
+        onViewClick={onViewClick}
       />
     </PlaceFormLayout>
   )
@@ -232,17 +209,16 @@ function PlaceFormContainer(props) {
 
 
 const mapStateToProps = state => {
-  const {name: placeName} = getPayload(state)
   const centre = getMeCentre(state)
+  const formValues = getPlaceFormValues(state)
   const nodes = getCanvasNodes(state)
   const title = getTitle(state)
   const userLocation = getUserLocation(state)
 
   return {
     centre,
-    formValues: state.form.PlaceForm ? state.form.PlaceForm.values : {},
+    formValues,
     userLocation,
-    placeName,
     nodes,
     title
   }
@@ -257,28 +233,46 @@ const placeFormQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        title: props.placeName || ''
+        title: props.routePayload.name || ''
       }
     }
   },
-  props({data}) {
+  props({data, ownProps}) {
     const {myPlaces, place, places, loading} = data
-
-    let initialValues = {}
-
-    if (place) {
-      initialValues = merge(initialValues, {
-        city: place.city,
-        department: place.department,
-        marker: [place.latitude, place.longitude],
-        title: place.title
-      })
-    }
+    const {nodes, routes, routeType} = ownProps
+    const selectedNode = nodes.find(node => node.selected)
 
     let props = {
-      initialValues,
       isLoading: loading,
-      mustCreate: !places || !places.length,
+      mustCreate: !places || !places.length
+    }
+
+    if (place) {
+      const {
+        id: placeId,
+        city,
+        department,
+        latitude,
+        longitude,
+        title
+      } = place
+      const mine = myPlaces.find(myPlace => myPlace.id === placeId)
+
+      props = merge(props, {
+        initialValues: {
+          city,
+          department,
+          marker: [latitude, longitude],
+          title
+        },
+        mine,
+        placeId
+      })
+    } else if (
+      !loading && [routerActions.ME_PLACE_EDIT].includes(routeType)
+      && !selectedNode.isNew
+    ) {
+      routes.meRoute()
     }
 
     if (places) {
@@ -325,9 +319,12 @@ const createUserPlaceMutationConfig = {
 const updatePlaceMutationConfig = {
   props({ownProps, mutate}) {
     return {
-      doUpdatePlace({place}) {
+      doUpdatePlace({placeId, place}) {
         return mutate({
-          variables: {}
+          variables: {
+            placeId,
+            place
+          }
         })
       }
     }

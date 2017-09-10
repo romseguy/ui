@@ -5,6 +5,7 @@ import { reduxForm, Field } from 'redux-form'
 
 import { keepCities } from 'views/utils/geosuggest'
 import { LocationFormBreakpoints as breakpoints } from 'views/utils/form/responsive'
+import { required } from 'views/utils/form/validators'
 
 import GeosuggestField from 'views/components/geosuggestField'
 import Icon from 'views/components/icon'
@@ -85,39 +86,36 @@ class SetLocationForm extends Component {
     let content = null
 
     if (isLoading) {
-      content = <Loader active inline="centered"/>
-    }  else if (process.env.NODE_ENV !== 'development' && isLoading === null) {
+      content = <span>{t('loading')}</span>
+    } else if (process.env.NODE_ENV !== 'development' && isLoading === null) {
       content = <span>{t('form:failed_loading')}</span>
     } else {
       content = (
-        <Grid>
-          <Row>
-            <Col mobile={16} tablet={16} computer={11}>
-              <Field
-                name="city"
-                component={GeosuggestField}
-                breakpoints={breakpoints}
-                id="city"
-                center={center}
-                label={t('form:setLocation.city')}
-                skipSuggest={keepCities}
-                t={t}
-                onSuggestSelect={this.handleSuggestSelect}
-              />
-            </Col>
+        <Grid verticalAlign="middle">
+          <Field
+            name="city"
+            component={GeosuggestField}
+            breakpoints={breakpoints}
+            id="city"
+            center={center}
+            label={t('form:setLocation.city')}
+            skipSuggest={keepCities}
+            t={t}
+            validate={[required({msg: t('errors:required')})]}
+            onSuggestSelect={this.handleSuggestSelect}
+          />
 
-            <Field
-              name="department"
-              component="input"
-              type="hidden"
-            />
+          <Field
+            name="department"
+            component="input"
+            type="hidden"
+          />
 
-            <Field
-              name="marker"
-              component="input"
-              type="hidden"
-            />
-          </Row>
+          <Field
+            name="marker"
+            component="input"
+            type="hidden"
+          />
         </Grid>
       )
     }

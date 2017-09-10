@@ -7,7 +7,7 @@ import {
   Radio,
   Row
 } from 'views/components/layout'
-import Select from 'views/components/select'
+import Select from 'views/components/selectField'
 
 function RadioGroup(props) {
   const {

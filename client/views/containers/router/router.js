@@ -100,7 +100,7 @@ class RouterContainer extends Component {
       )
 
       if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(selectedRouteType)) {
-        sidePanelEl = <PlaceForm {...this.props}/>
+        sidePanelEl = <PlaceForm {...this.props} routeType={selectedRouteType}/>
       }
       if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(selectedRouteType)) {
         sidePanelEl = <SymbolForm {...this.props}/>

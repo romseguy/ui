@@ -7,7 +7,7 @@ import { required } from 'views/utils/form/validators'
 
 import GeosuggestField from 'views/components/geosuggestField'
 import InputField from 'views/components/inputField'
-import { Grid } from 'views/components/layout'
+import { Grid, Button, Row, NoPadCol as Col } from 'views/components/layout'
 import MapField from 'views/components/mapField'
 
 
@@ -34,7 +34,10 @@ class PlaceFormFields extends Component {
       userLocation
     } = props
 
-    const {marker} = formValues
+    const {
+      marker
+    } = formValues || {}
+
     const hasMarker = Array.isArray(marker) && marker.length === 2
     let latitude = hasMarker ? marker[0] : userLocation.lat
     let longitude = hasMarker ? marker[1] : userLocation.lng
@@ -65,7 +68,7 @@ class PlaceFormFields extends Component {
     const {center, zoom} = this.state
 
     return (
-      <Grid>
+      <Grid verticalAlign="middle">
         <Field
           name="title"
           component={InputField}
@@ -110,6 +113,12 @@ class PlaceFormFields extends Component {
           onBoundsChanged={this.handleBoundsChange}
           onMapClick={onMapClick}
         />
+
+        <Row>
+          <Col>
+            <Button type="submit">{t('form:place.save')}</Button>
+          </Col>
+        </Row>
 
       </Grid>
     )

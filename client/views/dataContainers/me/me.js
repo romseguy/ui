@@ -22,6 +22,21 @@ class Me extends Component {
     this.props.canvasActions.setNodes([])
   }
 
+  setCreateRoute = node => {
+    const {routes} = this.props
+    const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
+
+    if (node.type === atomTypes.LOCATION) {
+      mePlacesAddRoute()
+    }
+    else if (node.type === atomTypes.PERSON) {
+      meUsersAddRoute()
+    }
+    else if (symbolTypes[node.type]) {
+      meSymbolsAddRoute()
+    }
+  }
+
   setEditRoute = node => {
     const {routes} = this.props
     const {mePlaceEditRoute, meSymbolEditRoute, meUserEditRoute} = routes
@@ -77,7 +92,11 @@ class Me extends Component {
   }
 
   handleEditSelectedNode = node => {
-    this.setEditRoute(node)
+    if (node.isNew) {
+      this.setCreateRoute(node)
+    } else {
+      this.setEditRoute(node)
+    }
   }
 
   handleModeChange = async key => {
@@ -139,7 +158,12 @@ class Me extends Component {
     switch (currentMode) {
       case modeTypes.EDIT:
         selectNode(true, node)
-        this.setEditRoute(node)
+
+        if (node.isNew) {
+          this.setCreateRoute(node)
+        } else {
+          this.setEditRoute(node)
+        }
         break
     }
   }

@@ -1,7 +1,7 @@
 import { call, put, select } from 'redux-saga/effects'
 import { canvasActions, getCanvasNodes } from 'core/canvas'
 
-import { personToNode, userPlaceToLocationNode } from 'views/utils/nodes'
+import { personToNode, userPlaceToLocationNode } from 'views/utils/transformers'
 
 
 export function* mergePlaceIntoPersonNodesSaga(place = {users:[]}) {

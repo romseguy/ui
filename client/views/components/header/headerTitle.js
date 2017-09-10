@@ -21,30 +21,71 @@ cursor: pointer;
 color: blue;
 `
 
-const titleMaxLength = 100
 
-
-function HeaderTitle({children, iconTitle, isLoading, title, titleIcon, onClick, onIconClick}) {
-
-  if (typeof children === 'string' && children.length > titleMaxLength) {
-    children = `${children.substring(0, titleMaxLength)}...`
-  }
+function HeaderTitle(props) {
+  const {
+    children,
+    atomIcon,
+    atomIconTitle,
+    connectIcon,
+    connectIconTitle,
+    title,
+    locationIcon,
+    locationIconTitle,
+    onAtomIconClick,
+    onLocationIconClick,
+    onClick,
+    onConnectIconClick
+  } = props
 
   return (
-    <Segment basic loading={isLoading}>
-      <Link
-        title={iconTitle}
-        onClick={onIconClick}
-      >
-        {titleIcon}
-      </Link>
-      <Link
-        title={title}
-        onClick={onClick}
-      >
-        {children}
-      </Link>
-    </Segment>
+    <div>
+      {atomIcon && onAtomIconClick && (
+        <Link
+          title={atomIconTitle}
+          onClick={onAtomIconClick}
+        >
+          {atomIcon}
+        </Link>
+      )}
+
+      {atomIcon && !onAtomIconClick && (
+        <span title={atomIconTitle}> {atomIcon}</span>
+      )}
+
+      {onClick && (
+        <Link
+          title={title}
+          onClick={onClick}
+        >
+          {children}
+        </Link>
+      )}
+
+      {!onClick && (
+        <span title={title}>{children}</span>
+      )}
+
+      {' '}
+
+      {locationIcon && onLocationIconClick && (
+        <Link
+          title={locationIconTitle}
+          onClick={onLocationIconClick}
+        >
+          {locationIcon}
+        </Link>
+      )}
+
+      {connectIcon && onConnectIconClick && (
+        <Link
+          title={connectIconTitle}
+          onClick={onConnectIconClick}
+        >
+          {connectIcon}
+        </Link>
+      )}
+    </div>
   )
 }
 

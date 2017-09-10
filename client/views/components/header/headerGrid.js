@@ -8,4 +8,5 @@ import { media } from 'views/utils/responsive'
 export default styled(Grid)`
 ${media.desktop`box-shadow: 0px -1px 10px black;`}
 ${media.tablet`box-shadow: none;`}
+padding: 5px !important;
 `

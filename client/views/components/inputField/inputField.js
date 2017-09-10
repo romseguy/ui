@@ -38,7 +38,7 @@ class Input extends Component {
         </Col>
 
         <Col {...breakpoints.input}>
-          <Form.Field error={touched && error !== undefined}>
+          <Form.Field error={isError}>
             <input
               {...input}
               id={input.name}

@@ -26,6 +26,7 @@ class AuthForm extends Component {
     return (
       <UIForm
         error={hasClientErrors || hasServerErrors}
+        loading={false}
         onSubmit={handleSubmit(onSubmit)}
       >
         {currentStep === steps.FIRST && (

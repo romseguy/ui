@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 
 import { Loader } from 'views/components/layout'
-import { placeToNode } from 'views/utils/nodes'
+import { placeToNode } from 'views/utils/transformers'
 
 import placesQuery from './places.query.graphql'
 
