@@ -64,8 +64,20 @@ class PlaceFormFields extends Component {
   }
 
   render() {
-    const {formValues, userLocation, readOnly, t, onMapClick} = this.props
-    const {center, zoom} = this.state
+    const {
+      formValues,
+      userLocation,
+      readOnly,
+      submitting,
+      t,
+      onMapClick,
+      onSaveClick
+    } = this.props
+
+    const {
+      center,
+      zoom
+    } = this.state
 
     return (
       <Grid verticalAlign="middle">
@@ -116,7 +128,13 @@ class PlaceFormFields extends Component {
 
         <Row>
           <Col>
-            <Button type="submit">{t('form:place.save')}</Button>
+            <Button
+              disabled={submitting}
+              positive
+              onClick={onSaveClick}
+            >{
+              t('form:place.save')}
+              </Button>
           </Col>
         </Row>
 

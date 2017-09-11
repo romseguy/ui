@@ -4,31 +4,25 @@ import React from 'react'
 import { graphql } from 'react-apollo'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
-import { getContext } from 'recompose'
+import { getContext, withHandlers } from 'recompose'
 import { change } from 'redux-form'
-import { withHandlers } from 'recompose'
-import { merge } from 'ramda'
 
 import geo from 'helpers/api/geo'
 import { getGeocodedDepartment, getGeocodedProperty } from 'helpers/geo'
+import { formValuesToPlace, placeToNode } from 'utils/transformers'
+import { getSuggestedDepartment } from 'utils/geosuggest'
 
 import { roleTypes } from 'core/constants'
 import { canvasActions, getCanvasNodes } from 'core/canvas'
 import { getPlaceFormValues } from 'core/form'
-import { routerActions } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
-import { getMeCentre } from 'core/me'
 
-import { formValuesToPlace, placeToNode } from 'utils/transformers'
-import { getSuggestedDepartment } from 'utils/geosuggest'
+import placeQuery from 'graphql/queries/place.query.graphql'
+import PlaceFormDataContainer from 'dataContainers/placeForm'
 
-import PlaceForm, { PlaceFormHeader, PlaceFormLayout } from 'components/placeForm'
-
-import placeQuery from '../place.query.graphql'
-import placeFormQuery from './place.form.query.graphql'
-import createPlaceMutation from './createPlace.mutation.graphql'
-import createUserPlaceMutation from './createUserPlace.mutation.graphql'
-import updatePlaceMutation from './updatePlace.mutation.graphql'
+import createPlaceMutation from 'graphql/mutations/createPlace.mutation.graphql'
+import createUserPlaceMutation from 'graphql/mutations/createUserPlace.mutation.graphql'
+import updatePlaceMutation from 'graphql/mutations/updatePlace.mutation.graphql'
 
 
 export const handlers = {
@@ -162,61 +156,21 @@ export const handlers = {
     props.routes.placeViewRoute(formValues.selectedPlaceTitle)
   }
 }
-function PlaceFormContainer(props) {
-  const {
-    centre,
-    disconnectedPlaces,
-    formValues,
-    initialValues,
-    isLoading,
-    mustCreate,
-    routeType,
-    t,
-    title,
-    userLocation,
-    onMapClick,
-    onSubmit,
-    onSuggestSelect,
-    onViewClick
-  } = props
 
+function PlaceFormContainer(props) {
   return (
-    <PlaceFormLayout fluid>
-      <PlaceFormHeader
-        routeType={routeType}
-        routeTypes={routerActions}
-        t={t}
-        title={title}
-      />
-      <PlaceForm
-        formValues={formValues}
-        initialValues={initialValues}
-        isLoading={isLoading}
-        userLocation={userLocation}
-        mustCreate={mustCreate}
-        disconnectedPlaces={disconnectedPlaces}
-        routeType={routeType}
-        routeTypes={routerActions}
-        t={t}
-        onMapClick={onMapClick}
-        onSubmit={onSubmit}
-        onSuggestSelect={onSuggestSelect}
-        onViewClick={onViewClick}
-      />
-    </PlaceFormLayout>
+    <PlaceFormDataContainer {...props}/>
   )
 }
 
 
 const mapStateToProps = state => {
-  const centre = getMeCentre(state)
   const formValues = getPlaceFormValues(state)
   const nodes = getCanvasNodes(state)
   const title = getTitle(state)
   const userLocation = getUserLocation(state)
 
   return {
-    centre,
     formValues,
     userLocation,
     nodes,
@@ -227,65 +181,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   change,
   setNodes: canvasActions.setNodes
-}
-
-const placeFormQueryConfig = {
-  options: (props) => {
-    return {
-      variables: {
-        title: props.routePayload.name || ''
-      }
-    }
-  },
-  props({data, ownProps}) {
-    const {myPlaces, place, places, loading} = data
-    const {nodes, routes, routeType} = ownProps
-    const selectedNode = nodes.find(node => node.selected)
-
-    let props = {
-      isLoading: loading,
-      mustCreate: !places || !places.length
-    }
-
-    if (place) {
-      const {
-        id: placeId,
-        city,
-        department,
-        latitude,
-        longitude,
-        title
-      } = place
-      const mine = myPlaces.find(myPlace => myPlace.id === placeId)
-
-      props = merge(props, {
-        initialValues: {
-          city,
-          department,
-          marker: [latitude, longitude],
-          title
-        },
-        mine,
-        placeId
-      })
-    } else if (
-      !loading && [routerActions.ME_PLACE_EDIT].includes(routeType)
-      && !selectedNode.isNew
-    ) {
-      routes.meRoute()
-    }
-
-    if (places) {
-      props = merge(props, {
-        // filters out places already belonging to myPlaces
-        disconnectedPlaces: myPlaces ? places.filter(place => {
-          return !myPlaces.find(userPlace => userPlace.place.id === place.id)
-        }) : places
-      })
-    }
-
-    return props
-  }
 }
 
 const createPlaceMutationConfig = {
@@ -332,12 +227,11 @@ const updatePlaceMutationConfig = {
 }
 
 export default compose(
+  translate(),
   connect(mapStateToProps, mapDispatchToProps),
-  graphql(placeFormQuery, placeFormQueryConfig),
   graphql(createPlaceMutation, createPlaceMutationConfig),
   graphql(createUserPlaceMutation, createUserPlaceMutationConfig),
   graphql(updatePlaceMutation, updatePlaceMutationConfig),
   getContext({client: PropTypes.object}),
-  withHandlers(handlers),
-  translate(),
+  withHandlers(handlers)
 )(PlaceFormContainer)

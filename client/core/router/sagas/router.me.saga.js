@@ -4,10 +4,11 @@ import { canvasActions, getCanvasNodesSaga } from 'core/canvas'
 import { routerActions } from 'core/router'
 import { i18n } from 'core/settings'
 
-import placeQuery from 'dataContainers/place/place.query.graphql'
-import currentUserQuery from 'dataContainers/app/currentUser.query.graphql'
+import placeQuery from 'graphql/queries/place.query.graphql'
+import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 
-import { setCentreSaga, setTitleSaga } from './router.sub.saga'
+import setCentreSaga from 'sagas/setCentre.saga'
+import setTitleSaga from 'sagas/setTitle.saga'
 
 
 export function* meSaga(payload, settings) {

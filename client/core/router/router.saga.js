@@ -3,10 +3,10 @@ import { all, call, fork, put, select, spawn, take, takeEvery } from 'redux-saga
 import { delay } from 'redux-saga'
 
 import routes from 'core/routes'
+import getCurrentUserSaga from 'sagas/getCurrentUser.saga'
 
 import { routerActions } from './router.actions'
-import routeSagas from './sub'
-import { getCurrentUserSaga } from './sub/router.sub.saga'
+import routeSagas from './sagas'
 
 
 function* locationChangedSaga({type: routeType, payload, meta}) {

@@ -5,7 +5,7 @@ import { setErrorModalSaga } from 'helpers/modal'
 
 import { routerActions, getRouteType } from 'core/router'
 
-import { mergePlaceIntoPersonNodesSaga, mergeUserPlacesIntoLocationNodesSaga } from './sub/apollo.sub.saga'
+import { mergePlaceIntoPersonNodesSaga, mergeUserPlacesIntoLocationNodesSaga } from './sagas'
 
 
 function* startupSaga() {

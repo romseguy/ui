@@ -1,22 +1,23 @@
 import { call, getContext, put, select, take } from 'redux-saga/effects'
 
-import { canvasActions } from 'core/canvas'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions } from 'core/router'
 import { i18n } from 'core/settings'
 
-import logoutMutation from 'containers/auth/form/logout.mutation.graphql'
-import placeQuery from 'dataContainers/place/place.query.graphql'
-import userQuery from 'dataContainers/user/user.query.graphql'
+import setCentreSaga from 'sagas/setCentre.saga'
+import setDepartmentTitleSaga from 'sagas/setDepartmentTitle.saga'
+import setTitleSaga from 'sagas/setTitle.saga'
 
-import { setCentreSaga, setDepartmentTitle, setTitleSaga } from './router.sub.saga'
+import logoutMutation from 'containers/auth/form/logout.mutation.graphql'
+import placeQuery from 'graphql/queries/place.query.graphql'
+import userQuery from 'dataContainers/user/user.query.graphql'
 
 
 export function* rootSaga(payload, settings) {
   const {centre} = settings
 
   yield call(setCentreSaga, centre)
-  yield call(setDepartmentTitle)
+  yield call(setDepartmentTitleSaga)
 }
 
 export function* aboutSaga(payload, settings) {
@@ -39,7 +40,7 @@ export function* authSaga(payload, settings) {
     }))
   }
 
-  yield call(setDepartmentTitle)
+  yield call(setDepartmentTitleSaga)
 }
 
 export function* logoutSaga(payload, settings) {
@@ -128,5 +129,5 @@ export function* userViewSaga(payload, settings) {
 }
 
 export function* notFoundSaga() {
-  yield call(setDepartmentTitle)
+  yield call(setDepartmentTitleSaga)
 }

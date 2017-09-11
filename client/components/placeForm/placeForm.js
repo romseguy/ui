@@ -10,6 +10,8 @@ import {
   Loader
 } from 'components/layout'
 
+import PlaceFormHeader from './placeFormHeader'
+import PlaceFormLayout from './placeFormLayout'
 import PlaceFormFields from './placeFormFields'
 import PlaceFormSelectFields from './placeFormSelectFields'
 import PlaceFormSelector from './placeFormSelector'
@@ -78,6 +80,7 @@ class PlaceForm extends Component {
       routeTypes,
       submitting,
       t,
+      title,
       userLocation,
       handleSubmit,
       onMapClick,
@@ -102,9 +105,15 @@ class PlaceForm extends Component {
     const showFields = formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || !disconnectedPlaces.length
 
     return (
-      <UIForm
-        loading={false}
-      >
+      <PlaceFormLayout fluid>
+        <PlaceFormHeader
+          routeType={routeType}
+          routeTypes={routeTypes}
+          t={t}
+          title={title}
+        />
+
+      <UIForm loading={isLoading}>
         {showSelector && (
           <PlaceFormSelector t={t}/>
         )}
@@ -125,13 +134,15 @@ class PlaceForm extends Component {
             userLocation={userLocation}
             formValues={formValues}
             readOnly={readOnly}
+            submitting={submitting}
             t={t}
             onMapClick={onMapClick}
-            onSubmit={onSubmit}
+            onSaveClick={this.handleSaveClick}
             onSuggestSelect={onSuggestSelect}
           />
         )}
       </UIForm>
+      </PlaceFormLayout>
     )
   }
 }

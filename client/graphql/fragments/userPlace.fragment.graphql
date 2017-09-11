@@ -1,0 +1,14 @@
+fragment UserPlaceDetails on UserPlace {
+  id
+  place {
+    id
+    city
+    department
+    latitude
+    longitude
+    title
+  }
+  role {
+    id
+  }
+}

@@ -10,7 +10,7 @@ import { entityTypes } from 'utils/types/entities'
 import { modeTypes } from 'utils/canvas'
 import { symbolTypes } from 'utils/types/symbols'
 
-import placeQuery from './place.query.graphql'
+import placeQuery from 'graphql/queries/place.query.graphql'
 
 
 class Place extends Component {

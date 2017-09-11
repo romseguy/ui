@@ -1,8 +1,6 @@
-import { roleTypes } from 'core/constants'
-
 import { placeToNode } from 'utils/nodes'
 
-import { handlers } from './place.form'
+import { handlers } from './placeForm.container'
 
 
 const routes = {
@@ -38,11 +36,11 @@ const expectedSelectedNode = placeToNode(
   {mine: true}
 )
 
-describe('place.form', () => {
+describe('placeFormContainer', () => {
 
-  describe('place.form.handlers', () => {
+  describe('placeFormContainer.handlers', () => {
 
-    describe('place.form.handlers.onSubmit', () => {
+    describe('placeFormContainer.handlers.onSubmit', () => {
 
       describe('create', () => {
 

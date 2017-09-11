@@ -15,8 +15,8 @@ import { modalActions, modalConstants } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { settingsActions, getCity, getDepartment, getTitle, getUserLocation } from 'core/settings'
 
-import placeQuery from 'dataContainers/place/place.query.graphql'
-import currentUserQuery from 'dataContainers/app/currentUser.query.graphql'
+import placeQuery from 'graphql/queries/place.query.graphql'
+import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import logoutMutation from 'containers/auth/form/logout.mutation.graphql'
 
 import { entityTypes } from 'utils/types/entities'
