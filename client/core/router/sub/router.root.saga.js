@@ -1,14 +1,13 @@
-import { call, put, select, take } from 'redux-saga/effects'
+import { call, getContext, put, select, take } from 'redux-saga/effects'
 
-import { client } from 'core/apollo'
 import { canvasActions } from 'core/canvas'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions } from 'core/router'
 import { i18n } from 'core/settings'
 
-import logoutMutation from 'views/containers/auth/form/logout.mutation.graphql'
-import placeQuery from 'views/dataContainers/place/place.query.graphql'
-import userQuery from 'views/dataContainers/user/user.query.graphql'
+import logoutMutation from 'containers/auth/form/logout.mutation.graphql'
+import placeQuery from 'dataContainers/place/place.query.graphql'
+import userQuery from 'dataContainers/user/user.query.graphql'
 
 import { setCentreSaga, setDepartmentTitle, setTitleSaga } from './router.sub.saga'
 
@@ -45,6 +44,7 @@ export function* authSaga(payload, settings) {
 
 export function* logoutSaga(payload, settings) {
   const {currentUser} = settings
+  const client = yield getContext('client')
 
   if (currentUser) {
     yield call([client, client.mutate], {

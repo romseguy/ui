@@ -1,6 +1,6 @@
 import { call } from 'redux-saga/effects'
 
-import geo from 'utils/api/geo'
+import geo from 'helpers/api/geo'
 
 
 export function* getLocationDataSaga(lat, lng) {

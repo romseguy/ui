@@ -5,10 +5,10 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import { delay } from 'redux-saga'
 import { call, put, take, takeEvery, select, race } from 'redux-saga/effects'
 
-import { CustomError } from 'utils/errors'
-import { setErrorModalSaga } from 'utils/modal'
+import { CustomError } from 'helpers/errors'
+import { setErrorModalSaga } from 'helpers/modal'
 
-import { getCurrentPosition, getCurrentPositionErrorCodes } from 'views/utils/navigator'
+import { getCurrentPosition, getCurrentPositionErrorCodes } from 'utils/navigator'
 
 import { settingsActions } from './settings.actions'
 import { getLocationDataSaga } from './shared'

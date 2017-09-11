@@ -1,7 +1,7 @@
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { getBodySaga } from 'utils/apollo'
-import { setErrorModalSaga } from 'utils/modal'
+import { getBodySaga } from 'helpers/apollo'
+import { setErrorModalSaga } from 'helpers/modal'
 
 import { routerActions, getRouteType } from 'core/router'
 

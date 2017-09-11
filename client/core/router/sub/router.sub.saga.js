@@ -1,14 +1,15 @@
-import { call, put, take, select } from 'redux-saga/effects'
+import { call, getContext, put, take, select } from 'redux-saga/effects'
 
-import { client } from 'core/apollo'
 import { meActions } from 'core/me'
 import { settingsActions, getCity, getDepartment, getI18nInitialized } from 'core/settings'
 
-import currentUserQuery from 'views/dataContainers/app/currentUser.query.graphql'
+import currentUserQuery from 'dataContainers/app/currentUser.query.graphql'
 
 
 export function* getCurrentUserSaga() {
   try {
+    const client = yield getContext('client')
+
     const result = yield call([client, client.readQuery], {
       query: currentUserQuery
     })

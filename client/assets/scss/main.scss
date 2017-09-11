@@ -1,0 +1,65 @@
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('../fonts/FiraSans-Regular.woff2') format('woff2'),
+  url('../fonts/FiraSans-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'myriad-pro-condensed';
+  src: url('../fonts/myriad-pro-condensed.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+$font-name: 'Fira Sans' !default;
+$font-family: $font-name, 'Helvetica Neue', Arial, Helvetica, sans-serif !default;
+$import-google-fonts: false;
+$icons-font-path: '~semantic-ui-sass/icons' !default;
+
+@import "~semantic-ui-sass/semantic-ui.scss";
+
+body {
+  font-size: 1.6rem;
+  line-height: normal !important;
+}
+
+#app, #portal {
+  font-size: 62.5%;
+}
+
+img.ui.image {
+  display: inline-block !important;
+}
+
+.ui.loading.segment:before {
+  background: none;
+}
+
+.ui.stackable.grid.app-header > .column:not(.row) {
+  padding: 0 !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .ui.fluid.container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .ui.stackable.grid.app-toolbar > .column:not(.row) {
+    padding: 0 !important;
+  }
+}
+
+
+.geosuggest__suggests--hidden {
+  max-height: 0;
+  overflow: hidden;
+  border-width: 0;
+}
+
+.geosuggest__item--active {
+  background: #267dc0;
+  color: #fff;
+}
