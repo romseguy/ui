@@ -4,7 +4,7 @@ export function getMe(state) {
   return state.me
 }
 
-export function getMeCenter(state) {
+export function getMapCenter(state) {
   return getMe(state).center
 }
 export function getMeCentre(state) {

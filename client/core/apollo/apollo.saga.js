@@ -1,9 +1,9 @@
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { getBodySaga } from 'helpers/apollo'
-import { setErrorModalSaga } from 'helpers/modal'
-
 import { routerActions, getRouteType } from 'core/router'
+import getBodySaga from 'sagas/getBody.saga'
+
+import setErrorModalSaga from 'sagas/setErrorModal.saga'
 
 import { mergePlaceIntoPersonNodesSaga, mergeUserPlacesIntoLocationNodesSaga } from './sagas'
 

@@ -102,7 +102,7 @@
     "webpack": "3.0.0",
     "webpack-dev-server": "2.5.0",
     "webpack-manifest-plugin": "1.1.0",
-    "why-did-you-update": "0.0.8",
+    "why-did-you-update": "https://github.com/romseguy/why-did-you-update/tarball/master",
     "winston": "2.2.0"
   },
   "scripts": {

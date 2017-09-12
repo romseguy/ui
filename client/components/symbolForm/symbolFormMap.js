@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ContainerDimensions from 'react-container-dimensions'
 import Map from 'pigeon-maps'
 import Marker from 'pigeon-marker'
-import { providers } from 'utils/map'
+import { providers } from 'helpers/map'
 
 class SymbolFormMap extends Component {
   handleMapClick = e => {

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 
 import { Field } from 'redux-form'
-import { AuthFormBreakpoints as breakpoints } from 'utils/form/responsive'
-import { confirmation, email, length, required } from 'utils/form/validators'
+import { AuthFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
+import { confirmation, email, length, required } from 'helpers/form/validators'
 
 import InputField from 'components/inputField'
 import {
@@ -145,7 +145,10 @@ class AuthFormStep1 extends Component {
           label={t('form:auth.email')}
           ref={node => this.emailInput = node}
           withRef
-          validate={[required({msg: t('errors:required')}), email({msg: t('errors:auth.email_invalid')})]}
+          validate={[
+            required({msg: t('errors:required')}),
+            email({msg: t('errors:auth.email_invalid')})
+          ]}
         />
 
         {isRegister && (
@@ -157,7 +160,10 @@ class AuthFormStep1 extends Component {
             label={t('form:auth.username')}
             ref={node => this.usernameInput = node}
             withRef
-            validate={[required(), length({max: 40, msg: t('errors:register.username_too_long')})]}
+            validate={[
+              required({msg: t('errors:required')}),
+              length({max: 40, msg: t('errors:register.username_too_long')})
+            ]}
           />
         )}
 
@@ -170,7 +176,10 @@ class AuthFormStep1 extends Component {
             label={t('form:auth.password')}
             ref={node => this.passwordInput = node}
             withRef
-            validate={[required(), length({min: 6, msg: t('errors:auth.password_too_short')})]}
+            validate={[
+              required({msg: t('errors:required')}),
+              length({min: 6, msg: t('errors:auth.password_too_short')})
+            ]}
           />
         )}
 
@@ -183,7 +192,10 @@ class AuthFormStep1 extends Component {
             label={t('form:auth.password2')}
             ref={node => this.password2Input = node}
             withRef
-            validate={[confirmation({field: 'password', msg: t('errors:register.passwordsNotMatch')}), required()]}
+            validate={[
+              confirmation({field: 'password', msg: t('errors:register.passwordsNotMatch')}),
+              required({msg: t('errors:required')})
+            ]}
           />
         )}
 

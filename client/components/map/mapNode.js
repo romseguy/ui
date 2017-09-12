@@ -2,7 +2,8 @@ import { compose, withHandlers } from 'recompose'
 import React from 'react'
 import { Origin } from 'redux-tooltip'
 
-import { getMapNodeAnchorTooltipName, getMapNodeHeaderTooltipName } from 'utils/tooltips'
+import icons from 'assets/icons'
+import { getMapNodeAnchorTooltipName, getMapNodeHeaderTooltipName } from 'helpers/tooltips'
 
 
 const imageOffset = {
@@ -44,11 +45,10 @@ function MapNode(props) {
   const {
     hovered,
     id,
-    image,
-    imageSelected,
+    iconName,
+    iconNameSelected,
     name,
     selected,
-    textColor,
     type
   } = node
 
@@ -56,6 +56,7 @@ function MapNode(props) {
   const imageWidth = 30
   const anchorTooltipName = getMapNodeAnchorTooltipName({type})
   const headerTooltipName = getMapNodeHeaderTooltipName({type})
+  const src = hovered || selected ? icons[iconNameSelected] : icons[iconName]
 
   return (
     <div
@@ -72,7 +73,7 @@ function MapNode(props) {
         <img
           id={`${anchorTooltipName}-${id}`}
           alt=""
-          src={hovered || selected ? imageSelected : image}
+          src={src}
           style={{cursor: 'zoom-in'}}
           width={imageWidth}
           height={imageHeight}
@@ -85,9 +86,6 @@ function MapNode(props) {
         <p
           id={`${headerTooltipName}-${id}`}
           onClick={onHeaderClick}
-          style={{
-            color: textColor
-          }}
         >
           {name}
         </p>

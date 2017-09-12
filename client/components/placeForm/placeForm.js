@@ -92,17 +92,14 @@ class PlaceForm extends Component {
       isLoading
     } = this.state
 
-    if (isLoading) {
-      return <Loader active inline="centered"/>
-    } else if (process.env.NODE_ENV !== 'development' && isLoading === null) {
+    // google lib failed loading: warn the user
+    if (process.env.NODE_ENV !== 'development' && isLoading === null) {
       return <span>{t('form:failed_loading')}</span>
     }
 
-    let readOnly = false
-
-    const showSelector = routeType === routeTypes.ME_PLACES_ADD && !mustCreate && disconnectedPlaces.length > 0
-    const showSelectFields = formValues.action === 'select'
-    const showFields = formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || !disconnectedPlaces.length
+    const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && !mustCreate
+    const showSelectFields = !isLoading && formValues.action === 'select'
+    const showFields = !isLoading && (formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || mustCreate)
 
     return (
       <PlaceFormLayout fluid>
@@ -113,35 +110,35 @@ class PlaceForm extends Component {
           title={title}
         />
 
-      <UIForm loading={isLoading}>
-        {showSelector && (
-          <PlaceFormSelector t={t}/>
-        )}
+        <UIForm loading={isLoading}>
+          {showSelector && (
+            <PlaceFormSelector t={t}/>
+          )}
 
-        {showSelectFields && (
-          <PlaceFormSelectFields
-            disconnectedPlaces={disconnectedPlaces}
-            formValues={formValues}
-            submitting={submitting}
-            t={t}
-            onSaveClick={this.handleSaveClick}
-            onViewClick={this.handleViewClick}
-          />
-        )}
+          {showSelectFields && (
+            <PlaceFormSelectFields
+              disconnectedPlaces={disconnectedPlaces}
+              formValues={formValues}
+              submitting={submitting}
+              t={t}
+              onSaveClick={this.handleSaveClick}
+              onViewClick={this.handleViewClick}
+            />
+          )}
 
-        {showFields && (
-          <PlaceFormFields
-            userLocation={userLocation}
-            formValues={formValues}
-            readOnly={readOnly}
-            submitting={submitting}
-            t={t}
-            onMapClick={onMapClick}
-            onSaveClick={this.handleSaveClick}
-            onSuggestSelect={onSuggestSelect}
-          />
-        )}
-      </UIForm>
+          {showFields && (
+            <PlaceFormFields
+              userLocation={userLocation}
+              formValues={formValues}
+              readOnly={false}
+              submitting={submitting}
+              t={t}
+              onMapClick={onMapClick}
+              onSaveClick={this.handleSaveClick}
+              onSuggestSelect={onSuggestSelect}
+            />
+          )}
+        </UIForm>
       </PlaceFormLayout>
     )
   }

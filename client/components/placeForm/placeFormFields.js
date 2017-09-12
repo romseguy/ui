@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Field } from 'redux-form'
 
-import { PlaceFormBreakpoints as breakpoints } from 'utils/form/responsive'
-import { keepCities } from 'utils/geosuggest'
-import { required } from 'utils/form/validators'
+import { PlaceFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
+import keepCities from 'helpers/keepCities'
+import { required } from 'helpers/form/validators'
 
 import GeosuggestField from 'components/geosuggestField'
 import InputField from 'components/inputField'
@@ -15,7 +15,7 @@ class PlaceFormFields extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      center: this.getCenter(props),
+      center: this.getMapCenter(props),
       zoom: 14
     }
   }
@@ -25,10 +25,10 @@ class PlaceFormFields extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState(p => ({center: this.getCenter(nextProps)}))
+    this.setState(p => ({center: this.getMapCenter(nextProps)}))
   }
 
-  getCenter(props = this.props) {
+  getMapCenter(props = this.props) {
     const {
       formValues,
       userLocation
@@ -134,7 +134,7 @@ class PlaceFormFields extends Component {
               onClick={onSaveClick}
             >{
               t('form:place.save')}
-              </Button>
+            </Button>
           </Col>
         </Row>
 

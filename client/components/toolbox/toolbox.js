@@ -2,35 +2,21 @@ import React from 'react'
 import { withHandlers } from 'recompose'
 import styled from 'styled-components'
 
-import Icon, { IconLink } from 'components/icon'
-import { Button } from 'components/layout'
+import Icon from 'components/icon'
+import { ToolbarIconLink } from 'components/toolbar'
 
 
-export function ToolboxButton({active, disabled, label, title, onClick}) {
-  return (
-    <Button
-      active={active}
-      disabled={disabled}
-      title={title}
-      toggle
-      onClick={onClick}
-    >
-      {label} &nbsp;
-      <Icon
-        id={active ? 'chevron-bottom' : 'chevron-top'}
-        size={0.6}
-        weight='heavy'
-      />
-    </Button>
-  )
-}
-
-export const ToolboxMenu = styled.ul`
-list-style-type: none;
-padding: 0;
-margin: 0;
+const Container = styled.div`
+  background-color: rgba(255, 255, 255, 0.94);
+  border: 1.5px solid #d1d1d1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  padding-bottom: 10px;
+  padding-left: 26px;
+  padding-right: 26px;
+  padding-top: 26px;
+  position: absolute;
+  top: -1px;
 `
-
 
 const handlers = {
   onCloseClick: ({onClose}) => e => {
@@ -39,20 +25,20 @@ const handlers = {
   }
 }
 
-function Toolbox({children, className, onCloseClick}) {
+function Toolbox({children, onCloseClick}) {
   return (
-    <div className={className}>
+    <Container text>
       {onCloseClick && (
-        <IconLink
-          className="close-toolbox"
+        <ToolbarIconLink
           onClick={onCloseClick}
+          style={{position: 'absolute', right: '10px', top: '10px'}}
         >
           <Icon id="close"/>
-        </IconLink>
+        </ToolbarIconLink>
       )}
 
       {children}
-    </div>
+    </Container>
   )
 }
 

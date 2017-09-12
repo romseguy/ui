@@ -3,9 +3,6 @@ import { set, setIn, getIn, updateIn } from 'zaphod/compat'
 
 
 export const SettingsState = {
-  canvas: {
-    backgroundColor: 'grey'
-  },
   i18n: {
     initialized: false
   },

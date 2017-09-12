@@ -1,1 +1,1 @@
-export default from './mainPanel'
+export default from './mainPanel.container'

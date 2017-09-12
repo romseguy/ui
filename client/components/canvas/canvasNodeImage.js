@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { modeTypes } from 'utils/canvas'
+import modeTypes from 'lib/maps/modeTypes'
 
 
 const CanvasNodeImage = styled.image`

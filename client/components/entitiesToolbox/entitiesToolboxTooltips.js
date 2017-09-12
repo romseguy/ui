@@ -1,8 +1,10 @@
 import React from 'react'
 import { Tooltip } from 'redux-tooltip'
 
-import { entityTypes } from 'utils/types/entities'
-import { getEntitiesTooboxTooltipName } from 'utils/tooltips'
+import entityTypes from 'lib/maps/entityTypes'
+import { getEntitiesTooboxTooltipName } from 'helpers/tooltips'
+
+import Icon from 'components/icon'
 
 
 function EntitiesToolboxTooltips({t}) {
@@ -20,6 +22,12 @@ function EntitiesToolboxTooltips({t}) {
             <div style={{
               padding: '5px'
             }}>
+              <Icon
+                name="mouseDrag"
+                width={29}
+                height={16}
+              />
+              {' '}
               {tooltipLabel}
             </div>
           </Tooltip>

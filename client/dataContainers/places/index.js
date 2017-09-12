@@ -1,1 +1,1 @@
-export default from './places'
+export default from './places.dataContainer'

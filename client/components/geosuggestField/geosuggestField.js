@@ -3,7 +3,7 @@ import 'assets/scss/geosuggest.scss'
 import React, { Component } from 'react'
 import Geosuggest from 'react-geosuggest'
 
-import { createLatLngObject } from 'utils/google'
+import createLatLngObject from 'helpers/createLatLngObject'
 
 import {
   Form,

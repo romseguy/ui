@@ -5,8 +5,8 @@ import { Tooltip } from 'redux-tooltip'
 import Icon from 'components/icon'
 import { Grid, Row as UIRow, Col as UICol } from 'components/layout'
 
-import { entityTypes } from 'utils/types/entities'
-import { getMapNodeAnchorTooltipName, getMapNodeHeaderTooltipName } from 'utils/tooltips'
+import entityTypes from 'lib/maps/entityTypes'
+import { getMapNodeAnchorTooltipName, getMapNodeHeaderTooltipName } from 'helpers/tooltips'
 
 
 const Col = styled(UICol)`
@@ -24,13 +24,13 @@ function MapPlaceNodeAnchorTooltip({t}) {
 
   return (
     <Tooltip name={tooltipName}>
-      <Grid style={{width: '130px'}}>
+      <Grid style={{width: '410px'}}>
         <Row>
-          <Col width={5}>
+          <Col width={2}>
             <Icon name="mouseLeftClick" width={16} height={16}/>
           </Col>
-          <Col width={11}>
-            explorer
+          <Col width={14}>
+            {t('map:tooltips.place_node_anchor')}
           </Col>
         </Row>
       </Grid>

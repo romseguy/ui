@@ -1,5 +1,5 @@
 import { set, push, update } from 'zaphod/compat'
-import { centreTypes } from 'core/constants'
+import centreTypes from 'lib/maps/centreTypes'
 import { meActions } from './me.actions'
 
 

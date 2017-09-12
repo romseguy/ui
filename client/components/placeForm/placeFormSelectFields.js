@@ -1,8 +1,8 @@
 import React from 'react'
 import { Field } from 'redux-form'
 
-import { PlaceFormBreakpoints as breakpoints } from 'utils/form/responsive'
-import { required } from 'utils/form/validators'
+import { PlaceFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
+import { required } from 'helpers/form/validators'
 
 import {
   Button,

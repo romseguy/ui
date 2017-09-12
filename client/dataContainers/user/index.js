@@ -1,2 +1,1 @@
-export { default as UserForm } from './form/user.form'
-export default from './user'
+export default from './user.dataContainer'

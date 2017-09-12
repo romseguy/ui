@@ -1,70 +1,18 @@
-import i18next from 'i18next'
-import XHR from 'i18next-xhr-backend'
-// import Cache from 'i18next-localstorage-cache'
-import LanguageDetector from 'i18next-browser-languagedetector'
 import { delay } from 'redux-saga'
-import { call, put, take, takeEvery, select, race } from 'redux-saga/effects'
+import { call, getContext, put, take, takeEvery, select, race } from 'redux-saga/effects'
 
-import { CustomError } from 'helpers/errors'
-import { setErrorModalSaga } from 'helpers/modal'
+import getCurrentPosition from 'helpers/getCurrentPosition'
+import CustomError from 'lib/classes/customError'
+import getCurrentPositionErrorCodes from 'lib/maps/getCurrentPositionErrorCodes'
 
-import { getCurrentPosition, getCurrentPositionErrorCodes } from 'utils/navigator'
+import setErrorModalSaga from 'sagas/setErrorModal.saga'
+import getLocationDataSaga from 'sagas/getLocationData.saga'
 
 import { settingsActions } from './settings.actions'
-import { getLocationDataSaga } from './shared'
 
-
-export let i18n = i18next
-  .use(XHR)
-  // .use(Cache)
-  .use(LanguageDetector)
-
-const i18nOptions = {
-  fallbackLng: 'en',
-
-  whitelist: ['en', 'fr'],
-
-  react: {
-    wait: true, // globally set to wait for loaded translations in translate hoc
-    // exposeNamespace: true // exposes namespace on data-i18next-options to be used in eg. locize-editor
-  },
-
-  // have a common namespace used around the full app
-  ns: ['common', 'canvas', 'errors', 'form', 'header'],
-  defaultNS: 'common',
-
-  backend: {
-    loadPath: `${process.env.REACT_APP_LOCALES_URL}/{{lng}}/{{ns}}.json`,
-    crossDomain: true
-  },
-
-  debug: window.log && process.env.NODE_ENV === 'development',
-
-  // cache: {
-  //   enabled: true
-  // },
-
-  interpolation: {
-    escapeValue: false, // not needed for react!!
-    formatSeparator: ',',
-    format: function(value, format, lng) {
-      if (format === 'uppercase') return value.toUpperCase()
-      return value
-    }
-  }
-}
-
-function i18nInit() {
-  return new Promise((resolve, reject) => {
-    i18n = i18n.init(i18nOptions, () => {
-      resolve()
-    })
-  })
-}
 
 export function* settingsSaga() {
-  yield call(i18nInit)
-  yield put(settingsActions.i18nInitialized())
+  const i18n = yield getContext('i18n')
 
   try {
     const {currentPosition, t1} = yield race({

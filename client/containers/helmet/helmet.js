@@ -13,7 +13,7 @@ function HelmetContainer({t, title}) {
       <meta charSet="utf-8"/>
       <link rel="canonical" href="http://mysite.com/example"/>
 
-      <title>{`${t('app_title')} | ${title || t('loading')}`}</title>
+      <title>{t('app_title')} {title ? `| ${title}` : ''}</title>
     </Helmet>
   )
 }

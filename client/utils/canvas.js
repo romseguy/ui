@@ -1,6 +1,0 @@
-export const modeTypes = {
-  DISCOVERY: 'DISCOVERY_MODE',
-  EDIT: 'EDIT_MODE',
-  HELP: 'HELP_MODE',
-  NOTIFICATION: 'NOTIFICATION_MODE'
-}

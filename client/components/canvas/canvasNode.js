@@ -3,39 +3,37 @@ import { Origin } from 'redux-tooltip'
 import cx from 'classnames'
 import { pure } from 'recompose'
 
-import { modeTypes } from 'utils/canvas'
-import { getCanvasNodeAnchorTooltipName, getCanvasNodeHeaderTooltipName } from 'utils/tooltips'
+import icons from 'assets/icons'
+import modeTypes from 'lib/maps/modeTypes'
+import { getCanvasNodeAnchorTooltipName, getCanvasNodeHeaderTooltipName } from 'helpers/tooltips'
 
 import CanvasNodeImage from './canvasNodeImage'
 
 
 const SVGOrigin = Origin.wrapBy('g')
 
-function CanvasNode(props) {
+
+function CanvasNode(props) {
   const {
     node,
+    foreignObjectSupport,
     currentMode,
     defaultImageHeight = 50,
     defaultImageWidth = 50,
-    foreignObjectSupport,
     readOnly,
     onAnchorClick,
     onAnchorMouseOver,
     onAnchorMouseOut,
     onHeaderClick
   } = props
-  const nodeHeight = node.height
-  const nodeWidth = node.width
 
   let anchor = null
-  let text = null
 
-  // anchor
-  // image
-  if (node.image) {
+  if (node.iconName) {
     const imageHeight = node.imageHeight || defaultImageHeight
     const imageWidth = node.imageWidth || defaultImageWidth
-    let tooltipName = getCanvasNodeAnchorTooltipName(currentMode, node.selected)
+    const src = node.hovered || node.selected ? icons[node.iconNameSelected] : icons[node.iconName]
+    let tooltipName = getCanvasNodeAnchorTooltipName(currentMode, node)
 
     if (currentMode === modeTypes.DISCOVERY && node.isNew) {
       tooltipName = null
@@ -53,119 +51,90 @@ function CanvasNode(props) {
           height={imageHeight}
           node={node}
           width={imageWidth}
-          x={(nodeWidth - imageWidth) / 2}
-          xlinkHref={node.selected ? node.imageSelected : node.image}
+          x={(node.width - imageWidth) / 2}
+          xlinkHref={src}
           y="0"
         />
       </SVGOrigin>
     )
   }
-  // icon
-  else if (node.icon && foreignObjectSupport) {
-    const iconWidth = node.iconWidth
-    const fontSize = node.fontSize || '76px'
 
-    anchor = (
-      <foreignObject
-        x={(nodeWidth - iconWidth) / 2}
-        y={(nodeHeight / 2) - 54}
-        height={fontSize}
-        width={iconWidth}
-        key="node-icon-class"
-      >
-        <i
-          className={node.icon}
-          style={{fontSize: node.fontSize || '76px'}}
-        />
-      </foreignObject>
-    )
-  }
-  // fontContent
-  else if (node.fontFamily && node.fontContent) {
-    const className = cx({
-      'canvas-node__anchor-icon': true
-    })
+  let header = null
 
-    anchor = (
-      <text
-        className={className}
-        style={{fontFamily: node.fontFamily}}
-        x={0}
-        y={0}
-        key="node-icon-fontcontent"
-      >
-        {node.fontContent}
-      </text>
-    )
-  }
-
-  // text
   if (node.name) {
-    if (foreignObjectSupport) {
-      let tooltipName = getCanvasNodeHeaderTooltipName(node)
-      let cursor = 'pointer'
+    let tooltipName = getCanvasNodeHeaderTooltipName(node)
+    let cursor = 'pointer'
 
-      if (currentMode === modeTypes.DISCOVERY) {
-        tooltipName = null
-        cursor = 'default'
-      } else {
-        if (!node.mine) {
-          cursor = 'move'
-        }
+    if (currentMode === modeTypes.DISCOVERY) {
+      tooltipName = null
+      cursor = 'default'
+    } else {
+      if (!node.mine) {
+        cursor = 'move'
       }
+    }
 
+    let text = null
+
+    if (foreignObjectSupport) {
+      const multiplier = 2
+      
       text = (
-        <SVGOrigin name={tooltipName}>
-          <foreignObject
-            className={cx('canvas-node__header')}
-            width={nodeWidth}
-            height={nodeHeight / 2}
-            x={0}
-            y={nodeHeight / 2}
-            key="title-text-wrap"
+        <foreignObject
+          height={node.height / multiplier}
+          x={-(node.width / multiplier)}
+          y={node.height / multiplier}
+          width={node.width * multiplier}
+        >
+          <div
+            id={`canvas-node__header-${node.id}`}
+            style={{
+              textAlign: 'center',
+              width: node.width * multiplier
+            }}
           >
             <label
-              id={`canvas-node__header-${node.id}`}
               style={{
-                color: node.textColor,
                 cursor,
-                width: nodeWidth
+                width: node.width * multiplier
               }}
             >
               {node.name} {node.distance ? `${node.distance}km` : ''}
             </label>
-          </foreignObject>
-        </SVGOrigin>
+          </div>
+        </foreignObject>
       )
-    }
-    else {
-      const className = cx({
-        'canvas-node__header': true,
-        'node-rect': !node.selected
-      })
-
+    } else {
       text = (
         <text
-          className={className}
-          x={nodeWidth / 2}
-          y={nodeHeight - 24}
-          textAnchor="middle"
           alignmentBaseline="middle"
-          key="title-no-wrap"
+          key="header-no-wrap"
+          textAnchor="middle"
+          x={node.width / 2}
+          y={node.height - (node.height / 3)}
+          style={{
+            cursor
+          }}
         >
           {node.name}
         </text>
       )
     }
+
+    header = (
+      <SVGOrigin name={tooltipName}>
+        {text}
+      </SVGOrigin>
+    )
   }
 
   return (
-    <g className="canvas-node">
+    <g>
       <g onClick={e => onAnchorClick(node)}>
         {anchor}
       </g>
       <g onClick={e => onHeaderClick(node)}>
-        {text}
+        {header}
       </g>
     </g>
   )

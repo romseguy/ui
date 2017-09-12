@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Grid } from 'components/layout'
-import { media } from 'utils/responsive'
+import media from 'lib/maps/media'
 
 
 export default styled(Grid)`

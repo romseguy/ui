@@ -7,14 +7,16 @@ import { connect } from 'react-redux'
 import { getContext, withHandlers } from 'recompose'
 import { change } from 'redux-form'
 
-import geo from 'helpers/api/geo'
-import { getGeocodedDepartment, getGeocodedProperty } from 'helpers/geo'
-import { formValuesToPlace, placeToNode } from 'utils/transformers'
-import { getSuggestedDepartment } from 'utils/geosuggest'
+import getSuggestedDepartment from 'helpers/getSuggestedDepartment'
 
-import { roleTypes } from 'core/constants'
+import geo from 'lib/api/geo'
+import { getGeocodedDepartment, getGeocodedProperty } from 'lib/api/geo'
+import { formValuesToPlace, placeToNode } from 'lib/factories'
+import roleTypes from 'lib/maps/roleTypes'
+
 import { canvasActions, getCanvasNodes } from 'core/canvas'
 import { getPlaceFormValues } from 'core/form'
+import { routerActions } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
 
 import placeQuery from 'graphql/queries/place.query.graphql'
@@ -59,14 +61,13 @@ export const handlers = {
 
     if (formValues.action === 'create') {
       let place = await formValuesToPlace(formValues)
-
       const {data} = await doCreatePlace({place})
       const {id, title} = data.createPlace
 
       if (selectedNode) {
         nodes = nodes.map(node => {
           if (node.id === selectedNode.id) {
-            return placeToNode(selectedNode.id, date.createPlace.place, {
+            return placeToNode(selectedNode.id, data.createPlace.place, {
               mine: true,
               x: selectedNode.x,
               y: selectedNode.y

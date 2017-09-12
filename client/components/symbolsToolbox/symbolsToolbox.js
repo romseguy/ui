@@ -2,8 +2,8 @@ import React from 'react'
 import { Origin } from 'redux-tooltip'
 
 import DraggableToolboxItem from 'components/draggableToolboxItem'
+import Icon from 'components/icon'
 import { Label } from 'components/layout'
-import Symbol from 'components/symbol'
 import Toolbox, { ToolboxMenu } from 'components/toolbox'
 
 
@@ -31,9 +31,9 @@ function SymbolsToolbox({symbols, isOpen, onClose}) {
                 style={{cursor: 'move', padding: '0.5rem 0'}}
               >
                 <Label basic image>
-                  <Symbol
+                  <Icon
                     height={symbol.height}
-                    image={symbol.image}
+                    name={symbol.iconName}
                     type={symbol.type}
                     width={symbol.width}
                   />

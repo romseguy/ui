@@ -3,9 +3,8 @@ import React from 'react'
 import { DropTarget } from 'react-dnd'
 import cx from 'classnames'
 
-import { invert } from 'helpers/number'
-
-import { getClientPosition } from 'utils/navigator'
+import invert from 'helpers/invert'
+import getClientPosition from 'helpers/getClientPosition'
 
 import CanvasItemTypes from './canvasItemTypes'
 import DraggableCanvasNode from './draggableCanvasNode'
@@ -93,7 +92,7 @@ class Canvas extends React.Component {
       canvasWidth = 1396,
       connectDropTarget,
       currentMode,
-      nodes,
+      nodes = [],
       readOnly = false,
       toolboxes,
       zoomLevel,
@@ -107,7 +106,7 @@ class Canvas extends React.Component {
 
     const svgClasses = cx(canvasClass, {
       [`${canvasClass}--dragging`]: this.state.dragging,
-      'read-only': readOnly
+      [`${canvasClass}--readonly`]: readOnly
     })
 
     const svg = (
@@ -116,7 +115,6 @@ class Canvas extends React.Component {
         className={svgClasses}
         height={canvasHeight}
         width={canvasWidth}
-        xlinkHref=''
         onClick={onClick}
         onMouseDown={this.onDragStart}
         onTouchStart={this.onDragStart}
@@ -151,7 +149,7 @@ class Canvas extends React.Component {
     )
 
     return (
-      <div className='canvas-toolbox-container'>
+      <div style={{position: 'relative'}}>
         {toolboxes.map(toolbox => React.createElement(toolbox.component, toolbox.props))}
         <div>
           {connectDropTarget(svg)}

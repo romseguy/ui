@@ -1,8 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Image, Icon as UIIcon } from 'semantic-ui-react'
+import { Image } from 'semantic-ui-react'
 
 import icons from 'assets/icons'
+
+import { Icon as UIIcon } from 'components/layout'
+
 
 function IconChevronBottom() {
   return (
@@ -160,7 +163,7 @@ function Icon(props) {
   const src = icons[name]
 
   if (src) {
-    return <Image src={src} width={width} height={height}/>
+    return <Image src={src} width={width} height={height} {...rest}/>
   } else if (name) {
     return <UIIcon name={name} {...rest}/>
   }

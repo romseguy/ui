@@ -16,7 +16,7 @@ margin: 0 !important;
 `
 
 const Link = styled.a`
-text-decoration: underline;
+text-decoration: none;
 cursor: pointer;
 color: blue;
 `
@@ -44,13 +44,19 @@ function HeaderTitle(props) {
         <Link
           title={entityIconTitle}
           onClick={onEntityIconClick}
+          style={{borderBottom: '1px dashed black', cursor: 'help', padding: '2px'}}
         >
           {entityIcon}
         </Link>
       )}
 
       {entityIcon && !onEntityIconClick && (
-        <span title={entityIconTitle}> {entityIcon}</span>
+        <span
+          style={{borderBottom: '1px dashed black', cursor: 'help', padding: '2px'}}
+          title={entityIconTitle}
+        >
+          {entityIcon}
+          </span>
       )}
 
       {onClick && (

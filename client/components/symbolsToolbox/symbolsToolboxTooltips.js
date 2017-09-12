@@ -1,8 +1,10 @@
 import React from 'react'
 import { Tooltip } from 'redux-tooltip'
 
-import { symbolTypes } from 'utils/types/symbols'
-import { getSymbolsTooboxTooltipName } from 'utils/tooltips'
+import symbolTypes from 'lib/maps/symbolTypes'
+import { getSymbolsTooboxTooltipName } from 'helpers/tooltips'
+
+import Icon from 'components/icon'
 
 
 function SymbolsToolboxTooltips({t}) {
@@ -20,6 +22,12 @@ function SymbolsToolboxTooltips({t}) {
             <div style={{
               padding: '5px'
             }}>
+              <Icon
+                name="mouseDrag"
+                width={29}
+                height={16}
+              />
+              {' '}
               {tooltipLabel}
             </div>
           </Tooltip>

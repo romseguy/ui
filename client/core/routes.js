@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { centreTypes } from 'core/constants'
+import centreTypes from 'lib/maps/centreTypes'
 import { routerActions } from 'core/router'
 
 
@@ -16,6 +16,10 @@ export default {
 
   [routerActions.ABOUT]: {
     path: '/about'
+  },
+
+  [routerActions.TUTORIAL]: {
+    path: '/tutorial'
   },
 
   [routerActions.AUTH]: {

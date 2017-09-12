@@ -1,9 +1,10 @@
 import Map from 'pigeon-maps'
 import React, { Component } from 'react'
+import { compose, pure } from 'recompose'
 import { createSelector } from 'reselect'
 
 import { MapTooltips } from 'components/tooltips'
-import { providers } from 'utils/map'
+import { providers } from 'helpers/map'
 
 import MapNode from './mapNode'
 
@@ -14,7 +15,7 @@ const getAnchor = createSelector(
   (latitude, longitude) => [latitude, longitude]
 )
 
-const getCenter = createSelector(
+const getMapCenter = createSelector(
   r => r.center,
   r => r.userLocation,
   (center, userLocation) => center.length ? center : [userLocation.lat, userLocation.lng]
@@ -31,11 +32,19 @@ class MapManager extends Component {
     }
   }
 
+  setZoom(zoom) {
+    if (zoom !== this.state.zoom) {
+      this.setState(p => ({
+        zoom
+      }))
+    }
+  }
+
   handleBoundsChange = data => {
     const {onBoundsChange} = this.props
     const {center, zoom, bounds, initial} = data
 
-    this.setState(p => ({zoom}))
+    this.setZoom(zoom)
 
     typeof onBoundsChange === 'function' && onBoundsChange(data)
   }
@@ -65,7 +74,7 @@ class MapManager extends Component {
         <MapTooltips t={t}/>
 
         <Map
-          center={getCenter({center, userLocation})}
+          center={getMapCenter({center, userLocation})}
           zoom={zoom}
           provider={providers[provider]}
           onBoundsChanged={this.handleBoundsChange}
@@ -94,4 +103,4 @@ class MapManager extends Component {
   }
 }
 
-export default MapManager
+export default compose(pure)(MapManager)

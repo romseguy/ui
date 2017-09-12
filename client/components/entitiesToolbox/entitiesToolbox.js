@@ -2,7 +2,7 @@ import React from 'react'
 import { Origin } from 'redux-tooltip'
 
 import DraggableToolboxItem from 'components/draggableToolboxItem'
-import Entity from 'components/entity'
+import Icon from 'components/icon'
 import { Label } from 'components/layout'
 import Toolbox, { ToolboxMenu } from 'components/toolbox'
 
@@ -14,7 +14,6 @@ function EntitiesToolbox({entities, isOpen, onClose}) {
 
   return (
     <Toolbox
-      className={`canvas-toolbox`}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -31,9 +30,9 @@ function EntitiesToolbox({entities, isOpen, onClose}) {
                 style={{cursor: 'move', padding: '0.5rem 0'}}
               >
                 <Label basic image>
-                  <Entity
+                  <Icon
                     height={entity.height}
-                    image={entity.image}
+                    name={entity.iconName}
                     type={entity.type}
                     width={entity.width}
                   />

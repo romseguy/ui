@@ -3,9 +3,9 @@ import React, { Component } from 'react'
 import scriptLoader from 'react-async-script-loader'
 import { reduxForm, Field } from 'redux-form'
 
-import { keepCities } from 'utils/geosuggest'
-import { LocationFormBreakpoints as breakpoints } from 'utils/form/responsive'
-import { required } from 'utils/form/validators'
+import keepCities from 'helpers/keepCities'
+import { LocationFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
+import { required } from 'helpers/form/validators'
 
 import GeosuggestField from 'components/geosuggestField'
 import Icon from 'components/icon'

@@ -1,5 +1,6 @@
 import React from 'react'
-import Icon, { IconLink } from '../icon'
+import Icon from 'components/icon'
+import ToolbarIconLink from './toolbarIconLink'
 
 
 const noop = () => {}
@@ -18,7 +19,7 @@ function ToolbarIcon(props) {
   } = props
 
   return (
-    <IconLink
+    <ToolbarIconLink
       active={active}
       disabled={disabled}
       onClick={disabled ? noop : onClick}
@@ -35,7 +36,7 @@ function ToolbarIcon(props) {
           margin={margin}
         />
       )}
-    </IconLink>
+    </ToolbarIconLink>
   )
 }
 

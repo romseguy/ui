@@ -1,5 +1,5 @@
 import { compose } from 'ramda'
-import React from 'react'
+import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 
 import { routerActions } from 'core/router'
@@ -11,42 +11,34 @@ import placeQuery from 'graphql/queries/place.query.graphql'
 import placesQuery from 'graphql/queries/places.query.graphql'
 
 
-function PlaceFormContainer(props) {
-  const {
-    centre,
-    disconnectedPlaces,
-    formValues,
-    initialValues,
-    isLoading,
-    places,
-    routeType,
-    t,
-    title,
-    userLocation,
-    onMapClick,
-    onSubmit,
-    onSuggestSelect,
-    onViewClick
-  } = props
+class PlaceFormDataContainer extends Component {
+  componentWillReceiveProps(nextProps) {
+    const {
+      routes,
+      routeType
+    } = this.props
 
-  return (
-    <PlaceForm
-      formValues={formValues}
-      initialValues={initialValues}
-      isLoading={isLoading}
-      userLocation={userLocation}
-      mustCreate={!places || !places.length}
-      disconnectedPlaces={disconnectedPlaces}
-      routeType={routeType}
-      routeTypes={routerActions}
-      t={t}
-      title={title}
-      onMapClick={onMapClick}
-      onSubmit={onSubmit}
-      onSuggestSelect={onSuggestSelect}
-      onViewClick={onViewClick}
-    />
-  )
+    if (routeType === routerActions.ME_PLACE_EDIT && !nextProps.isLoading && !nextProps.place) {
+      routes.meRoute()
+    }
+  }
+
+  render() {
+    const {
+      disconnectedPlaces,
+      places,
+      ...props
+    } = this.props
+
+    return (
+      <PlaceForm
+        {...props}
+        disconnectedPlaces={disconnectedPlaces}
+        mustCreate={!places || !places.length || disconnectedPlaces.length === 0}
+        routeTypes={routerActions}
+      />
+    )
+  }
 }
 
 
@@ -65,19 +57,16 @@ const placeQueryConfig = {
     } = data
 
     const {
-      isLoading = true,
-      nodes,
-      routes,
-      routeType
+      isLoading = false,
     } = ownProps
 
     const props = {
-      isLoading: isLoading && loading,
+      initialValues: {},
+      isLoading: isLoading || loading,
+      place: null
     }
 
-    const selectedNode = nodes.find(node => node.selected)
-
-    if (place) {
+    if (!loading && place) {
       const {
         id: placeId,
         city,
@@ -94,12 +83,7 @@ const placeQueryConfig = {
         title
       }
 
-      props.placeId = placeId
-    } else if (
-      !loading && [routerActions.ME_PLACE_EDIT].includes(routeType)
-      && !selectedNode.isNew
-    ) {
-      routes.meRoute()
+      props.place = place
     }
 
     return props
@@ -114,13 +98,18 @@ const placesQueryConfig = {
     } = data
 
     const {
-      isLoading = true
+      isLoading = false
     } = ownProps
 
     const props = {
-      isLoading: isLoading && loading,
-      mustCreate: !places || !places.length,
-      places
+      isLoading: isLoading || loading,
+      mustCreate: false,
+      places: []
+    }
+
+    if (!loading && places) {
+      props.mustCreate = places.length === 0
+      props.places = places
     }
 
     return props
@@ -135,26 +124,26 @@ const myPlacesQueryConfig = {
     } = data
 
     const {
-      isLoading = true,
-      placeId,
+      isLoading = false,
+      place,
       places
     } = ownProps
 
     const props = {
       disconnectedPlaces: [],
-      isLoading: isLoading && loading,
+      isLoading: isLoading || loading,
       mine: false
     }
 
-    if (placeId) {
-      props.mine = myPlaces.find(myPlace => myPlace.id === placeId)
-    }
-
-    if (myPlaces && places) {
+    if (!loading && myPlaces) {
       // filters out places already belonging to myPlaces
       props.disconnectedPlaces = places.filter(place => {
         return !myPlaces.find(userPlace => userPlace.place.id === place.id)
       })
+
+      if (place) {
+        props.mine = myPlaces.find(myPlace => myPlace.id === place.id)
+      }
     }
 
     return props
@@ -165,4 +154,4 @@ export default compose(
   graphql(placeQuery, placeQueryConfig),
   graphql(placesQuery, placesQueryConfig),
   graphql(myPlacesQuery, myPlacesQueryConfig),
-)(PlaceFormContainer)
+)(PlaceFormDataContainer)

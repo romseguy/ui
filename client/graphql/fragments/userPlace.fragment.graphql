@@ -1,14 +1,14 @@
+#import "./place.fragment.graphql"
+#import "./role.fragment.graphql"
+
 fragment UserPlaceDetails on UserPlace {
   id
+  x
+  y
   place {
-    id
-    city
-    department
-    latitude
-    longitude
-    title
+    ...PlaceDetails
   }
   role {
-    id
+    ...RoleDetails
   }
 }

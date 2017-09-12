@@ -3,7 +3,7 @@ import React from 'react'
 import { withHandlers } from 'recompose'
 import styled from 'styled-components'
 
-import { entityTypes } from 'utils/types/entities'
+import entityTypes from 'lib/maps/entityTypes'
 
 import { Col as UICol, Grid, Segment } from 'components/layout'
 

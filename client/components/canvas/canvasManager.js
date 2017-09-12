@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 
-import withDragDropContext from 'utils/withDragDropContext'
+import withDragDropContext from 'lib/decorators/withDragDropContext'
 
 import Toolbar from 'components/toolbar'
-import { NodeTooltips, ToolboxTooltips } from 'components/tooltips'
+import { CanvasTooltips, ToolboxTooltips } from 'components/tooltips'
 
 import Canvas from './canvas'
 import CanvasItemTypes from './canvasItemTypes'
@@ -162,7 +162,8 @@ class CanvasManager extends Component {
       currentMode,
       modes,
       readOnly,
-      selectedNodeIds,
+      selectedNode,
+      selectedNodeIds = [],
       nodes,
       t,
       toolboxes
@@ -174,22 +175,15 @@ class CanvasManager extends Component {
       zoomInDisabled
     } = this.state
 
-    // todo: move to MainPanel?
-    let selectedNode = null
-
-    if (selectedNodeIds.length === 1) {
-      selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
-    }
-
     return (
       <CanvasLayout>
-        <NodeTooltips t={t}/>
+        <CanvasTooltips t={t}/>
         <ToolboxTooltips t={t}/>
 
         <Toolbar
           currentMode={currentMode}
           deleteDisabled={selectedNodeIds.length !== 1 || readOnly}
-          editDisabled={selectedNodeIds.length !== 1 || readOnly}
+          editDisabled={!selectedNode || !selectedNode.mine || readOnly}
           modes={modes}
           selectedNode={selectedNode}
           t={t}

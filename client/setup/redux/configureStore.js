@@ -7,7 +7,7 @@ import configureRouter from './router'
 import configureSagaMiddleware from './saga'
 
 
-function configureStore(reducer, routes, saga, client) {
+export default function configureStore(reducer, routes, saga, client, i18n) {
   // devTools
   const composeEnhancers = composeWithDevTools(devToolsOptions)
 
@@ -15,14 +15,14 @@ function configureStore(reducer, routes, saga, client) {
   const router = configureRouter(routes)
 
   // middlewares
-  const sagaMiddleware = configureSagaMiddleware(client)
+  const sagaMiddleware = configureSagaMiddleware(client, i18n)
   const middlewares = [
     router.middleware,
     sagaMiddleware,
     client.middleware()
   ];
 
-  if (process.env.NODE_ENV === 'development' && window.log === true) {
+  if (process.env.NODE_ENV === 'development') {
     middlewares.push(configureLoggerMiddleware())
   }
 
@@ -46,5 +46,3 @@ function configureStore(reducer, routes, saga, client) {
 
   return store
 }
-
-export default configureStore
