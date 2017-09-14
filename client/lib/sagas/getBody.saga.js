@@ -1,5 +1,5 @@
 import { call, getContext } from 'redux-saga/effects'
-import setErrorModalSaga from 'sagas/setErrorModal.saga'
+import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
 
 
 export default function* getBodySaga(payload, dataKey) {

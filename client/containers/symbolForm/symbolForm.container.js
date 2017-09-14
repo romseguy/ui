@@ -9,7 +9,6 @@ import { merge } from 'ramda'
 import roleTypes from 'lib/maps/roleTypes'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
-import { getMeCentre } from 'core/me'
 
 import { Container } from 'components/layout'
 import SymbolForm, { SymbolFormHeader } from 'components/symbolForm'
@@ -45,7 +44,6 @@ const handlers = {
 function SymbolFormContainer(props) {
   const {
     // state
-    centre,
     formValues,
     initialValues,
     userLocation,
@@ -90,12 +88,10 @@ function SymbolFormContainer(props) {
 const mapStateToProps = state => {
   const routeType = getRouteType(state)
   const {name: symbolName} = getPayload(state)
-  const centre = getMeCentre(state)
   const userLocation = getUserLocation(state)
   const title = getTitle(state)
 
   return {
-    centre,
     formValues: state.form.SymbolForm ? state.form.SymbolForm.values : {},
     userLocation,
     symbolName,

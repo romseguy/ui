@@ -1,19 +1,21 @@
 import { call, getContext, put, select, take } from 'redux-saga/effects'
 
+import { query } from 'helpers/apollo'
+import { personToNode } from 'lib/factories'
+import setDepartmentTitleSaga from 'lib/sagas/setDepartmentTitle.saga'
+import setTitleSaga from 'lib/sagas/setTitle.saga'
+
+import { canvasActions } from 'core/canvas'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions } from 'core/router'
 
-import setCentreSaga from 'sagas/setCentre.saga'
-import setDepartmentTitleSaga from 'sagas/setDepartmentTitle.saga'
-import setTitleSaga from 'sagas/setTitle.saga'
-
+import placeQuery from 'graphql/queries/place.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
 
 export function* rootSaga(payload, settings) {
-  const {centre} = settings
+  const {} = settings
 
-  yield call(setCentreSaga, centre)
   yield call(setDepartmentTitleSaga)
 }
 
@@ -54,36 +56,26 @@ export function* logoutSaga(payload, settings) {
   yield put(routerActions.rootRoute())
 }
 
-// NIY
-export function* placeEditSaga(payload, settings) {
-  const {centre} = settings
-
-  yield call(setCentreSaga, centre)
-}
-
-// NIY
-export function* placesAddSaga(payload, settings) {
-  const {centre} = settings
-
-  yield call(setCentreSaga, centre)
-}
-
 export function* placeViewSaga(payload, settings) {
   const {name: placeName} = payload
-  const {centre} = settings
+  const {prevRouteType} = settings
   const i18n = yield getContext('i18n')
 
-  yield call(setCentreSaga, centre)
+  if (![].includes(prevRouteType)) {
+    const client = yield getContext('client')
+    const {place} = yield call(query, {client, query: placeQuery, variables: {title: placeName}}, {cache: true, from: '/place/view'})
+    yield put(canvasActions.setNodes(place.users.map((person, nodeId) => personToNode(nodeId, person))))
+  }
+
   yield call(setTitleSaga, `${placeName}`)
 }
 
 export function* userViewSaga(payload, settings) {
   const {name: username, noReset} = payload
-  const {centre} = settings
+  const {} = settings
   const i18n = yield getContext('i18n')
 
   yield call(setTitleSaga, `${username}`)
-  yield call(setCentreSaga, centre)
 }
 
 export function* notFoundSaga() {

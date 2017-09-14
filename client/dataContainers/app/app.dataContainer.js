@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose, getContext, pure, withProps } from 'recompose'
 
-import { query } from 'lib/apollo'
+import { query } from 'helpers/apollo'
 
 import { getCurrentUser } from 'core/me'
 

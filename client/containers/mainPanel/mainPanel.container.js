@@ -9,9 +9,12 @@ import { createModes, createToolboxes } from 'lib/factories'
 import modeTypes from 'lib/maps/modeTypes'
 import sizeTypes from 'lib/maps/sizeTypes'
 
-import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
+import { canvasActions, getCanvasNodes, getCanvasNodesLoading, getSelectedNodeIds } from 'core/canvas'
+import { mapActions, getMapCenter, getMapNodes, getMapNodesLoading } from 'core/map'
 import { routerActions } from 'core/router'
 import { getUserLocation } from 'core/settings'
+
+import { Loader } from 'components/layout'
 
 
 class MainPanelContainer extends Component {
@@ -217,7 +220,7 @@ class MainPanelContainer extends Component {
   render() {
     const {
       container,
-      dataContainer,
+      isLoading,
       ...props
     } = this.props
 
@@ -225,8 +228,12 @@ class MainPanelContainer extends Component {
       ...state
     } = this.state
 
+    if (isLoading) {
+      return <Loader active inline="centered"/>
+    }
+
     if (this.props.routeType === routerActions.ROOT) {
-      return React.createElement(container || dataContainer, {
+      return React.createElement(container, {
         ...props,
         mapHeight: state.mapHeight,
         mapWidth: state.mapWidth,
@@ -237,7 +244,7 @@ class MainPanelContainer extends Component {
       })
     }
 
-    return React.createElement(container || dataContainer, {
+    return React.createElement(container, {
       ...props,
       ...state,
       toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
@@ -255,15 +262,34 @@ class MainPanelContainer extends Component {
 }
 
 const mapStateToProps = (state, {routeType}) => {
+  const userLocation = getUserLocation(state)
+
   const props = {
-    userLocation: getUserLocation(state)
+    isLoading: userLocation.lat === null || userLocation.lng === null
   }
 
-  if (![routerActions.ROOT, routerActions.ABOUT, routerActions.TUTORIAL].includes(routeType)) {
+  // control is a map
+  if ([routerActions.ROOT].includes(routeType)) {
+    const center = getMapCenter(state)
+    const nodes = getMapNodes(state)
+    const isLoading =
+
+    props.isLoading = props.isLoading || getMapNodesLoading(state) || center === null
+
+    if (!isLoading) {
+      props.center = center
+      props.nodes = nodes
+    }
+  }
+  // control is a canvas
+  else {
     const nodes = getCanvasNodes(state)
+    const isLoading = getCanvasNodesLoading(state)
     const selectedNodeIds = getSelectedNodeIds(state)
 
-    if (nodes.length > 0) {
+    props.isLoading = props.isLoading || isLoading
+
+    if (!isLoading) {
       props.nodes = nodes
     }
 
@@ -285,7 +311,12 @@ const mapDispatchToProps = (dispatch, {routeType}) => {
     showTooltip: bindActionCreators(tooltipActions.show, dispatch)
   }
 
-  if (![routerActions.ABOUT, routerActions.TUTORIAL, routerActions.ROOT].includes(routeType)) {
+  // control is a map
+  if ([routerActions.ROOT].includes(routeType)) {
+    actions.mapActions = bindActionCreators(mapActions, dispatch)
+  }
+  // control is a canvas
+  else {
     actions.canvasActions = bindActionCreators(canvasActions, dispatch)
   }
 

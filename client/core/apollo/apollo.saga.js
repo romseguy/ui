@@ -1,18 +1,18 @@
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects'
 
+import { canvasActions } from 'core/canvas'
 import { mapActions } from 'core/map'
 import { routerActions, getRouteType } from 'core/router'
 
-import getBodySaga from 'sagas/getBody.saga'
-import setErrorModalSaga from 'sagas/setErrorModal.saga'
-
-import { mergePlaceIntoPersonNodesSaga, mergeUserPlacesIntoLocationNodesSaga } from './sagas'
+import getBodySaga from 'lib/sagas/getBody.saga'
+import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
 
 
 function* startupSaga() {
   const {result = {}} = yield take('APOLLO_QUERY_RESULT')
 
   if (result.message === 'Failed to fetch') {
+    window.offlineMode = true
     yield call(setErrorModalSaga, {
       title: 'System error',
       errors: ['Server is offline']
@@ -39,85 +39,36 @@ function* queryInitSaga(payload) {
   if (operationName === 'places') {
     yield put(mapActions.setNodesLoading(true))
   }
+  else if (operationName === 'myPlaces') {
+    yield put(canvasActions.setNodesLoading(true))
+  }
 }
 
 function* queryResultSaga(payload) {
   const {operationName} = payload
 
-  if (operationName === 'me') {
-    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
-    const routeType = yield select(getRouteType)
-
-    if ([routerActions.ME, routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
-      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
-    }
-  }
-  else if (operationName === 'place') {
-    const place = yield call(getBodySaga, payload)
-    const routeType = yield select(getRouteType)
-
-    if (routeType === routerActions.PLACE_VIEW) {
-      yield call(mergePlaceIntoPersonNodesSaga, place)
-    }
+  if (operationName === 'myPlaces') {
+    yield put(canvasActions.setNodesLoading(false))
   }
   else if (operationName === 'places') {
     yield put(mapActions.setNodesLoading(false))
-  }
-  else if (operationName === 'user') {
-    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
-    const routeType = yield select(getRouteType)
-
-    if (routeType === routerActions.USER_VIEW) {
-      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
-    }
   }
 }
 
 function* queryResultClientSaga(payload) {
   const {operationName} = payload
 
-  if (operationName === 'me') {
-    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
-    const routeType = yield select(getRouteType)
-
-    if ([routerActions.ME, routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
-      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
-    }
-  }
-  else if (operationName === 'place') {
-    const place = yield call(getBodySaga, payload)
-    const routeType = yield select(getRouteType)
-
-    if (routeType === routerActions.PLACE_VIEW) {
-      yield call(mergePlaceIntoPersonNodesSaga, place)
-    }
+  if (operationName === 'myPlaces') {
+    yield put(canvasActions.setNodesLoading(false))
   }
   else if (operationName === 'places') {
     yield put(mapActions.setNodesLoading(false))
-  }
-  else if (operationName === 'user') {
-    const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
-    const routeType = yield select(getRouteType)
-
-    if (routeType === routerActions.USER_VIEW) {
-      yield call(mergeUserPlacesIntoLocationNodesSaga, myPlaces)
-    }
   }
 }
 
 export function* apolloSaga() {
   yield all([
-
-    //====================================
-    //  STARTUP
-    //------------------------------------
-
     call(startupSaga),
-
-    //====================================
-    //  ACTIONS -> TASKS
-    //------------------------------------
-
     //takeEvery('APOLLO_MUTATION_ERROR', mutationErrorSaga),
     takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga),
     takeEvery('APOLLO_QUERY_INIT', queryInitSaga),

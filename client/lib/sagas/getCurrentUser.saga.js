@@ -2,7 +2,7 @@ import  { call, getContext } from 'redux-saga/effects'
 
 import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 
-import { query } from 'lib/apollo'
+import { query } from 'helpers/apollo'
 
 
 export default function* getCurrentUserSaga() {
@@ -10,9 +10,9 @@ export default function* getCurrentUserSaga() {
   let data = null
 
   try {
-    data = yield call(query, {client, query: currentUserQuery}, {cache: true})
+    data = yield call(query, {client, query: currentUserQuery}, {cache: true, from: 'getCurrentUserSaga'})
   } catch (error) {
-    data = yield call(query, {client, query: currentUserQuery})
+    data = yield call(query, {client, query: currentUserQuery}, {from: 'getCurrentUserSaga'})
   }
 
   if (data) {

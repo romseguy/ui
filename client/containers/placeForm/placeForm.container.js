@@ -9,6 +9,7 @@ import { change } from 'redux-form'
 
 import getSuggestedDepartment from 'helpers/getSuggestedDepartment'
 
+import { query } from 'helpers/apollo'
 import geo from 'lib/api/geo'
 import { getGeocodedDepartment, getGeocodedProperty } from 'lib/api/geo'
 import { formValuesToPlace, placeToNode } from 'lib/factories'
@@ -19,12 +20,11 @@ import { getPlaceFormValues } from 'core/form'
 import { routerActions } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
 
-import placeQuery from 'graphql/queries/place.query.graphql'
-import PlaceFormDataContainer from 'dataContainers/placeForm'
-
 import createPlaceMutation from 'graphql/mutations/createPlace.mutation.graphql'
 import createUserPlaceMutation from 'graphql/mutations/createUserPlace.mutation.graphql'
 import updatePlaceMutation from 'graphql/mutations/updatePlace.mutation.graphql'
+import placeQuery from 'graphql/queries/place.query.graphql'
+import PlaceFormDataContainer from 'dataContainers/placeForm'
 
 
 export const handlers = {
@@ -59,7 +59,7 @@ export const handlers = {
     let {nodes} = props
     const selectedNode = nodes.find(node => node.selected)
 
-    if (formValues.action === 'create') {
+    if (!formValues.action || formValues.action === 'create') {
       let place = await formValuesToPlace(formValues)
       const {data} = await doCreatePlace({place})
       const {id, title} = data.createPlace
@@ -67,7 +67,7 @@ export const handlers = {
       if (selectedNode) {
         nodes = nodes.map(node => {
           if (node.id === selectedNode.id) {
-            return placeToNode(selectedNode.id, data.createPlace.place, {
+            return placeToNode(selectedNode.id, data.createPlace, {
               mine: true,
               x: selectedNode.x,
               y: selectedNode.y
@@ -87,9 +87,13 @@ export const handlers = {
       mePlaceEditRoute(title)
     }
     else if (formValues.action === 'select') {
-      let {data: {place}} = await client.query({
+      let {data: {place}} = await query({
+        client,
         query: placeQuery,
         variables: {title: formValues.selectedPlaceTitle},
+      }, {
+        cache: true,
+        from: 'placeForm.container.onSubmit.select'
       })
 
       let userPlace = {

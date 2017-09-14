@@ -1,13 +1,16 @@
+import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
-import { compose, pure, withHandlers } from 'recompose'
+import { withHandlers } from 'recompose'
 
 import { routerActions } from 'core/router'
 
 import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
 import symbolTypes from 'lib/maps/symbolTypes'
+
+import MeDataContainer from 'dataContainers/me'
 
 import deleteUserPlaceMutation from 'graphql/mutations/deleteUserPlace.mutation.graphql'
 import updateUserPlacesMutation from 'graphql/mutations/updateUserPlaces.mutation.graphql'
@@ -160,23 +163,18 @@ const handlers = {
 
 class MeContainer extends Component {
   render() {
-    const {
-      control,
-      currentMode,
-      ...props
-    } = this.props
-
-    return React.createElement(control, {
-      ...props,
-      currentMode,
-      readOnly: currentMode !== modeTypes.EDIT
-    })
+    return (
+      <MeDataContainer {...this.props}/>
+    )
   }
 }
+
 
 const mapStateToProps = state => {
   return {}
 }
+
+const mapDispatchToProps = {}
 
 const deleteUserPlaceMutationConfig = {
   props({ownProps, mutate}) {
@@ -239,10 +237,9 @@ const updateUserPlacesMutationConfig = {
  */
 
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   graphql(deleteUserPlaceMutation, deleteUserPlaceMutationConfig),
   graphql(updateUserPlacesMutation, updateUserPlacesMutationConfig),
   // todo: graphql(updateUserUsersMutation, updateUserUsersMutationConfig)
-  withHandlers(handlers),
-  pure
+  withHandlers(handlers)
 )(MeContainer)

@@ -15,7 +15,7 @@ function PlaceFormHeader({routeType, routeTypes, t, title}) {
     routeType === routeTypes.PLACE_EDIT ||
     routeType === routeTypes.ME_PLACE_EDIT
   ) {
-    label = title ? `${t('form:place.header_edit')} ${title}` : t('loading')
+    label = title ? title : t('loading')
   }
   else if (
     routeType === routeTypes.ME_PLACES_ADD

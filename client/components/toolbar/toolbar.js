@@ -57,7 +57,7 @@ function Toolbar(props) {
       }}>
         <Segment compact style={{
           border: 0,
-          padding: '0.25rem 0.25rem 0 0.5rem'
+          padding: '0.35rem 0.35rem 0.35rem 0.35rem'
         }}>
           {modes.map(mode => {
             const {
@@ -105,7 +105,7 @@ function Toolbar(props) {
         <Segment
           compact style={{
           border: 0,
-          padding: '0.25rem 0.25rem 0 0'
+          padding: '0.35rem 0.55rem 0.35rem 0',
         }}
         >
           <ToolbarIcon

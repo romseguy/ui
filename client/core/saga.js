@@ -2,6 +2,7 @@ import { delay } from 'redux-saga'
 import { call, spawn, all } from 'redux-saga/effects'
 
 import { apolloSaga } from './apollo'
+import { canvasSaga } from './canvas'
 import { mapSaga } from './map'
 import { meSaga } from './me'
 import { modalSaga } from './modal'
@@ -28,6 +29,7 @@ const makeRestartable = saga => {
 
 const rootSagas = [
   apolloSaga,
+  canvasSaga,
   mapSaga,
   meSaga,
   //modalSaga,

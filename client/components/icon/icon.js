@@ -1,10 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Image } from 'semantic-ui-react'
 
 import icons from 'assets/icons'
 
-import { Icon as UIIcon } from 'components/layout'
+import { Icon as UIIcon, Image } from 'components/layout'
 
 
 function IconChevronBottom() {

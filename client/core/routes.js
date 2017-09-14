@@ -1,21 +1,34 @@
 import React from 'react'
 
-import centreTypes from 'lib/maps/centreTypes'
-import { routerActions } from 'core/router'
+import {
+  rootSaga,
+  aboutSaga,
+  authSaga,
+  logoutSaga,
+  placeViewSaga,
+  userViewSaga,
+  notFoundSaga,
+  meSaga,
+  mePlacesAddSaga,
+  mePlaceEditSaga,
+} from 'lib/sagas/routes'
 
+import { routerActions } from 'core/router'
 
 export default {
   [routerActions.NOT_FOUND]: {
-    path: '/notFound'
+    path: '/notFound',
+    saga: notFoundSaga
   },
 
   [routerActions.ROOT]: {
     path: '/',
-    centre: centreTypes.DEPARTMENT
+    saga: rootSaga
   },
 
   [routerActions.ABOUT]: {
-    path: '/about'
+    path: '/about',
+    saga: aboutSaga
   },
 
   [routerActions.TUTORIAL]: {
@@ -24,85 +37,78 @@ export default {
 
   [routerActions.AUTH]: {
     path: '/auth',
-    modalRouteType: routerActions.ROOT
+    modalRouteType: routerActions.ROOT,
+    saga: authSaga
   },
 
   [routerActions.LOGOUT]: {
-    path: '/logout'
+    path: '/logout',
+    saga: logoutSaga
   },
 
   [routerActions.PLACES_ADD]: {
     path: '/places/add',
-    centre: centreTypes.DEPARTMENT,
     requiresAuth: true
   },
   [routerActions.PLACE_VIEW]: {
     path: '/place/:name',
-    centre: centreTypes.LOCATION,
+    saga: placeViewSaga
   },
   [routerActions.PLACE_EDIT]: {
     path: '/place/:name/edit',
-    centre: centreTypes.DEPARTMENT,
     requiresAuth: true
   },
 
   [routerActions.USER_VIEW]: {
     path: '/user/:name',
-    centre: centreTypes.PERSON,
-    requiresAuth: true
+    requiresAuth: true,
+    saga: userViewSaga
   },
 
   [routerActions.ME]: {
     path: '/me',
-    centre: centreTypes.PERSON,
-    requiresAuth: true
+    requiresAuth: true,
+    saga: meSaga
   },
 
   [routerActions.ME_PLACES_ADD]: {
     path: '/me/places/add',
-    centre: centreTypes.PERSON,
-    requiresAuth: true
+    requiresAuth: true,
+    saga: mePlacesAddSaga
   },
   [routerActions.ME_PLACE_VIEW]: {
     path: '/me/place/:name',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_PLACE_EDIT]: {
     path: '/me/place/:name/edit',
-    centre: centreTypes.PERSON,
-    requiresAuth: true
+    requiresAuth: true,
+    saga: mePlaceEditSaga
   },
 
   [routerActions.ME_SYMBOLS_ADD]: {
     path: '/me/symbols/add',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_SYMBOL_VIEW]: {
     path: '/me/symbol/:name',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_SYMBOL_EDIT]: {
     path: '/me/symbol/:name/edit',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   },
 
   [routerActions.ME_USERS_ADD]: {
     path: '/me/users/add',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_USER_VIEW]: {
     path: '/me/user/:name',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   },
   [routerActions.ME_USER_EDIT]: {
     path: '/me/user/:name/edit',
-    centre: centreTypes.PERSON,
     requiresAuth: true
   }
 }

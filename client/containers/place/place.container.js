@@ -7,8 +7,6 @@ import { withHandlers } from 'recompose'
 import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
 
-import PlaceDataContainer from 'dataContainers/place'
-
 
 const handlers = {
   setCreateRoute: props => node => {
@@ -96,15 +94,32 @@ const handlers = {
 
 class PlaceContainer extends Component {
   render() {
-    return (
-      <PlaceDataContainer {...this.props}/>
-    )
+    const {
+      control,
+      currentMode,
+      mine,
+      modes,
+      ...props
+    } = this.props
+
+    return React.createElement(control, {
+      ...props,
+      currentMode,
+      modes: modes.map(mode => {
+        if (mode.key === modeTypes.EDIT) {
+          return {...mode, disabled: !mine}
+        }
+        return mode
+      }),
+      readOnly: currentMode !== modeTypes.EDIT
+    })
   }
 }
 
-
 const mapStateToProps = state => {
-  return {}
+  return {
+    mine: false
+  }
 }
 
 const mapDispatchToProps = {}

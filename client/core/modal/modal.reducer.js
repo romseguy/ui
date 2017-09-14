@@ -2,7 +2,7 @@ import { merge, set, setIn, updateIn, unset, push } from 'zaphod/compat'
 
 import { modalActions } from './modal.actions'
 
-export const ModalState = {
+export const modalState = {
   modals: {
 /*    [modalConstants.AUTH]: {
       isOpen: false
@@ -11,7 +11,7 @@ export const ModalState = {
 }
 
 
-export function modalReducer(state = ModalState, {payload, type}) {
+export function modalReducer(state = modalState, {payload, type}) {
   switch (type) {
     case modalActions.SET_MODAL:
       return {

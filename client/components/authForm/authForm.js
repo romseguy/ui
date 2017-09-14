@@ -1,6 +1,6 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { reduxForm } from 'redux-form'
+import { compose, pure } from 'recompose'
 
 import { Form as UIForm } from 'components/layout'
 
@@ -53,5 +53,6 @@ class AuthForm extends Component {
 export default compose(
   reduxForm({
     form: 'AuthForm'
-  })
+  }),
+  pure
 )(AuthForm)

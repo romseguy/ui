@@ -1,53 +1,18 @@
-import { channel } from 'redux-saga'
 import { call, getContext, fork, put, take, takeEvery } from 'redux-saga/effects'
-
-import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
-
-import { query, watchQuery } from 'lib/apollo'
-
 import { meActions } from 'core/me'
+import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
+import { query } from 'helpers/apollo'
+import watchQuerySaga from 'lib/sagas/watchQuery.saga'
 
-
-let currentUserSubscription = null
-
-function* watchCurrentUserQuerySaga(client) {
-  const currentUserChannel = channel()
-
-  currentUserSubscription = yield call(watchQuery, {
-    channel: currentUserChannel,
-    client,
-    query: currentUserQuery
-  })
-
-  while (true) {
-    const {type, payload} = yield take(currentUserChannel)
-
-    switch (type) {
-      case 'QUERY_OK':
-        const {currentUser} = payload.results.data
-
-        yield put(meActions.setCurrentUser(currentUser))
-        break
-
-      case 'QUERY_NOK':
-        if (window.offlineMode) {
-          yield put({type: 'OFFLINE_MODE'})
-          currentUserSubscription.unsubscribe()
-        }
-        break
-    }
-  }
-}
 
 export function* meSaga() {
   const client = yield getContext('client')
 
-  yield fork(watchCurrentUserQuerySaga, client)
+  yield fork(watchQuerySaga, {client, query: currentUserQuery}, function* onLoadSaga({currentUser}) {
+    yield put(meActions.setCurrentUser(currentUser))
+  })
 
   yield takeEvery(meActions.REFETCH_CURRENT_USER, function*() {
-    query({
-      client,
-      query: currentUserQuery
-    })
+    yield call(query, {client, query: currentUserQuery}, {from: meActions.REFETCH_CURRENT_USER})
   })
 }

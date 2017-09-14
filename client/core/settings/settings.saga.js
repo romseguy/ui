@@ -5,8 +5,8 @@ import getCurrentPosition from 'helpers/getCurrentPosition'
 import CustomError from 'lib/classes/customError'
 import getCurrentPositionErrorCodes from 'lib/maps/getCurrentPositionErrorCodes'
 
-import setErrorModalSaga from 'sagas/setErrorModal.saga'
-import getLocationDataSaga from 'sagas/getLocationData.saga'
+import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
+import getLocationDataSaga from 'lib/sagas/getLocationData.saga'
 
 import { settingsActions } from './settings.actions'
 

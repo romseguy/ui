@@ -2,7 +2,7 @@ import { settingsActions } from './settings.actions'
 import { set, setIn, getIn, updateIn } from 'zaphod/compat'
 
 
-export const SettingsState = {
+export const settingsState = {
   i18n: {
     initialized: false
   },
@@ -18,7 +18,7 @@ export const SettingsState = {
 }
 
 
-export function settingsReducer(state = SettingsState, {payload, type}) {
+export function settingsReducer(state = settingsState, {payload, type}) {
   switch (type) {
     case settingsActions.I18N_INITIALIZED:
       return setIn(state, ['i18n', 'initialized'], true)

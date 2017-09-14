@@ -1,7 +1,7 @@
-import { compose } from 'ramda'
 import React from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
+import { compose, pure } from 'recompose'
 
 import { routerActions, getRouteType } from 'core/router'
 
@@ -30,8 +30,6 @@ const mapDispatchToProps = {}
 
 export default compose(
   translate(),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps),
+  pure
 )(SymbolsToolboxContainer)

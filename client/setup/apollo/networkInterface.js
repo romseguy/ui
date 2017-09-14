@@ -22,7 +22,6 @@ export default {
       if (error.name === 'TypeError') {
         if (error.message === 'Failed to fetch') {
           console.debug('we are offline')
-          window.offlineMode = true
           offlineMode = true
         }
       }

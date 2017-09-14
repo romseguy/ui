@@ -2,7 +2,7 @@ import roleTypes from 'lib/maps/roleTypes'
 import { placeToNode } from 'lib/factories'
 
 
-export const userPlaceToLocationNode = (id, userPlace) => {
+export const userPlaceToNode = (id, userPlace) => {
   const {
     place,
     role: {

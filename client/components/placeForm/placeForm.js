@@ -75,7 +75,6 @@ class PlaceForm extends Component {
     const {
       disconnectedPlaces,
       formValues,
-      mustCreate,
       routeType,
       routeTypes,
       submitting,
@@ -97,9 +96,9 @@ class PlaceForm extends Component {
       return <span>{t('form:failed_loading')}</span>
     }
 
-    const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && !mustCreate
+    const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && disconnectedPlaces.length > 0
     const showSelectFields = !isLoading && formValues.action === 'select'
-    const showFields = !isLoading && (formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || mustCreate)
+    const showFields = !isLoading && (formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || routeType === routeTypes.ME_PLACES_ADD && !disconnectedPlaces.length)
 
     return (
       <PlaceFormLayout fluid>

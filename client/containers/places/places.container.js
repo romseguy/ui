@@ -2,17 +2,15 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose, pure, withHandlers } from 'recompose'
 
-import { mapActions, getMapCenter } from 'core/map'
-
-import PlacesDataContainer from 'dataContainers/places'
+import { mapActions } from 'core/map'
 
 
 const handlers = {
   onBoundsChange: props => data => {
     const {center, zoom, bounds, initial} = data
-    const {setCenter} = props
+    const {mapActions} = props
 
-    setCenter(center)
+    mapActions.setCenter(center)
   },
 
   onNodeAnchorClick: props => node => {
@@ -25,24 +23,23 @@ const handlers = {
 
 class PlacesContainer extends Component {
   render() {
-    return (
-      <PlacesDataContainer {...this.props}/>
-    )
+    const {
+      control,
+      ...props
+    } = this.props
+
+    return React.createElement(control, {
+      ...props
+    })
   }
 }
 
 const mapStateToProps = state => {
-  return {
-    center: getMapCenter(state)
-  }
-}
-
-const mapDispatchToProps = {
-  setCenter: mapActions.setCenter
+  return {}
 }
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(mapStateToProps),
   withHandlers(handlers),
   pure
 )(PlacesContainer)

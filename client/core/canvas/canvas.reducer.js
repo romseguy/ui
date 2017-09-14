@@ -5,6 +5,7 @@ import { canvasActions } from './canvas.actions'
 
 export const canvasState = {
   nodes: [],
+  nodesLoading: false,
   selectedNodeIds: []
 }
 
@@ -73,8 +74,11 @@ export function canvasReducer(state = canvasState, {payload, type}) {
 
       return state
 
-    case canvasActions.SET_NODES:
+    case canvasActions.SET_CANVAS_NODES:
       return setIn(state, ['nodes'], payload.nodes)
+
+    case canvasActions.SET_CANVAS_NODES_LOADING:
+      return set(state, 'nodesLoading', payload.loading)
 
     case canvasActions.UNSELECT_NODES:
       state = updateIn(state, ['selectedNodeIds'], selectedNodeIds => {

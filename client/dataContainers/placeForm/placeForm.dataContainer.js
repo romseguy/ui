@@ -25,16 +25,12 @@ class PlaceFormDataContainer extends Component {
 
   render() {
     const {
-      disconnectedPlaces,
-      places,
       ...props
     } = this.props
 
     return (
       <PlaceForm
         {...props}
-        disconnectedPlaces={disconnectedPlaces}
-        mustCreate={!places || !places.length || disconnectedPlaces.length === 0}
         routeTypes={routerActions}
       />
     )
@@ -103,12 +99,10 @@ const placesQueryConfig = {
 
     const props = {
       isLoading: isLoading || loading,
-      mustCreate: false,
       places: []
     }
 
     if (!loading && places) {
-      props.mustCreate = places.length === 0
       props.places = places
     }
 
@@ -125,12 +119,14 @@ const myPlacesQueryConfig = {
 
     const {
       isLoading = false,
+      initialValues,
       place,
       places
     } = ownProps
 
     const props = {
       disconnectedPlaces: [],
+      initialValues,
       isLoading: isLoading || loading,
       mine: false
     }

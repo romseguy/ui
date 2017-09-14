@@ -1,13 +1,13 @@
 import { isLocationAction, NOT_FOUND } from 'redux-first-router'
-import { call, fork, put, spawn, take } from 'redux-saga/effects'
+import { call, fork, put, select, spawn, take } from 'redux-saga/effects'
 import { delay } from 'redux-saga'
 
+import { getPrevRouteType } from 'core/router'
 import routes from 'core/routes'
 
-import getCurrentUserSaga from 'sagas/getCurrentUser.saga'
+import getCurrentUserSaga from 'lib/sagas/getCurrentUser.saga'
 
 import { routerActions } from './router.actions'
-import routeSagas from './sagas'
 
 
 function* locationChangedSaga({type: routeType, payload, meta}) {
@@ -27,10 +27,13 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
     }
   }
 
-  // equivalent to React Router onEnter callback
-  if (routeSagas[routeType]) {
-    const settings = {currentUser, centre: currentRoute.centre}
-    yield spawn(routeSagas[routeType], payload, settings)
+  if (currentRoute.saga) {
+    const prevRouteType = yield select(getPrevRouteType)
+    const settings = {
+      currentUser,
+      prevRouteType
+    }
+    yield spawn(currentRoute.saga, payload, settings)
   }
 }
 

@@ -4,9 +4,12 @@ export const canvasActions = {
   SELECT_ALL_NODES: 'SELECT_ALL_NODES',
   SELECT_NODE: 'SELECT_NODE',
   SELECT_NODES: 'SELECT_NODES',
-  SET_NODES: 'SET_NODES',
+  SET_CANVAS_NODES: 'SET_CANVAS_NODES',
+  SET_CANVAS_NODES_LOADING: 'SET_CANVAS_NODES_LOADING',
   UNSELECT_NODES: 'UNSELECT_NODES',
   REMOVE_NODE: 'REMOVE_NODE',
+
+  REFETCH_MY_PLACES: 'REFETCH_MY_PLACES',
 
   addNode: (node) => ({
     type: canvasActions.ADD_NODE,
@@ -45,8 +48,13 @@ export const canvasActions = {
   }),
 
   setNodes: (nodes) => ({
-    type: canvasActions.SET_NODES,
+    type: canvasActions.SET_CANVAS_NODES,
     payload: {nodes}
+  }),
+
+  setNodesLoading: loading => ({
+    type: canvasActions.SET_CANVAS_NODES_LOADING,
+    payload: {loading}
   }),
 
   unselectNodes: (unselectedNodeIds) => ({

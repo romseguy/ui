@@ -9,7 +9,6 @@ import { merge } from 'ramda'
 import roleTypes from 'lib/maps/roleTypes'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
-import { getMeCentre } from 'core/me'
 
 import createUserMutation from 'graphql/mutations/createUser.mutation.graphql'
 import createUserUserMutation from 'graphql/mutations/createUserUser.mutation.graphql'
@@ -46,7 +45,6 @@ const handlers = {
 function UserFormContainer(props) {
   const {
     // state
-    centre,
     formValues,
     initialValues,
     userLocation,
@@ -89,12 +87,10 @@ function UserFormContainer(props) {
 const mapStateToProps = state => {
   const routeType = getRouteType(state)
   const {name: username} = getPayload(state)
-  const centre = getMeCentre(state)
   const userLocation = getUserLocation(state)
   const title = getTitle(state)
 
   return {
-    centre,
     formValues: state.form.UserForm ? state.form.UserForm.values : {},
     userLocation,
     username,
