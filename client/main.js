@@ -28,17 +28,18 @@ if (module.hot) {
 }
 
 if (process.env.NODE_ENV === 'development') {
+  window.client = client
   window.perf = require('react-addons-perf')
   window.store = store
-  window.s = () => store.getState()
+  window.s = store.getState
   window.ss = window.$$LogSagas
-  const {whyDidYouUpdate} = require('why-did-you-update')
-  whyDidYouUpdate(React, {
-    include: /.*MainPanel.*/,
+
+/*  require('why-did-you-update').whyDidYouUpdate(React, {
+    include: /.*MainPanel.*!/,
     includeFunctions: true,
     groupByComponent: true,
     collapseComponentGroups: false,
     mergeDiffs: true,
     onlyFunctions: true
-  })
+  })*/
 }

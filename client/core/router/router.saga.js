@@ -1,8 +1,9 @@
 import { isLocationAction, NOT_FOUND } from 'redux-first-router'
-import { all, call, fork, put, select, spawn, take, takeEvery } from 'redux-saga/effects'
+import { call, fork, put, spawn, take } from 'redux-saga/effects'
 import { delay } from 'redux-saga'
 
 import routes from 'core/routes'
+
 import getCurrentUserSaga from 'sagas/getCurrentUser.saga'
 
 import { routerActions } from './router.actions'
@@ -34,17 +35,14 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
 }
 
 export function* routerSaga() {
-
-  //====================================
-  //  ROUTER EVENTS -> TASKS
-  //------------------------------------
-
   while (true) {
-    const action = yield take('*')
+    const action = yield take(isLocationAction)
 
-    if (isLocationAction(action)) {
-      yield delay(100) // needed because when a route param contains special characters or spaces, it's escaped by the browser (e.g into %20 for a space) and the route saga will be spawned twice
-      yield fork(locationChangedSaga, action)
-    }
+    // when a route param contains special characters or spaces
+    // it's escaped by the browser (e.g spaces into %20) and the route saga is spawned twice
+    // so we use a delay
+    yield delay(100)
+
+    yield fork(locationChangedSaga, action)
   }
 }

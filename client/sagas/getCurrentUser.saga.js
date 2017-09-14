@@ -1,22 +1,23 @@
-import { call, getContext, take } from 'redux-saga/effects'
+import  { call, getContext } from 'redux-saga/effects'
+
 import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
+
+import { query } from 'lib/apollo'
 
 
 export default function* getCurrentUserSaga() {
+  const client = yield getContext('client')
+  let data = null
+
   try {
-    const client = yield getContext('client')
-
-    const result = yield call([client, client.readQuery], {
-      query: currentUserQuery
-    })
-
-    return result ? result.currentUser : null
-  } catch (e) {
-    while (true) {
-      const {operationName, result} = yield take(['APOLLO_QUERY_RESULT', 'APOLLO_QUERY_RESULT_CLIENT'])
-      if (['currentUser'].includes(operationName)) {
-        return result.data ? result.data.currentUser : null
-      }
-    }
+    data = yield call(query, {client, query: currentUserQuery}, {cache: true})
+  } catch (error) {
+    data = yield call(query, {client, query: currentUserQuery})
   }
+
+  if (data) {
+    return data.currentUser
+  }
+
+  return null
 }

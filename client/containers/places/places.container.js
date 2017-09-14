@@ -1,8 +1,6 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
-import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
-import { withHandlers } from 'recompose'
+import { compose, pure, withHandlers } from 'recompose'
 
 import { mapActions, getMapCenter } from 'core/map'
 
@@ -33,7 +31,6 @@ class PlacesContainer extends Component {
   }
 }
 
-
 const mapStateToProps = state => {
   return {
     center: getMapCenter(state)
@@ -46,5 +43,6 @@ const mapDispatchToProps = {
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  withHandlers(handlers)
+  withHandlers(handlers),
+  pure
 )(PlacesContainer)

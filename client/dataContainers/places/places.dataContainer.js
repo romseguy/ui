@@ -1,15 +1,17 @@
 import React, { Component } from 'react'
-import { graphql } from 'react-apollo'
+import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
-import { createSelector } from 'reselect'
+
+import { mapActions, getMapNodes, getMapNodesLoading } from 'core/map'
 
 import { Loader } from 'components/layout'
-import { placeToNode } from 'lib/factories'
-
-import placesQuery from 'graphql/queries/places.query.graphql'
 
 
 class PlacesDataContainer extends Component {
+  componentDidMount() {
+    this.props.dispatch({type: mapActions.REFETCH_PLACES})
+  }
+
   render() {
     const {
       control,
@@ -27,36 +29,14 @@ class PlacesDataContainer extends Component {
   }
 }
 
-const getNodes = createSelector(
-  r => r.places,
-  places => places.map((place, i) => placeToNode(i, place))
-)
-
-const placesQueryConfig = {
-  props({data, ownProps}) {
-    const {
-      loading,
-      places = []
-    } = data
-
-    const {
-      isLoading = false,
-      userLocation
-    } = ownProps
-
-    const props = {
-      isLoading: isLoading || loading || userLocation.lat === null || userLocation.lng === null
-    }
-
-    if (!props.isLoading) {
-      props.nodes = getNodes({places})
-    }
-
-    return props
+const mapStateToProps = (state, {userLocation}) => {
+  return {
+    isLoading: getMapNodesLoading(state) || userLocation.lat === null || userLocation.lng === null,
+    nodes: getMapNodes(state)
   }
 }
 
 export default compose(
-  graphql(placesQuery, placesQueryConfig),
+  connect(mapStateToProps),
   pure
 )(PlacesDataContainer)

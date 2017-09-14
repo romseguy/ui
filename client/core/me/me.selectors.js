@@ -7,6 +7,11 @@ export function getMe(state) {
 export function getMapCenter(state) {
   return getMe(state).center
 }
+
 export function getMeCentre(state) {
   return getMe(state).centre
+}
+
+export function getCurrentUser(state) {
+  return getMe(state).currentUser
 }

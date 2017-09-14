@@ -1,11 +1,6 @@
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { compose, getContext, pure, withProps } from 'recompose'
-
-import { query } from 'lib/apollo'
-
-import { getCurrentUser } from 'core/me'
+import { graphql } from 'react-apollo'
+import { compose, pure } from 'recompose'
 
 import Footer from 'containers/footer'
 import Header from 'containers/header'
@@ -47,14 +42,20 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    currentUser: getCurrentUser(state)
+
+const currentUserQueryConfig = {
+  fetchPolicy: 'network-only',
+  props({data, ownProps}) {
+    const {currentUser, loading} = data
+    const props = {
+      currentUser
+    }
+
+    return props
   }
 }
 
 export default compose(
-  connect(mapStateToProps),
-  getContext({client: PropTypes.object}),
+  graphql(currentUserQuery, currentUserQueryConfig),
   pure
 )(App)

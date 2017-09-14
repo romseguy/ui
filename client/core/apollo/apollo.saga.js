@@ -1,8 +1,9 @@
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects'
 
+import { mapActions } from 'core/map'
 import { routerActions, getRouteType } from 'core/router'
-import getBodySaga from 'sagas/getBody.saga'
 
+import getBodySaga from 'sagas/getBody.saga'
 import setErrorModalSaga from 'sagas/setErrorModal.saga'
 
 import { mergePlaceIntoPersonNodesSaga, mergeUserPlacesIntoLocationNodesSaga } from './sagas'
@@ -32,6 +33,14 @@ function* mutationResultSaga(payload) {
   }
 }
 
+function* queryInitSaga(payload) {
+  const {operationName} = payload
+
+  if (operationName === 'places') {
+    yield put(mapActions.setNodesLoading(true))
+  }
+}
+
 function* queryResultSaga(payload) {
   const {operationName} = payload
 
@@ -50,6 +59,9 @@ function* queryResultSaga(payload) {
     if (routeType === routerActions.PLACE_VIEW) {
       yield call(mergePlaceIntoPersonNodesSaga, place)
     }
+  }
+  else if (operationName === 'places') {
+    yield put(mapActions.setNodesLoading(false))
   }
   else if (operationName === 'user') {
     const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
@@ -80,6 +92,9 @@ function* queryResultClientSaga(payload) {
       yield call(mergePlaceIntoPersonNodesSaga, place)
     }
   }
+  else if (operationName === 'places') {
+    yield put(mapActions.setNodesLoading(false))
+  }
   else if (operationName === 'user') {
     const myPlaces = yield call(getBodySaga, payload, 'myPlaces')
     const routeType = yield select(getRouteType)
@@ -105,6 +120,7 @@ export function* apolloSaga() {
 
     //takeEvery('APOLLO_MUTATION_ERROR', mutationErrorSaga),
     takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga),
+    takeEvery('APOLLO_QUERY_INIT', queryInitSaga),
     takeEvery('APOLLO_QUERY_RESULT', queryResultSaga),
     takeEvery('APOLLO_QUERY_RESULT_CLIENT', queryResultClientSaga)
   ])

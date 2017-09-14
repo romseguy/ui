@@ -5,7 +5,8 @@ import { meActions } from './me.actions'
 
 export const MeState = {
   center: [],
-  centre: centreTypes.DEPARTMENT
+  centre: centreTypes.DEPARTMENT,
+  currentUser: null
 }
 
 export function meReducer(state = MeState, {payload, type}) {
@@ -15,6 +16,9 @@ export function meReducer(state = MeState, {payload, type}) {
 
     case meActions.SET_CENTRE:
       return set(state, 'centre', payload.centre)
+
+    case meActions.SET_CURRENT_USER:
+      return set(state, 'currentUser', payload.currentUser)
 
     default:
       return state

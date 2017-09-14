@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose } from 'recompose'
+import { compose, pure } from 'recompose'
 import { actions as tooltipActions } from 'redux-tooltip'
 
 import bindActionCreators from 'helpers/bindActionCreators'
 import { getCanvasNodeAnchorTooltipName } from 'helpers/tooltips'
+import { createModes, createToolboxes } from 'lib/factories'
 import modeTypes from 'lib/maps/modeTypes'
 import sizeTypes from 'lib/maps/sizeTypes'
 
@@ -12,92 +13,21 @@ import { canvasActions, getCanvasNodes, getSelectedNodeIds } from 'core/canvas'
 import { routerActions } from 'core/router'
 import { getUserLocation } from 'core/settings'
 
-import { EntitiesToolbox, SymbolsToolbox } from 'containers/toolbox'
-
-import { ToolboxButton } from 'components/toolbox'
-
 
 class MainPanelContainer extends Component {
-
   constructor(props) {
     super(props)
-
     const {routeType, t} = props
+    let currentMode = modeTypes.DISCOVERY
 
-    const editModeRouteTypes = [
-      routerActions.ME_PLACES_ADD,
-      routerActions.ME_PLACE_EDIT
-    ]
-
-    const currentMode = editModeRouteTypes.includes(routeType) ? modeTypes.EDIT : modeTypes.DISCOVERY
+    if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
+      currentMode = modeTypes.EDIT
+    }
 
     this.state = {
       currentMode,
-      modes: [{
-        key: modeTypes.DISCOVERY,
-        labels: {
-          active: t('canvas:modes.discovery.labels.active'),
-          disabled: t('canvas:modes.discovery.labels.disabled'),
-          inactive: t('canvas:modes.discovery.labels.inactive')
-        },
-        disabled: false,
-        iconId: 'search'
-      }, {
-        key: modeTypes.EDIT,
-        labels: {
-          active: t('canvas:modes.edit.labels.active'),
-          disabled: t('canvas:modes.edit.labels.disabled'),
-          inactive: t('canvas:modes.edit.labels.inactive')
-        },
-        disabled: false,
-        iconId: 'edit'
-      }, {
-        key: modeTypes.NOTIFICATION,
-        labels: {
-          active: t('canvas:modes.notification.labels.active'),
-          disabled: t('canvas:modes.notification.labels.disabled'),
-          inactive: t('canvas:modes.notification.labels.inactive')
-        },
-        disabled: false,
-        iconId: 'volume'
-      }],
-      toolboxes: [{
-        key: 'entities',
-        button: ToolboxButton,
-        buttonProps: {
-          active: false,
-          disabled: currentMode !== modeTypes.EDIT,
-          iconName: 'eye',
-          label: t('canvas:entities.label') + 's',
-          title: t('canvas:entities.add'),
-          toggle: true,
-          onClick: () => this.setToolboxIsOpen('entities')
-        },
-        component: EntitiesToolbox,
-        props: {
-          isOpen: false,
-          key: 'canvas-entities-toolbox',
-          onClose: () => this.setToolboxIsOpen('entities', false)
-        }
-      }, {
-        key: 'symbols',
-        button: ToolboxButton,
-        buttonProps: {
-          active: false,
-          disabled: currentMode !== modeTypes.EDIT,
-          iconName: 'bullseye',
-          label: t('canvas:symbols.label') + 's',
-          title: t('canvas:symbols.add'),
-          toggle: true,
-          onClick: () => this.setToolboxIsOpen('symbols')
-        },
-        component: SymbolsToolbox,
-        props: {
-          isOpen: false,
-          key: 'canvas-symbols-toolbox',
-          onClose: () => this.setToolboxIsOpen('entities', false)
-        }
-      }]
+      modes: createModes(t),
+      toolboxes: createToolboxes(currentMode, this.setToolboxIsOpen, t)
     }
   }
 
@@ -324,27 +254,25 @@ class MainPanelContainer extends Component {
   }
 }
 
-
 const mapStateToProps = (state, {routeType}) => {
-  const nodes = getCanvasNodes(state)
-  const selectedNodeIds = getSelectedNodeIds(state)
   const props = {
     userLocation: getUserLocation(state)
   }
 
-  if (nodes.length > 0 && ![
-      routerActions.ROOT,
-      routerActions.ABOUT,
-      routerActions.TUTORIAL
-    ].includes(routeType)) {
-    props.nodes = nodes
-  }
+  if (![routerActions.ROOT, routerActions.ABOUT, routerActions.TUTORIAL].includes(routeType)) {
+    const nodes = getCanvasNodes(state)
+    const selectedNodeIds = getSelectedNodeIds(state)
 
-  if (selectedNodeIds.length > 0) {
-    props.selectedNodeIds = selectedNodeIds
+    if (nodes.length > 0) {
+      props.nodes = nodes
+    }
 
-    if (selectedNodeIds.length === 1) {
-      props.selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
+    if (selectedNodeIds.length > 0) {
+      props.selectedNodeIds = selectedNodeIds
+
+      if (selectedNodeIds.length === 1) {
+        props.selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
+      }
     }
   }
 
@@ -353,14 +281,18 @@ const mapStateToProps = (state, {routeType}) => {
 
 const mapDispatchToProps = (dispatch, {routeType}) => {
   const actions = {
-    canvasActions: bindActionCreators(canvasActions, dispatch),
     hideTooltip: bindActionCreators(tooltipActions.hide, dispatch),
     showTooltip: bindActionCreators(tooltipActions.show, dispatch)
+  }
+
+  if (![routerActions.ABOUT, routerActions.TUTORIAL, routerActions.ROOT].includes(routeType)) {
+    actions.canvasActions = bindActionCreators(canvasActions, dispatch)
   }
 
   return actions
 }
 
 export default compose(
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps, mapDispatchToProps),
+  pure
 )(MainPanelContainer)
