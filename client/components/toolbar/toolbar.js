@@ -1,8 +1,8 @@
-import { compose } from 'ramda'
 import React from 'react'
-import { withHandlers } from 'recompose'
+import { compose, pure, withHandlers } from 'recompose'
 import styled from 'styled-components'
 
+import media from 'helpers/media'
 import entityTypes from 'lib/maps/entityTypes'
 
 import { Col as UICol, Grid, Segment } from 'components/layout'
@@ -11,6 +11,10 @@ import ToolbarIcon from './toolbarIcon'
 
 const Col = styled(UICol)`
 width: auto !important;
+
+${media.MOBILE`
+padding: 0 !important;
+`}
 `
 
 
@@ -48,10 +52,7 @@ function Toolbar(props) {
   const selectedNodeType = selectedNode && selectedNode.type
 
   return (
-    <Grid
-      className="app-toolbar"
-      stackable
-    >
+    <Grid>
       <Col style={{
         paddingLeft: 0
       }}>
@@ -132,7 +133,7 @@ function Toolbar(props) {
         <Segment
           compact style={{
           border: 0,
-          padding: '0.25rem 0.25rem 0 0.25rem'
+          padding: '0.35rem 0.55rem 0.35rem 0.55rem',
         }}
         >
           <ToolbarIcon
@@ -157,5 +158,6 @@ function Toolbar(props) {
 }
 
 export default compose(
-  withHandlers(handlers)
+  withHandlers(handlers),
+  pure
 )(Toolbar)

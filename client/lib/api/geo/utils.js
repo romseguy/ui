@@ -1,14 +1,17 @@
+import debug from 'helpers/debug'
+
+
 function apiResultIsValid(res) {
   if (!res) {
-    console.error('no result from api')
+    debug('no result from api')
     return false
   }
   else if (!res.body) {
-    console.error('no body')
+    debug('no body')
     return false
   }
   else if (!res.body.features || !res.body.features.length) {
-    console.error('no features')
+    debug('no features')
     return false
   }
 

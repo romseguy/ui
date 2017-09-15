@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { graphql } from 'react-apollo'
 import { getContext } from 'recompose'
 import { change } from 'redux-form'
 import { connect } from 'react-redux'
+import { compose, pure } from 'recompose'
 
 import geo from 'lib/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'lib/api/geo'
@@ -21,27 +21,17 @@ import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
 import Icon from 'components/icon'
-import { Col } from 'components/layout'
-import { HeaderGrid, HeaderIcon, HeaderLink, HeaderTitle } from 'components/header'
+import { NoPadCol as Col, Grid } from 'components/layout'
+import { HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
 
 
 class HeaderContainer extends Component {
-  static isStacked() {
-    return window.innerWidth < sizeTypes.tablet
-  }
-
-  state = {
-    isStacked: HeaderContainer.isStacked()
-  }
-
   componentDidMount() {
-    window.addEventListener('resize', event => {
-      const isStacked = HeaderContainer.isStacked()
+    window.addEventListener('resize', this.handleResize)
+  }
 
-      if (isStacked !== this.state.isStacked) {
-        this.setState(p => ({isStacked}))
-      }
-    })
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   }
 
   handleConnectIconClick = event => {
@@ -93,6 +83,10 @@ class HeaderContainer extends Component {
     }).then(() => {
       rootRoute()
     })
+  }
+
+  handleResize = () => {
+    this.forceUpdate()
   }
 
   handleTitleClick = event => {
@@ -167,10 +161,6 @@ class HeaderContainer extends Component {
       t
     } = this.props
 
-    const {
-      isStacked
-    } = this.state
-
     const monadIcon = <Icon name="monad" height={16} width={16}/>
     const placeIcon = <Icon name="place" height={16} width={16}/>
 
@@ -178,7 +168,7 @@ class HeaderContainer extends Component {
     let connectIconTitle = t('header:connect.title.place')
     let entityIcon = null
     let entityIconTitle = ''
-    let locationIcon = <HeaderIcon bordered name="location arrow"/>
+    let locationIcon = <Icon name="location arrow"/>
     let locationIconTitle = t('header:location.title.default')
     let {title} = this.props
     let subtitle = ''
@@ -208,7 +198,7 @@ class HeaderContainer extends Component {
     } else if ([
         routerActions.PLACE_VIEW
       ].includes(routeType)) {
-      connectIcon = <Icon bordered name="linkify"/>
+      connectIcon = <Icon name="linkify"/>
       entityIcon = placeIcon
       entityIconTitle = t('header:entityIcon.title.place') + ` ${routePayload.name}`
       locationIconTitle = t('header:location.title.place')
@@ -228,50 +218,62 @@ class HeaderContainer extends Component {
       }
     }
 
+    const isMobile = window.currentBreakpoint === sizeTypes.MOBILE
+    const isTablet = window.currentBreakpoint === sizeTypes.TABLET
+
     return (
       <HeaderGrid
-        className="app-header"
-        columns={3}
+        columns={2}
         stackable
-        verticalAlign="middle"
       >
-        <Col computer={3}>
-          {t('app_title')}
-
-          {' '}
-
-          <HeaderLink to={routerActions.rootRoute()}>
-            {t('header:map')}
-          </HeaderLink>
-
-          <HeaderLink to={routerActions.tutorialRoute()}>
-            {t('header:tutorial')}
-          </HeaderLink>
-        </Col>
-
         <Col
-          computer={10}
-          textAlign={isStacked ? 'left' : 'center'}
+          tablet={12}
         >
-          <HeaderTitle
-            connectIcon={connectIcon}
-            connectIconTitle={connectIconTitle}
-            entityIcon={entityIcon}
-            entityIconTitle={entityIconTitle}
-            locationIcon={locationIcon}
-            locationIconTitle={locationIconTitle}
-            title={subtitle}
-            onLocationIconClick={onLocationIconClick}
-            onClick={onTitleClick}
-            onConnectIconClick={onConnectIconClick}
+          <Grid
+            columns={2}
+            stackable
           >
-            {title}
-          </HeaderTitle>
+            <Col
+              tablet={6}
+            >
+              <HeaderLinkRaw href="http://pairroquet.com">
+                {t('app_title')}
+              </HeaderLinkRaw>
+
+              <HeaderLink to={routerActions.rootRoute()}>
+                {t('header:map')}
+              </HeaderLink>
+
+              <HeaderLink to={routerActions.tutorialRoute()}>
+                {t('header:tutorial')}
+              </HeaderLink>
+            </Col>
+
+            <Col
+              tablet={10}
+              textAlign={isMobile ? 'left' : 'center'}
+            >
+              <HeaderTitle
+                connectIcon={connectIcon}
+                connectIconTitle={connectIconTitle}
+                entityIcon={entityIcon}
+                entityIconTitle={entityIconTitle}
+                locationIcon={locationIcon}
+                locationIconTitle={locationIconTitle}
+                title={subtitle}
+                onLocationIconClick={onLocationIconClick}
+                onClick={onTitleClick}
+                onConnectIconClick={onConnectIconClick}
+              >
+                {title}
+              </HeaderTitle>
+            </Col>
+          </Grid>
         </Col>
 
         <Col
-          computer={3}
-          textAlign={isStacked ? 'left' : 'right'}
+          tablet={4}
+          textAlign={isMobile ? 'left' : 'right'}
         >
           {currentUser ? (
             <div>
@@ -330,5 +332,6 @@ export default compose(
   translate(),
   connect(mapStateToProps, mapDispatchToProps),
   graphql(logoutMutation, logoutMutationConfig),
-  getContext({client: PropTypes.object})
+  getContext({client: PropTypes.object}),
+  pure
 )(HeaderContainer)

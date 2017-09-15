@@ -1,25 +1,6 @@
 import React from 'react'
-import styled from 'styled-components'
 
-import { Segment as UISegment } from 'components/layout'
-
-
-const Segment = styled(UISegment)`
-padding: 0 !important;
-margin: 0 !important;
-
-::after {
-  margin-top: -0.85em !important;
-  width: 1.5em !important;
-  height: 1.5em !important;
-}
-`
-
-const Link = styled.a`
-text-decoration: none;
-cursor: pointer;
-color: blue;
-`
+import { HeaderLinkRaw, HeaderLink } from './'
 
 
 function HeaderTitle(props) {
@@ -41,13 +22,13 @@ function HeaderTitle(props) {
   return (
     <div>
       {entityIcon && onEntityIconClick && (
-        <Link
+        <HeaderLinkRaw
           title={entityIconTitle}
           onClick={onEntityIconClick}
           style={{borderBottom: '1px dashed black', cursor: 'help', padding: '2px'}}
         >
           {entityIcon}
-        </Link>
+        </HeaderLinkRaw>
       )}
 
       {entityIcon && !onEntityIconClick && (
@@ -60,12 +41,12 @@ function HeaderTitle(props) {
       )}
 
       {onClick && (
-        <Link
+        <HeaderLinkRaw
           title={title}
           onClick={onClick}
         >
           {children}
-        </Link>
+        </HeaderLinkRaw>
       )}
 
       {!onClick && (
@@ -75,21 +56,21 @@ function HeaderTitle(props) {
       {' '}
 
       {locationIcon && onLocationIconClick && (
-        <Link
+        <HeaderLinkRaw
           title={locationIconTitle}
           onClick={onLocationIconClick}
         >
           {locationIcon}
-        </Link>
+        </HeaderLinkRaw>
       )}
 
       {connectIcon && onConnectIconClick && (
-        <Link
+        <HeaderLinkRaw
           title={connectIconTitle}
           onClick={onConnectIconClick}
         >
           {connectIcon}
-        </Link>
+        </HeaderLinkRaw>
       )}
     </div>
   )

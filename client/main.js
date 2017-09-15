@@ -6,6 +6,7 @@ import configureClient from 'setup/apollo'
 import configureI18n, { initializeI18n } from 'setup/i18n'
 import configureStore from 'setup/redux'
 import configureRender from 'setup/react'
+import configureWindow from 'setup/window'
 import Root from 'setup/react/root'
 
 import reducers from 'core/reducers'
@@ -13,6 +14,7 @@ import routes from 'core/routes'
 import rootSaga from 'core/saga'
 
 
+configureWindow(window)
 const client = configureClient()
 const i18n = configureI18n()
 const store = configureStore(reducers, routes, rootSaga, client, i18n)
@@ -27,7 +29,7 @@ if (module.hot) {
   })
 }
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' && window.debug) {
   window.client = client
   window.perf = require('react-addons-perf')
   window.store = store

@@ -1,13 +1,16 @@
-import { compose } from 'ramda'
 import React from 'react'
 import { translate } from 'react-i18next'
+import { compose, pure } from 'recompose'
 import styled from 'styled-components'
+
+import breakpoints from 'lib/maps/breakpoints'
+import sizeTypes from 'lib/maps/sizeTypes'
 
 import { routerActions } from 'core/router'
 
-import FooterLink from 'components/footer/footerLink'
+import { FooterLink, FooterGrid } from 'components/footer'
 import Icon from 'components/icon'
-import { Grid, NoPadCol as Col } from 'components/layout'
+import { NoPadCol as Col } from 'components/layout'
 
 
 const Parrot = styled(Icon)`
@@ -16,13 +19,17 @@ const Parrot = styled(Icon)`
 
 
 function FooterContainer({t}) {
+// todo resize handler
+  const isMobile = window.currentBreakpoint === sizeTypes.MOBILE
+
   return (
-    <Grid
+    <FooterGrid
       columns={2}
       stackable
-      verticalAlign="middle"
     >
-      <Col computer={14}>
+      <Col
+        tablet={13}
+      >
         <Parrot
           height={14}
           name="parrot"
@@ -35,13 +42,17 @@ function FooterContainer({t}) {
         </FooterLink>
       </Col>
 
-      <Col computer={2} style={{textAlign: 'right'}}>
+      <Col
+        tablet={3}
+        textAlign={isMobile ? 'left': 'right'}
+      >
         <Icon name="flag outline"/>+{' '}<Icon name="leaf"/>={' '}<Icon name="heart"/>
       </Col>
-    </Grid>
+    </FooterGrid>
   )
 }
 
 export default compose(
-  translate()
+  translate(),
+  pure
 )(FooterContainer)

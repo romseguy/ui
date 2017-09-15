@@ -47,7 +47,7 @@ class PlaceFormFields extends Component {
 
   handleBoundsChange = ({center, zoom, bounds, initial}) => {
     if (initial) {
-      //console.log('Got initial bounds: ', bounds)
+      // got initial bounds
     }
     this.setState(p => ({center, zoom}))
   }

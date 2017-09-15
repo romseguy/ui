@@ -1,7 +1,7 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import scriptLoader from 'react-async-script-loader'
 import { translate } from 'react-i18next'
+import { compose, pure } from 'recompose'
 import { reduxForm } from 'redux-form'
 
 import {
@@ -149,5 +149,6 @@ export default compose(
     form: 'PlaceForm',
     enableReinitialize: true
   }),
-  translate()
+  translate(),
+  pure
 )(PlaceForm)

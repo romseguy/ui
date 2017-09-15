@@ -1,10 +1,9 @@
-import { compose } from 'ramda'
+import { merge } from 'ramda'
 import React from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { change } from 'redux-form'
-import { withHandlers } from 'recompose'
-import { merge } from 'ramda'
+import { compose, pure, withHandlers } from 'recompose'
 
 import roleTypes from 'lib/maps/roleTypes'
 import { getTitle, getUserLocation } from 'core/settings'
@@ -178,4 +177,5 @@ export default compose(
   graphql(createUserMutation, createUserMutationConfig),
   graphql(createUserUserMutation, createUserUserMutationConfig),
   withHandlers(handlers),
+  pure
 )(UserFormContainer)

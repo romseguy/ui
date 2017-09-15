@@ -10,41 +10,39 @@ import setTitleSaga from 'lib/sagas/setTitle.saga'
 import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
 
 
-function* setNodesFromMyPlacesSaga(placeName) {
-  const client = yield getContext('client')
+function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
   const {myPlaces} = yield call(query, {client, query: myPlacesQuery}, {cache: true, from: '/me'})
   let nodes = myPlaces.map((userPlace, nodeId) => userPlaceToNode(nodeId, userPlace))
 
-  if (placeName) {
-    nodes = nodes.map(node => node.name === placeName ? {...node, selected: true} : node)
+  if (selectedPlaceTitle) {
+    nodes = nodes.map(node => node.name === selectedPlaceTitle ? {...node, selected: true} : node)
   }
 
   yield put(canvasActions.setNodes(nodes))
 }
 
 export function* meSaga(payload, settings) {
-  const {prevRouteType} = settings
+  const {client, prevRouteType} = settings
 
   if (![
     routerActions.ME_PLACE_EDIT,
     routerActions.ME_PLACE_VIEW,
     routerActions.ME_PLACES_ADD
     ].includes(prevRouteType)) {
-    yield call(setNodesFromMyPlacesSaga)
+    yield call(setNodesFromMyPlacesSaga, client)
   }
 }
 
 export function* mePlaceEditSaga(payload, settings) {
-  const {prevRouteType} = settings
-  const {name: placeName} = payload
-  const i18n = yield getContext('i18n')
+  const {client, i18n, prevRouteType} = settings
+  const {name: placeTitle} = payload
 
   if (!prevRouteType.length) {
-    yield call(setNodesFromMyPlacesSaga, placeName)
+    yield call(setNodesFromMyPlacesSaga, client, placeTitle)
   }
 
   // todo: 404 place
-  yield call(setTitleSaga, `${i18n.t('form:place.header_edit')} ${placeName}`, {i18n: true})
+  yield call(setTitleSaga, `${i18n.t('form:place.header_edit')} ${placeTitle}`, {i18n: true})
 }
 
 export function* mePlacesAddSaga(payload, settings) {

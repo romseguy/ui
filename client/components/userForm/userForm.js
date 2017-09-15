@@ -1,5 +1,5 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
+import { compose, pure } from 'recompose'
 import { reduxForm } from 'redux-form'
 
 import { Form as UIForm, Loader } from 'components/layout'
@@ -71,5 +71,6 @@ export default compose(
   reduxForm({
     form: 'UserForm',
     enableReinitialize: true
-  })
+  }),
+  pure
 )(UserForm)

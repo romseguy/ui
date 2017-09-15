@@ -1,8 +1,7 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
-import { withHandlers } from 'recompose'
+import { compose, pure, withHandlers } from 'recompose'
 
 import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
@@ -126,5 +125,6 @@ const mapDispatchToProps = {}
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
-  withHandlers(handlers)
+  withHandlers(handlers),
+  pure
 )(PlaceContainer)

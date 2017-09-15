@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose, pure, withHandlers } from 'recompose'
 
-import { mapActions } from 'core/map'
-
 
 const handlers = {
   onBoundsChange: props => data => {

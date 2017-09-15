@@ -37,21 +37,24 @@ img.ui.image {
   background: none;
 }
 
-.ui.stackable.grid.app-header > .column:not(.row) {
+// components/layout/NoPadCol does not override
+header .ui.stackable.grid > .column:not(.row) {
+  padding: 0 !important;
+}
+footer .ui.stackable.grid > .column:not(.row) {
   padding: 0 !important;
 }
 
 @media only screen and (max-width: 767px) {
+  header .ui.stackable.grid .ui.stackable.grid {
+    margin: 0 !important;
+  }
+
   .ui.fluid.container {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
-
-  .ui.stackable.grid.app-toolbar > .column:not(.row) {
-    padding: 0 !important;
-  }
 }
-
 
 .geosuggest__suggests--hidden {
   max-height: 0;

@@ -4,6 +4,7 @@ import { compose, pure } from 'recompose'
 import { actions as tooltipActions } from 'redux-tooltip'
 
 import bindActionCreators from 'helpers/bindActionCreators'
+import debug from 'helpers/debug'
 import { getCanvasNodeAnchorTooltipName } from 'helpers/tooltips'
 import { createModes, createToolboxes } from 'lib/factories'
 import modeTypes from 'lib/maps/modeTypes'
@@ -18,6 +19,34 @@ import { Loader } from 'components/layout'
 
 
 class MainPanelContainer extends Component {
+  static getDimensions = function getDimensions(window) {
+    const {
+      currentBreakpoint,
+      innerHeight: h,
+      innerWidth: w
+    } = window
+    let mapHeight = h - 55
+    let canvasHeight = h - 115
+    let canvasWidth = w
+
+    if (currentBreakpoint === sizeTypes.MOBILE) {
+      mapHeight -= 49
+      canvasHeight -= 60
+    }
+    else if (currentBreakpoint === sizeTypes.TABLET) {
+      canvasWidth -= 30
+    }
+    else if (currentBreakpoint === sizeTypes.COMPUTER) {
+    }
+
+    return {
+      canvasWidth,
+      canvasHeight,
+      mapHeight,
+      mapWidth: w
+    }
+  }
+
   constructor(props) {
     super(props)
     const {routeType, t} = props
@@ -29,43 +58,24 @@ class MainPanelContainer extends Component {
 
     this.state = {
       currentMode,
+      ...MainPanelContainer.getDimensions(window),
       modes: createModes(t),
       toolboxes: createToolboxes(currentMode, this.setToolboxIsOpen, t)
     }
   }
 
   componentDidMount() {
-    this.setDimensions()
-    window.addEventListener('resize', this.setDimensions)
+    this.setState(MainPanelContainer.getDimensions(window))
+    window.addEventListener('resize', this.handleResize)
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', this.setDimensions);
+    window.removeEventListener('resize', this.handleResize);
   }
 
   setCurrentMode = modeKey => {
     this.setState(p => ({
       currentMode: modeKey
-    }))
-  }
-
-  setDimensions = () => {
-    const {innerHeight, innerWidth} = window
-    let mapHeight = innerHeight - 60
-    let canvasHeight = innerHeight - 125
-    let canvasWidth = innerWidth - 30
-
-    if (innerWidth < sizeTypes.tablet) {
-      mapHeight = innerHeight - 139
-      canvasHeight = innerHeight - 260
-      canvasWidth = innerWidth
-    }
-
-    this.setState(p => ({
-      canvasWidth,
-      canvasHeight,
-      mapHeight,
-      mapWidth: innerWidth
     }))
   }
 
@@ -148,7 +158,7 @@ class MainPanelContainer extends Component {
   }
 
   handleMapClick = args => {
-    console.log('NIY: MainPanel.handleMapClick', args)
+    debug('NIY: MainPanel.handleMapClick', args)
   }
 
   handleModeChange = modeKey => {
@@ -207,6 +217,10 @@ class MainPanelContainer extends Component {
     }))
   }
 
+  handleResize = () => {
+    this.setState(p => MainPanelContainer.getDimensions(window))
+  }
+
   handleNodeHeaderClick = node => {
     // NIY
   }
@@ -225,18 +239,24 @@ class MainPanelContainer extends Component {
     } = this.props
 
     const {
-      ...state
+      mapHeight,
+      mapWidth,
+      ...state,
     } = this.state
 
     if (isLoading) {
-      return <Loader active inline="centered"/>
+      return (
+        <div style={{minHeight: mapHeight}}>
+          <Loader active inline="centered" style={{position: 'absolute', top: mapHeight / 2, left: mapWidth / 2}}/>
+        </div>
+      )
     }
 
     if (this.props.routeType === routerActions.ROOT) {
       return React.createElement(container, {
         ...props,
-        mapHeight: state.mapHeight,
-        mapWidth: state.mapWidth,
+        mapHeight,
+        mapWidth,
         toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
         onMapClick: this.handleMapClick,
         onNodeAnchorClick: this.handleNodeAnchorClick,
@@ -274,7 +294,7 @@ const mapStateToProps = (state, {routeType}) => {
     const nodes = getMapNodes(state)
     const isLoading =
 
-    props.isLoading = props.isLoading || getMapNodesLoading(state) || center === null
+      props.isLoading = props.isLoading || getMapNodesLoading(state) || center === null
 
     if (!isLoading) {
       props.center = center

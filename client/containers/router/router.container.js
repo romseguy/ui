@@ -1,7 +1,7 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
+import { compose, pure } from 'recompose'
 
 import bindActionCreators from 'helpers/bindActionCreators'
 
@@ -157,5 +157,6 @@ const mapDispatchToProps = dispatch => {
 
 export default compose(
   translate(),
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps, mapDispatchToProps),
+  pure
 )(RouterContainer)

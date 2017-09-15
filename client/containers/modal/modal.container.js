@@ -1,9 +1,9 @@
 import 'assets/scss/modal.scss'
 
-import { compose } from 'ramda'
-import React, { Component } from 'react'
+import React from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
+import { compose, pure } from 'recompose'
 
 import { modalActions, modalConstants, getModals } from 'core/modal'
 
@@ -122,8 +122,6 @@ const mapDispatchToProps = {
 
 export default compose(
   translate(),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
+  connect(mapStateToProps, mapDispatchToProps),
+  pure
 )(ModalContainer)

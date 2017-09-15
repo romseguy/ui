@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types'
-import { compose } from 'ramda'
 import React from 'react'
 import { graphql } from 'react-apollo'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
-import { getContext, withHandlers } from 'recompose'
+import { compose, getContext, pure, withHandlers } from 'recompose'
 import { change } from 'redux-form'
 
 import getSuggestedDepartment from 'helpers/getSuggestedDepartment'
@@ -238,5 +237,6 @@ export default compose(
   graphql(createUserPlaceMutation, createUserPlaceMutationConfig),
   graphql(updatePlaceMutation, updatePlaceMutationConfig),
   getContext({client: PropTypes.object}),
-  withHandlers(handlers)
+  withHandlers(handlers),
+  pure
 )(PlaceFormContainer)

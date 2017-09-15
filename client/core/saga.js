@@ -1,6 +1,8 @@
 import { delay } from 'redux-saga'
 import { call, spawn, all } from 'redux-saga/effects'
 
+import debug from 'helpers/debug'
+
 import { apolloSaga } from './apollo'
 import { canvasSaga } from './canvas'
 import { mapSaga } from './map'
@@ -16,10 +18,10 @@ const makeRestartable = saga => {
           yield call(saga)
 
           if (!['settingsSaga'].includes(saga.name)) {
-            console.error(`unexpected ${saga.name} termination`, saga)
+            debug(`unexpected ${saga.name} termination`, saga)
           }
         } catch (e) {
-          console.error(`${saga.name} error, the saga will be restarted`, e)
+          debug(`${saga.name} error, the saga will be restarted`, e)
           yield call(saga)
         }
         yield delay(1000) // Avoid infinite failures blocking app TODO use backoff retry policy...

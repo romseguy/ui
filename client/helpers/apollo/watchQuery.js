@@ -1,11 +1,12 @@
+import debug from 'helpers/debug'
+
+
 export default function watchQuery({channel, client, query, variables}) {
   const queryObservable = client.watchQuery({query, variables})
 
   const querySubscription = queryObservable.subscribe({
     next: results => {
-      if (process.env.NODE_ENV === 'development') {
-        console.debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} next`, results.data)
-      }
+      debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} next`, results.data)
 
       channel.put({
         type: 'QUERY_OK',
@@ -15,9 +16,7 @@ export default function watchQuery({channel, client, query, variables}) {
       })
     },
     error: error => {
-      if (process.env.NODE_ENV === 'development') {
-        console.debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} error`, error)
-      }
+      debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} error`, error)
 
       channel.put({
         type: 'QUERY_NOK',

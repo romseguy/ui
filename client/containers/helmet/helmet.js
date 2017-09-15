@@ -1,13 +1,13 @@
-import { pipe } from 'ramda'
 import React from 'react'
 import { Helmet } from 'react-helmet'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
+import { compose, pure } from 'recompose'
 
 import { getTitle } from 'core/settings'
 
 
-function HelmetContainer({t, title}) {
+function HelmetContainer({t, title}) {
   return (
     <Helmet>
       <meta charSet="utf-8"/>
@@ -29,10 +29,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {}
 
-export default pipe(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
-  translate()
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  translate(),
+  pure
 )(HelmetContainer)

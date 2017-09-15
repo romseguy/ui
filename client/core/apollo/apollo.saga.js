@@ -9,10 +9,11 @@ import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
 
 
 function* startupSaga() {
-  const {result = {}} = yield take('APOLLO_QUERY_RESULT')
+  const {result} = yield take('APOLLO_QUERY_RESULT')
 
-  if (result.message === 'Failed to fetch') {
-    window.offlineMode = true
+  if (!result || result.message === 'Failed to fetch') {
+    yield put({type: 'OFFLINE_MODE'})
+    window.offlineMode = true // todo: remove
     yield call(setErrorModalSaga, {
       title: 'System error',
       errors: ['Server is offline']
@@ -28,7 +29,6 @@ function* mutationResultSaga(payload) {
     yield call([localStorage, localStorage.setItem], 'token', body.token)
   }
   else if (operationName === 'logout') {
-    const body = yield call(getBodySaga, payload)
     yield call([localStorage, localStorage.setItem], 'token', null)
   }
 }

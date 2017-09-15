@@ -4,7 +4,7 @@ import Link from 'redux-first-router-link'
 import styled from 'styled-components'
 
 
-export default styled(Link)`
+const template = `
 text-decoration: underline;
 cursor: pointer;
 color: ${BINARY_COLOR_BLUE_30};
@@ -14,3 +14,6 @@ margin-right: 5px;
   color: ${BINARY_COLOR_BLUE_50}
 }
 `
+
+export const HeaderLinkRaw = styled.a`${template}`
+export default styled(Link)`${template}`

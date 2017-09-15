@@ -15,8 +15,6 @@ import Router from 'containers/router'
 
 import { Layout } from 'components/layout'
 
-import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
-
 
 class App extends Component {
   render() {

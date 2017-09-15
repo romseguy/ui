@@ -1,3 +1,12 @@
+import sizeTypes from './sizeTypes'
+
+export default {
+  [sizeTypes.WIDE]: 1919,
+  [sizeTypes.COMPUTER]: 1199,
+  [sizeTypes.TABLET]: 991,
+  [sizeTypes.MOBILE]: 767
+}
+
 export const AuthFormBreakpoints = {
   label: {
     mobile: 16,

@@ -1,5 +1,6 @@
 export default {
-  desktop: 992,
-  tablet: 767,
-  phone: 376
+  WIDE: 'WIDE',
+  COMPUTER: 'COMPUTER',
+  TABLET: 'TABLET',
+  MOBILE: 'MOBILE'
 }

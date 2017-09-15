@@ -1,6 +1,7 @@
 import { delay } from 'redux-saga'
 import { call, getContext, put, take, takeEvery, select, race } from 'redux-saga/effects'
 
+import debug from 'helpers/debug'
 import getCurrentPosition from 'helpers/getCurrentPosition'
 import CustomError from 'lib/classes/customError'
 import getCurrentPositionErrorCodes from 'lib/maps/getCurrentPositionErrorCodes'
@@ -71,7 +72,7 @@ export function* settingsSaga() {
       yield put(settingsActions.setCity(false))
     }
     else {
-      console.error(error)
+      debug(error)
     }
   }
 }

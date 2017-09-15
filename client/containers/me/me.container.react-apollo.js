@@ -1,4 +1,3 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'

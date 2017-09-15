@@ -1,6 +1,8 @@
 import { createApolloFetch } from 'apollo-fetch'
 import { print } from 'graphql/language/printer'
 
+import debug from 'helpers/debug'
+
 import { authMiddleware } from './auth'
 import { errorAfterware } from './error'
 
@@ -21,7 +23,7 @@ export default {
     return apolloFetch({...req, query: print(req.query)}).catch(error => {
       if (error.name === 'TypeError') {
         if (error.message === 'Failed to fetch') {
-          console.debug('we are offline')
+          debug('we are offline')
           offlineMode = true
         }
       }

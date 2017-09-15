@@ -1,6 +1,6 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
+import { compose, pure } from 'recompose'
 
 import { routerActions } from 'core/router'
 
@@ -150,4 +150,5 @@ export default compose(
   graphql(placeQuery, placeQueryConfig),
   graphql(placesQuery, placesQueryConfig),
   graphql(myPlacesQuery, myPlacesQueryConfig),
+  pure
 )(PlaceFormDataContainer)

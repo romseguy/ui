@@ -1,12 +1,12 @@
 import styled from 'styled-components'
-import media from 'lib/maps/media'
+import media from 'helpers/media'
 
 export default styled.div`
-${media.desktop`
+${media.COMPUTER`
 margin-left: 15px;
 margin-right: 15px;
 `}
-${media.tablet`
+${media.MOBILE`
 margin-left: 0;
 margin-right: 0;
 `}

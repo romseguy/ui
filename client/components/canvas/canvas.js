@@ -1,4 +1,6 @@
 import './canvas.scss'
+
+import { debounce } from 'lodash'
 import React from 'react'
 import { DropTarget } from 'react-dnd'
 import cx from 'classnames'
@@ -14,13 +16,18 @@ import { pan, zoom } from './canvasUtils'
 class Canvas extends React.Component {
   constructor(props) {
     super(props)
-    const {zoomLevel} = props
+    const {zoomLevel, onWheel} = props
     this.state = {
       dragging: false,
       foreignObjectSupport: document.implementation.hasFeature('www.http://w3.org/TR/SVG11/feature#Extensibility', '1.1'),
       matrix: [zoomLevel, 0, 0, zoomLevel, 0, 0],
       zoomLevel
     }
+    this.onWheel = debounce(onWheel, 200)
+  }
+
+  handleWheel = ({deltaX, deltaY}) => {
+    this.onWheel({deltaX, deltaY})
   }
 
   setSvgReference = ref => {
@@ -100,8 +107,7 @@ class Canvas extends React.Component {
       onNodeAnchorClick,
       onNodeAnchorMouseOver,
       onNodeAnchorMouseOut,
-      onNodeHeaderClick,
-      onWheel
+      onNodeHeaderClick
     } = this.props
 
     const svgClasses = cx(canvasClass, {
@@ -122,7 +128,7 @@ class Canvas extends React.Component {
         onTouchMove={this.onDragMove}
         onMouseUp={this.onDragEnd}
         onTouchEnd={this.onDragEnd}
-        onWheel={onWheel}
+        onWheel={this.handleWheel}
       >
 
         <g transform={`matrix(${this.state.matrix.join(' ')})`}>
@@ -185,8 +191,8 @@ const dropCanvasSpec = {
       const canvasPosition = component.svg.getBoundingClientRect()
       const matrixDeltaX = matrix[4] < 0 ? Math.abs(matrix[4]) : -matrix[4]
       const matrixDeltaY = matrix[5] < 0 ? Math.abs(matrix[5]) : -matrix[5]
-      let x = (invert(matrix[4]) + delta.x + initial.x - canvasPosition.left - item.itemAttributes.width/1.8) / zoomLevel
-      let y = (invert(matrix[5]) + delta.y + initial.y - canvasPosition.top - item.itemAttributes.height/1.8) / zoomLevel
+      let x = (invert(matrix[4]) + delta.x + initial.x - canvasPosition.left - item.itemAttributes.width / 1.8) / zoomLevel
+      let y = (invert(matrix[5]) + delta.y + initial.y - canvasPosition.top - item.itemAttributes.height / 1.8) / zoomLevel
       onToolboxItemDrop(item, x, y)
     }
   },

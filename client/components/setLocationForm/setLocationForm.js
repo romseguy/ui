@@ -1,6 +1,6 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import scriptLoader from 'react-async-script-loader'
+import { compose, pure } from 'recompose'
 import { reduxForm, Field } from 'redux-form'
 
 import keepCities from 'helpers/keepCities'
@@ -142,5 +142,6 @@ export default compose(
   scriptLoader('https://maps.googleapis.com/maps/api/js?key=AIzaSyCZbB5gENry_UJNvwtOStrRqTt7sTi0E9k&libraries=places'),
   reduxForm({
     form: 'SetLocationForm'
-  })
+  }),
+  pure
 )(SetLocationForm)
