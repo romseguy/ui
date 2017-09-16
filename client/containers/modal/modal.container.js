@@ -73,7 +73,7 @@ const modalComponents = {
   }
 }
 
-function ModalContainer({modals, t, onClose}) {
+function ModalContainer({modals, t, setModal}) {
   const modalTypes = Object.keys(modals)
 
   if (!modalTypes.length) {
@@ -81,9 +81,9 @@ function ModalContainer({modals, t, onClose}) {
   }
 
   const closeIcon = (
-    <Container textAlign="right">
+    <div style={{position: 'absolute', top: -15, right: 0}}>
       <Icon name="close" fitted style={{cursor: 'pointer', color: 'white'}}/>
-    </Container>
+    </div>
   )
 
   return (
@@ -94,7 +94,7 @@ function ModalContainer({modals, t, onClose}) {
 
         modalProps = {
           closeIcon,
-          onClose: () => onClose(modalType, {isOpen: false}),
+          onClose: () => setModal(modalType, {isOpen: false}),
           open: modalComponentProps.isOpen,
           ...modalProps
         }
@@ -117,7 +117,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  onClose: modalActions.setModal
+  setModal: modalActions.setModal
 }
 
 export default compose(

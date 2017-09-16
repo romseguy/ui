@@ -8,6 +8,7 @@ export default function configureWindow(window) {
   }
 
   window.debug = true
+  window.offlineMode = false
 
   window.currentBreakpoint = getCurrentBreakpoint(window.innerWidth)
 

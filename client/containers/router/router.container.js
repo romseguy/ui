@@ -5,7 +5,7 @@ import { compose, pure } from 'recompose'
 
 import bindActionCreators from 'helpers/bindActionCreators'
 
-import { routerActions, getPayload, getRouteType } from 'core/router'
+import { routerActions, getPayload, getPrevRouteType, getRouteType } from 'core/router'
 import routes from 'core/routes'
 
 import MainPanelContainer from 'containers/mainPanel'
@@ -34,16 +34,18 @@ class RouterContainer extends Component {
     const {
       currentRoute = {},
       currentUser,
-      routeType,
+      prevRouteType,
+      prevRoute,
       t
     } = this.props
+
+    let {routeType} = this.props
 
     if (routeType === routerActions.NOT_FOUND) {
       return <Route404 t={t}/>
     }
 
     const {
-      modalRouteType,
       requiresAuth
     } = currentRoute
 
@@ -51,12 +53,20 @@ class RouterContainer extends Component {
       return <Loader indeterminate/>
     }
 
-    let selectedRouteType = modalRouteType ? modalRouteType : routeType
+    if (routeType === routerActions.AUTH) {
+      if (prevRouteType === '') {
+        routeType = routerActions.ROOT
+      } else if (prevRoute.requiresAuth) {
+        routeType = routerActions.ROOT
+      } else {
+        routeType = prevRouteType
+      }
+    }
 
-    if (selectedRouteType === routerActions.ABOUT) {
+    if (routeType === routerActions.ABOUT) {
       return <About {...this.props}/>
     }
-    else if (selectedRouteType === routerActions.TUTORIAL) {
+    else if (routeType === routerActions.TUTORIAL) {
       return (
         <Tutorial
           {...this.props}
@@ -67,13 +77,13 @@ class RouterContainer extends Component {
 
     let sidePanelEl = null
 
-    if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(selectedRouteType)) {
-      sidePanelEl = <PlaceFormContainer {...this.props} routeType={selectedRouteType}/>
+    if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
+      sidePanelEl = <PlaceFormContainer {...this.props} routeType={routeType}/>
     }
-    if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(selectedRouteType)) {
+    if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(routeType)) {
       sidePanelEl = <SymbolForm {...this.props}/>
     }
-    else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(selectedRouteType)) {
+    else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
       sidePanelEl = <UserForm {...this.props}/>
     }
 
@@ -85,7 +95,7 @@ class RouterContainer extends Component {
         routerActions.ROOT,
         routerActions.PLACES_ADD,
         routerActions.PLACE_EDIT
-      ].includes(selectedRouteType)
+      ].includes(routeType)
     ) {
       container = PlacesContainer
       control = MapManager
@@ -99,7 +109,7 @@ class RouterContainer extends Component {
         routerActions.ME_SYMBOL_EDIT,
         routerActions.ME_USERS_ADD,
         routerActions.ME_USER_EDIT
-      ].includes(selectedRouteType)
+      ].includes(routeType)
     ) {
       container = MeContainer
       control = CanvasManager
@@ -108,7 +118,7 @@ class RouterContainer extends Component {
       [
         routerActions.PLACE_VIEW,
         routerActions.ME_PLACE_VIEW
-      ].includes(selectedRouteType)
+      ].includes(routeType)
     ) {
       container = PlaceContainer
       control = CanvasManager
@@ -116,7 +126,7 @@ class RouterContainer extends Component {
     else if (
       [
         routerActions.USER_VIEW
-      ].includes(selectedRouteType)
+      ].includes(routeType)
     ) {
       container = UserContainer
       control = CanvasManager
@@ -128,7 +138,7 @@ class RouterContainer extends Component {
           {...this.props}
           container={container}
           control={control}
-          routeType={selectedRouteType}
+          routeType={routeType}
         />
         {sidePanelEl && <SidePanel>{sidePanelEl}</SidePanel>}
       </div>
@@ -138,12 +148,16 @@ class RouterContainer extends Component {
 
 
 const mapStateToProps = (state) => {
+  const prevRouteType = getPrevRouteType(state)
   const routeType = getRouteType(state)
   const routePayload = getPayload(state)
   const currentRoute = routes[routeType]
+  const prevRoute = routes[prevRouteType]
 
   return {
     currentRoute,
+    prevRoute,
+    prevRouteType,
     routePayload,
     routeType
   }

@@ -1,5 +1,5 @@
 export default {
-  WIDE: 'WIDE',
+  LARGESCREEN: 'LARGESCREEN',
   COMPUTER: 'COMPUTER',
   TABLET: 'TABLET',
   MOBILE: 'MOBILE'

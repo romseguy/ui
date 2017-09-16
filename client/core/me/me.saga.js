@@ -1,4 +1,4 @@
-import { call, getContext, fork, put, take, takeEvery } from 'redux-saga/effects'
+import { call, getContext, fork, put, takeEvery } from 'redux-saga/effects'
 import { meActions } from 'core/me'
 import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import { query } from 'helpers/apollo'

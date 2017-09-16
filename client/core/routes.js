@@ -37,7 +37,6 @@ export default {
 
   [routerActions.AUTH]: {
     path: '/auth',
-    modalRouteType: routerActions.ROOT,
     saga: authSaga
   },
 

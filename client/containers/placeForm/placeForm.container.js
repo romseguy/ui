@@ -3,12 +3,12 @@ import React from 'react'
 import { graphql } from 'react-apollo'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
-import { compose, getContext, pure, withHandlers } from 'recompose'
+import { compose, getContext, pure, withHandlers, withState } from 'recompose'
 import { change } from 'redux-form'
 
 import getSuggestedDepartment from 'helpers/getSuggestedDepartment'
 
-import { query } from 'helpers/apollo'
+import { formatErrorMessage, query } from 'helpers/apollo'
 import geo from 'lib/api/geo'
 import { getGeocodedDepartment, getGeocodedProperty } from 'lib/api/geo'
 import { formValuesToPlace, placeToNode } from 'lib/factories'
@@ -25,6 +25,19 @@ import updatePlaceMutation from 'graphql/mutations/updatePlace.mutation.graphql'
 import placeQuery from 'graphql/queries/place.query.graphql'
 import PlaceFormDataContainer from 'dataContainers/placeForm'
 
+
+function getServerErrors(error, props) {
+  error = JSON.parse(JSON.stringify(error))
+  return error.graphQLErrors.map(error => {
+    const {field_name, message, value} = error
+    props.change('PlaceForm', field_name, '')
+
+    return {
+      message: formatErrorMessage(message),
+      value,
+    }
+  })
+}
 
 export const handlers = {
   onMapClick: props => ({event, latLng, pixel}) => {
@@ -47,7 +60,8 @@ export const handlers = {
       placeId,
       routes,
       routeType,
-      setNodes
+      setNodes,
+      setServerErrors
     } = props
 
     const {
@@ -60,7 +74,16 @@ export const handlers = {
 
     if (!formValues.action || formValues.action === 'create') {
       let place = await formValuesToPlace(formValues)
-      const {data} = await doCreatePlace({place})
+      let data = null
+
+      try {
+        const res = await doCreatePlace({place})
+        data = res.data
+      } catch (error) {
+        setServerErrors(getServerErrors(error, props))
+        return
+      }
+
       const {id, title} = data.createPlace
 
       if (selectedNode) {
@@ -237,6 +260,7 @@ export default compose(
   graphql(createUserPlaceMutation, createUserPlaceMutationConfig),
   graphql(updatePlaceMutation, updatePlaceMutationConfig),
   getContext({client: PropTypes.object}),
+  withState('serverErrors', 'setServerErrors', []),
   withHandlers(handlers),
   pure
 )(PlaceFormContainer)

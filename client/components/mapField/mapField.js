@@ -53,7 +53,7 @@ class MapField extends Component {
                   id={input.name}
                   provider={providers['outdoors']}
                   height={200}
-                  width={width - 30}
+                  width={width}
                   zoom={zoom}
                   onBoundsChanged={this.handleBoundsChange}
                   onClick={this.handleMapClick}

@@ -15,8 +15,6 @@ export default {
       }
     }
 
-    //return type !== canvasActions.SET_NODES
-    return true
-
+    return type !== canvasActions.SET_CANVAS_NODES
   }
 }

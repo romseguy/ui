@@ -4,6 +4,10 @@ export function getSettings(state) {
   return state.settings
 }
 
+export function getOfflineMode(state) {
+  return getSettings(state).offlineMode || window.offlineMode
+}
+
 export function getI18nInitialized(state) {
   return getSettings(state).i18n.initialized
 }

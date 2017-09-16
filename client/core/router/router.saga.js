@@ -4,6 +4,7 @@ import { delay } from 'redux-saga'
 
 import { getPrevRouteType } from 'core/router'
 import routes from 'core/routes'
+import { getOfflineMode } from 'core/settings'
 
 import getCurrentUserSaga from 'lib/sagas/getCurrentUser.saga'
 
@@ -18,8 +19,9 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
     return
   }
 
-  // todo: use OFFLINE_MODE
-  if (window.offlineMode) {
+  const offlineMode = yield select(getOfflineMode)
+
+  if (offlineMode) {
     return
   }
 
@@ -38,7 +40,8 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
       client: yield getContext('client'),
       i18n: yield getContext('i18n'),
       currentUser,
-      prevRouteType
+      onEnter: prevRouteType === '',
+      prevRoute: {...routes[prevRouteType], type: prevRouteType}
     }
     yield spawn(currentRoute.saga, payload, settings)
   }

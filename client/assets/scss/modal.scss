@@ -1,29 +1,13 @@
 /*!
 override of node_modules/semantic-ui-sass/scss/modules/_modal.scss
-replaced "ui.modal > " with "ui.modal " for setLocationForm
+for setLocationForm
 */
-
-
-/*--------------
-     Header
----------------*/
-
-.ui.modal .header {
-  display: block;
-  //font-family: $font-family;
-  background: #FFFFFF;
-  margin: 0em;
-  padding: 0rem 1.5rem;
-  box-shadow: none;
-  color: rgba(0, 0, 0, 0.85);
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
-}
 
 /*--------------
      Content
 ---------------*/
 
-.ui.modal .content {
+.ui.modal > form .content {
   display: block;
   width: 100%;
   font-size: 1em;
@@ -36,13 +20,13 @@ replaced "ui.modal > " with "ui.modal " for setLocationForm
      Actions
 ---------------*/
 
-.ui.modal .actions {
+.ui.modal > form .actions {
   background: #F9FAFB;
   padding: 1rem 1rem;
   border-top: 1px solid rgba(34, 36, 38, 0.15);
   text-align: right;
 }
-.ui.modal .actions > .button {
+.ui.modal > form .actions > .button {
   margin-left: 0.75em;
 }
 
@@ -50,38 +34,18 @@ replaced "ui.modal > " with "ui.modal " for setLocationForm
        Responsive
 --------------------*/
 
-/* Tablet and Mobile */
-@media only screen and (max-width: 991px) {
-  .ui.modal .header {
-    padding-right: 2.25rem;
-  }
-  .ui.modal .close {
-    top: 1.0535rem;
-    right: 1rem;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-
 /* Mobile */
 @media only screen and (max-width: 767px) {
-  .ui.modal .header {
-    padding: 0.75rem 1rem !important;
-    padding-right: 2.25rem !important;
-  }
-  .ui.modal .content {
+  .ui.modal > form .content {
     display: block;
     padding: 1rem !important;
   }
-  .ui.modal .close {
-    top: 0.5rem !important;
-    right: 0.5rem !important;
-  }
 /* Let Buttons Stack */
-  .ui.modal .actions {
+  .ui.modal > form .actions {
     padding: 1rem 1rem 0rem !important;
   }
-  .ui.modal .actions > .buttons,
-  .ui.modal .actions > .button {
+  .ui.modal > form .actions > .buttons,
+  .ui.modal > form .actions > .button {
     margin-bottom: 1rem;
   }
 }

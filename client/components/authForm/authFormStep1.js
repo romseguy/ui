@@ -1,38 +1,28 @@
 import React, { Component } from 'react'
-
 import { Field } from 'redux-form'
+import { authTypes } from 'lib/maps/auth'
 import { AuthFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
 import { confirmation, email, length, required } from 'helpers/form/validators'
 
 import InputField from 'components/inputField'
 import {
   Button,
-  Form as UIForm,
   Grid,
-  Icon,
   Message,
   Row,
   NoPadCol as Col
 } from 'components/layout'
 
 
-const actions = {
-  LOGIN: 'LOGIN',
-  REGISTER: 'REGISTER',
-  FORGOTTEN: 'FORGOTTEN'
-}
-
-
 class AuthFormStep1 extends Component {
-  state = {currentAction: actions.LOGIN}
-
   componentDidMount() {
     this.focusEmptyInput()
   }
 
   focusEmptyInput() {
-    const isRegister = this.state.currentAction === actions.REGISTER
-    const isForgotten = this.state.currentAction === actions.FORGOTTEN
+    const {currentAction} = this.props
+    const isRegister = currentAction === authTypes.REGISTER
+    const isForgotten = currentAction === authTypes.FORGOTTEN
     const emailInput = this.emailInput.getRenderedComponent()
     const usernameInput = isRegister && this.usernameInput.getRenderedComponent()
     const passwordInput = !isForgotten && this.passwordInput.getRenderedComponent()
@@ -53,48 +43,52 @@ class AuthFormStep1 extends Component {
   }
 
   handleForgottenClick = event => {
-    const isForgotten = this.state.currentAction === actions.FORGOTTEN
+    const {currentAction, setCurrentAction, onForgottenClick} = this.props
+    const isForgotten = currentAction === authTypes.FORGOTTEN
 
-    if (!isForgotten) {
-      this.setState({currentAction: actions.FORGOTTEN}, this.focusEmptyInput)
+    if (isForgotten) {
+      onForgottenClick()
     } else {
-      const {
-        onSubmit,
-        handleSubmit
-      } = this.props
+      event.preventDefault()
+      setCurrentAction(authTypes.FORGOTTEN)
+      this.focusEmptyInput()
+      this.resetServerErrors()
+    }
+  }
 
-      handleSubmit(event, values => onSubmit(values))
+  handleInputChange = event => {
+    this.resetServerErrors()
+  }
+
+  handleLoginClick = event => {
+    const {currentAction, setCurrentAction, onLoginClick} = this.props
+    const isLogin = currentAction === authTypes.LOGIN
+
+    if (isLogin) {
+      onLoginClick()
+    } else {
+      event.preventDefault()
+      setCurrentAction(authTypes.LOGIN)
+      this.focusEmptyInput()
+      this.resetServerErrors()
     }
   }
 
   handleRegisterClick = event => {
-    const isRegister = this.state.currentAction === actions.REGISTER
+    const {currentAction, setCurrentAction, onRegisterClick} = this.props
+    const isRegister = currentAction === authTypes.REGISTER
 
-    if (!isRegister) {
-      event.preventDefault()
-      this.setState({currentAction: actions.REGISTER}, this.focusEmptyInput)
+    if (isRegister) {
+      onRegisterClick()
     } else {
-      const {
-        onSubmit,
-        handleSubmit
-      } = this.props
-
-      handleSubmit(event, values => onSubmit(values))
+      event.preventDefault()
+      setCurrentAction(authTypes.REGISTER)
+      this.focusEmptyInput()
+      this.resetServerErrors()
     }
   }
 
-  handleLoginClick = event => {
-    const isLogin = this.state.currentAction === actions.LOGIN
-
-    if (!isLogin) {
-      event.preventDefault()
-      this.setState({currentAction: actions.LOGIN}, this.focusEmptyInput)
-    } else {
-
-    }
-  }
-
-  renderButton(type, positive = false) {
+  renderButton(authType, positive = false) {
     const {
       submitting,
       t
@@ -102,10 +96,10 @@ class AuthFormStep1 extends Component {
 
     let onClick = this.handleRegisterClick
 
-    if (type === 'login') {
+    if (authType === authTypes.LOGIN) {
       onClick = this.handleLoginClick
     }
-    else if (type === 'forgotten') {
+    else if (authType === authTypes.FORGOTTEN || authType === authTypes.FORGOTTEN_CONFIRM) {
       onClick = this.handleForgottenClick
     }
 
@@ -116,23 +110,38 @@ class AuthFormStep1 extends Component {
         onClick={onClick}
         positive={positive}
       >
-        {t(`form:auth.${type}`)}
+        {t(`form:auth.${authType.toLowerCase()}`)}
       </Button>
     )
+  }
+
+  resetServerErrors() {
+    const {setServerErrors} = this.props
+    setServerErrors([])
   }
 
   render() {
     const {
       clientErrors,
+      currentAction,
       hasClientErrors,
       hasServerErrors,
       serverErrors,
-      submitting,
       t
     } = this.props
 
-    const isRegister = this.state.currentAction === actions.REGISTER
-    const isForgotten = this.state.currentAction === actions.FORGOTTEN
+    const isRegister = currentAction === authTypes.REGISTER
+    const isForgotten = currentAction === authTypes.FORGOTTEN
+
+    const validatePassword = [
+      required({msg: t('errors:required')})
+    ]
+
+    if (isRegister) {
+      validatePassword.push(
+        length({min: 6, msg: t('errors:auth.password_too_short')})
+      )
+    }
 
     return (
       <Grid columns={2} verticalAlign="middle">
@@ -149,6 +158,7 @@ class AuthFormStep1 extends Component {
             required({msg: t('errors:required')}),
             email({msg: t('errors:auth.email_invalid')})
           ]}
+          onChange={this.handleInputChange}
         />
 
         {isRegister && (
@@ -164,6 +174,7 @@ class AuthFormStep1 extends Component {
               required({msg: t('errors:required')}),
               length({max: 40, msg: t('errors:register.username_too_long')})
             ]}
+            onChange={this.handleInputChange}
           />
         )}
 
@@ -176,10 +187,8 @@ class AuthFormStep1 extends Component {
             label={t('form:auth.password')}
             ref={node => this.passwordInput = node}
             withRef
-            validate={[
-              required({msg: t('errors:required')}),
-              length({min: 6, msg: t('errors:auth.password_too_short')})
-            ]}
+            validate={validatePassword}
+            onChange={this.handleInputChange}
           />
         )}
 
@@ -196,6 +205,7 @@ class AuthFormStep1 extends Component {
               confirmation({field: 'password', msg: t('errors:register.passwordsNotMatch')}),
               required({msg: t('errors:required')})
             ]}
+            onChange={this.handleInputChange}
           />
         )}
 
@@ -222,11 +232,11 @@ class AuthFormStep1 extends Component {
         <Row>
           <Button.Group>
             {isRegister
-              ? this.renderButton('register', true)
+              ? this.renderButton(authTypes.REGISTER, true)
               : (
                 isForgotten
-                  ? this.renderButton('forgotten_confirm', true)
-                  : this.renderButton('login', true)
+                  ? this.renderButton(authTypes.FORGOTTEN_CONFIRM, true)
+                  : this.renderButton(authTypes.LOGIN, true)
               )
             }
           </Button.Group>
@@ -236,25 +246,25 @@ class AuthFormStep1 extends Component {
           {isRegister
             ? (
               <Button.Group>
-                {this.renderButton('login')}
+                {this.renderButton(authTypes.LOGIN)}
                 <Button.Or text={t('or')}/>
-                {this.renderButton('forgotten')}
+                {this.renderButton(authTypes.FORGOTTEN)}
               </Button.Group>
             )
             : (
               isForgotten
                 ? (
                 <Button.Group>
-                  {this.renderButton('login')}
+                  {this.renderButton(authTypes.LOGIN)}
                   <Button.Or text={t('or')}/>
-                  {this.renderButton('register')}
+                  {this.renderButton(authTypes.REGISTER)}
                 </Button.Group>
               )
                 : (
                 <Button.Group>
-                  {this.renderButton('register')}
+                  {this.renderButton(authTypes.REGISTER)}
                   <Button.Or text={t('or')}/>
-                  {this.renderButton('forgotten')}
+                  {this.renderButton(authTypes.FORGOTTEN)}
                 </Button.Group>
               )
             )

@@ -7,7 +7,7 @@ import { required } from 'helpers/form/validators'
 
 import GeosuggestField from 'components/geosuggestField'
 import InputField from 'components/inputField'
-import { Grid, Button, Row, NoPadCol as Col } from 'components/layout'
+import { Grid, Button, Row, NoPadCol as Col, Message } from 'components/layout'
 import MapField from 'components/mapField'
 
 
@@ -66,10 +66,12 @@ class PlaceFormFields extends Component {
   render() {
     const {
       formValues,
-      userLocation,
+      hasServerErrors,
       readOnly,
+      serverErrors,
       submitting,
       t,
+      userLocation,
       onMapClick,
       onSaveClick
     } = this.props
@@ -125,6 +127,26 @@ class PlaceFormFields extends Component {
           onBoundsChanged={this.handleBoundsChange}
           onMapClick={onMapClick}
         />
+
+        {hasServerErrors && (
+          <Row>
+            <Col width={16}>
+              <Message
+                size="tiny"
+                error
+              >
+                <Message.Header>{t('errors:place.fixForm')}</Message.Header>
+                <Message.List>
+                  {serverErrors.map(({message}, i) => (
+                    <Message.Item key={`serverError-${i}`}>
+                      {message}
+                    </Message.Item>
+                  ))}
+                </Message.List>
+              </Message>
+            </Col>
+          </Row>
+        )}
 
         <Row>
           <Col>

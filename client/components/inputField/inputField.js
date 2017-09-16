@@ -13,6 +13,11 @@ class Input extends Component {
     this.input.focus()
   }
 
+  handleChange = event => {
+    typeof this.props.onChange === 'function' && this.props.onChange(event)
+    this.props.input.onChange(event)
+  }
+
   render() {
     const {
       breakpoints,
@@ -41,6 +46,7 @@ class Input extends Component {
           <Form.Field error={isError}>
             <input
               {...input}
+              onChange={this.handleChange}
               id={input.name}
               ref={node => this.input = node}
               title={error}

@@ -15,5 +15,5 @@ export default function getCurrentBreakpoint(width) {
     return sizeTypes.COMPUTER
   }
 
-  return sizeTypes.WIDE
+  return sizeTypes.LARGESCREEN
 }

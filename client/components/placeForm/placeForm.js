@@ -4,11 +4,7 @@ import { translate } from 'react-i18next'
 import { compose, pure } from 'recompose'
 import { reduxForm } from 'redux-form'
 
-import {
-  Button,
-  Form as UIForm,
-  Loader
-} from 'components/layout'
+import { Form as UIForm } from 'components/layout'
 
 import PlaceFormHeader from './placeFormHeader'
 import PlaceFormLayout from './placeFormLayout'
@@ -77,13 +73,12 @@ class PlaceForm extends Component {
       formValues,
       routeType,
       routeTypes,
+      serverErrors,
       submitting,
       t,
       title,
       userLocation,
-      handleSubmit,
       onMapClick,
-      onSubmit,
       onSuggestSelect
     } = this.props
 
@@ -91,12 +86,14 @@ class PlaceForm extends Component {
       isLoading
     } = this.state
 
+    const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+
     // google lib failed loading: warn the user
     if (process.env.NODE_ENV !== 'development' && isLoading === null) {
       return <span>{t('form:failed_loading')}</span>
     }
 
-    const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && disconnectedPlaces.length > 0
+    const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && disconnectedPlaces.length > 0
     const showSelectFields = !isLoading && formValues.action === 'select'
     const showFields = !isLoading && (formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || routeType === routeTypes.ME_PLACES_ADD && !disconnectedPlaces.length)
 
@@ -109,7 +106,10 @@ class PlaceForm extends Component {
           title={title}
         />
 
-        <UIForm loading={isLoading}>
+        <UIForm
+          error={hasServerErrors}
+          loading={isLoading}
+        >
           {showSelector && (
             <PlaceFormSelector t={t}/>
           )}
@@ -127,11 +127,13 @@ class PlaceForm extends Component {
 
           {showFields && (
             <PlaceFormFields
-              userLocation={userLocation}
               formValues={formValues}
+              hasServerErrors={hasServerErrors}
               readOnly={false}
+              serverErrors={serverErrors}
               submitting={submitting}
               t={t}
+              userLocation={userLocation}
               onMapClick={onMapClick}
               onSaveClick={this.handleSaveClick}
               onSuggestSelect={onSuggestSelect}

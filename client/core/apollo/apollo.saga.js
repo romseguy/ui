@@ -1,10 +1,10 @@
-import { all, call, put, select, take, takeEvery } from 'redux-saga/effects'
+import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
 import { canvasActions } from 'core/canvas'
 import { mapActions } from 'core/map'
-import { routerActions, getRouteType } from 'core/router'
+import { settingsActions } from 'core/settings'
 
-import getBodySaga from 'lib/sagas/getBody.saga'
+import { getResponseData } from 'helpers/apollo'
 import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
 
 
@@ -12,8 +12,7 @@ function* startupSaga() {
   const {result} = yield take('APOLLO_QUERY_RESULT')
 
   if (!result || result.message === 'Failed to fetch') {
-    yield put({type: 'OFFLINE_MODE'})
-    window.offlineMode = true // todo: remove
+    yield put({type: settingsActions.OFFLINE_MODE})
     yield call(setErrorModalSaga, {
       title: 'System error',
       errors: ['Server is offline']
@@ -23,10 +22,19 @@ function* startupSaga() {
 
 function* mutationResultSaga(payload) {
   const {operationName, result} = payload
+  const i18n = yield getContext('i18n')
 
   if (['login', 'register'].includes(operationName)) {
-    const body = yield call(getBodySaga, payload)
-    yield call([localStorage, localStorage.setItem], 'token', body.token)
+    const data = yield call(getResponseData, payload)
+
+    if (!data) {
+      yield call(setErrorModalSaga, {
+        title: i18n.t('errors:modal.unknown.title'),
+        errors: [result /*i18n.t('errors:modal.unknown.content')*/]
+      })
+    }
+
+    yield call([localStorage, localStorage.setItem], 'token', data[operationName].token)
   }
   else if (operationName === 'logout') {
     yield call([localStorage, localStorage.setItem], 'token', null)
@@ -69,7 +77,6 @@ function* queryResultClientSaga(payload) {
 export function* apolloSaga() {
   yield all([
     call(startupSaga),
-    //takeEvery('APOLLO_MUTATION_ERROR', mutationErrorSaga),
     takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga),
     takeEvery('APOLLO_QUERY_INIT', queryInitSaga),
     takeEvery('APOLLO_QUERY_RESULT', queryResultSaga),

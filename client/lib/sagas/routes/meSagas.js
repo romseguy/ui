@@ -1,4 +1,4 @@
-import { call, getContext, put, select, take } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
 
 import { canvasActions } from 'core/canvas'
 import { routerActions } from 'core/router'
@@ -22,22 +22,22 @@ function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
 }
 
 export function* meSaga(payload, settings) {
-  const {client, prevRouteType} = settings
+  const {client, prevRoute} = settings
 
   if (![
     routerActions.ME_PLACE_EDIT,
     routerActions.ME_PLACE_VIEW,
     routerActions.ME_PLACES_ADD
-    ].includes(prevRouteType)) {
+    ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
 }
 
 export function* mePlaceEditSaga(payload, settings) {
-  const {client, i18n, prevRouteType} = settings
+  const {client, i18n, onEnter} = settings
   const {name: placeTitle} = payload
 
-  if (!prevRouteType.length) {
+  if (onEnter) {
     yield call(setNodesFromMyPlacesSaga, client, placeTitle)
   }
 
@@ -46,9 +46,9 @@ export function* mePlaceEditSaga(payload, settings) {
 }
 
 export function* mePlacesAddSaga(payload, settings) {
-  const {prevRouteType} = settings
+  const {client, onEnter} = settings
 
-  if (!prevRouteType.length) {
-    yield call(setNodesFromMyPlacesSaga)
+  if (onEnter) {
+    yield call(setNodesFromMyPlacesSaga, client)
   }
 }

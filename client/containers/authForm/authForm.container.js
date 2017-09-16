@@ -1,11 +1,14 @@
-import { filter, not, isNil } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { translate } from 'react-i18next'
 import { getFormSyncErrors } from 'redux-form'
 import { connect } from 'react-redux'
-import { compose, pure } from 'recompose'
+import { compose, pure, withHandlers, withState } from 'recompose'
 
+import { formatErrorMessage } from 'helpers/apollo'
+import { authStepsTypes, authTypes } from 'lib/maps/auth'
+
+import { getAuthFormValues } from 'core/form'
 import { modalActions, modalConstants } from 'core/modal'
 import { routerActions } from 'core/router'
 
@@ -17,89 +20,72 @@ import registerMutation from 'graphql/mutations/register.mutation.graphql'
 import AuthForm from 'components/authForm'
 
 
-const steps = {
-  FIRST: 'FIRST',
-  REGISTER_OK: 'REGISTER_OK'
+function getServerErrors(error) {
+  error = JSON.parse(JSON.stringify(error))
+  return error.graphQLErrors.map(error => {
+    const {field_name, message, value} = error
+
+    return {
+      message: formatErrorMessage(message),
+      value,
+    }
+  })
 }
 
+const handlers = {
+  onSubmit: props => async (formValues, /*dispatch*/) => {
+    const {currentAction, currentStep, doLogin, doRegister, rootRoute, setCurrentStep, setServerErrors, setModal} = props
+    const isRegister = currentAction === authTypes.REGISTER
+    const isForgotten = currentAction === authTypes.FORGOTTEN
 
-class AuthFormContainer extends Component {
-  state = {
-    currentStep: steps.FIRST,
-    serverErrors: null
-  }
+    switch (currentStep) {
+      case authStepsTypes.FIRST:
+        if (isRegister) {
+          try {
+            const result = await doRegister(formValues)
 
-  handleError(error) {
-    error = JSON.parse(JSON.stringify(error))
-
-    const serverErrors = error.graphQLErrors.map(({message}) => {
-      return {
-        message // todo format error message
-      }
-    })
-
-    this.setState(p => ({serverErrors}))
-  }
-
-  handleSubmit = (formValues, /*dispatch, props*/) => {
-    const {doLogin, doRegister, rootRoute, setModal} = this.props
-
-    switch (this.state.currentStep) {
-      case steps.FIRST:
-        if (formValues.username) {
-          doRegister(formValues)
-            .then(result => {
-              if (!result.stack) {
-                setModal(modalConstants.AUTH, {isOpen: false})
-                rootRoute()
-                // todo: this.setState(p => ({currentStep: steps.REGISTER_OK}))
-              }
-            })
-            .catch(error => this.handleError(error))
-        }
-        else {
-          doLogin(formValues)
-            .then(() => {
+            if (!result.stack) {
               setModal(modalConstants.AUTH, {isOpen: false})
               rootRoute()
-            })
-            .catch(error => this.handleError(error))
+              // todo: setCurrentStep(authStepsTypes.REGISTER_OK)
+            }
+          } catch (error) {
+            setServerErrors(getServerErrors(error))
+          }
+        }
+        else if (isForgotten) {
+          // todo
+        }
+        else {
+          try {
+            await doLogin(formValues)
+            setModal(modalConstants.AUTH, {isOpen: false})
+            rootRoute()
+          } catch (error) {
+            setServerErrors(getServerErrors(error))
+          }
         }
         break
 
-      case steps.REGISTER_OK:
+      case authStepsTypes.REGISTER_OK:
         // todo
         break
     }
   }
-
-  render() {
-    const {
-      clientErrors,
-      t
-    } = this.props
-    const {
-      currentStep,
-      serverErrors
-    } = this.state
-
-    return (
-      <AuthForm
-        clientErrors={clientErrors}
-        currentStep={currentStep}
-        serverErrors={serverErrors}
-        steps={steps}
-        t={t}
-        onSubmit={this.handleSubmit}
-      />
-    )
-  }
 }
 
+function AuthFormContainer(props) {
+  return (
+    <AuthForm
+      {...props}
+    />
+  )
+}
 
 const mapStateToProps = state => {
   return {
-    clientErrors: getFormSyncErrors('AuthForm')(state)
+    clientErrors: getFormSyncErrors('AuthForm')(state),
+    formValues: getAuthFormValues(state)
   }
 }
 
@@ -107,7 +93,6 @@ const mapDispatchToProps = {
   setModal: modalActions.setModal,
   rootRoute: routerActions.rootRoute
 }
-
 
 const loginMutationConfig = {
   props({ownProps, mutate}) {
@@ -148,5 +133,9 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(loginMutation, loginMutationConfig),
   graphql(registerMutation, registerMutationConfig),
+  withState('serverErrors', 'setServerErrors', []),
+  withState('currentStep', 'setCurrentStep', authStepsTypes.FIRST),
+  withState('currentAction', 'setCurrentAction', authTypes.LOGIN),
+  withHandlers(handlers),
   pure
 )(AuthFormContainer)

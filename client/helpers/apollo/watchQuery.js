@@ -16,7 +16,9 @@ export default function watchQuery({channel, client, query, variables}) {
       })
     },
     error: error => {
-      debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} error`, error)
+      if (!window.offlineMode) {
+        debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} error`, error)
+      }
 
       channel.put({
         type: 'QUERY_NOK',

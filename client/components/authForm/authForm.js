@@ -1,58 +1,75 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { reduxForm } from 'redux-form'
-import { compose, pure } from 'recompose'
-
+import { compose, pure, withHandlers } from 'recompose'
+import { authStepsTypes, authTypes } from 'lib/maps/auth'
 import { Form as UIForm } from 'components/layout'
-
 import AuthFormStep1 from './authFormStep1'
 
 
-class AuthForm extends Component {
-  render() {
+const handlers = {
+  onForgottenClick: props => () => {
     const {
-      currentStep,
-      clientErrors,
-      handleSubmit,
       onSubmit,
-      serverErrors,
-      steps,
-      submitting,
-      t
-    } = this.props
+      handleSubmit
+    } = props
 
-    const hasClientErrors = Array.isArray(clientErrors) && clientErrors.length > 0
-    const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+    handleSubmit(event, values => onSubmit(values))
+  },
+  onLoginClick: props => () => {
+    const {
+      onSubmit,
+      handleSubmit
+    } = props
 
-    return (
-      <UIForm
-        error={hasClientErrors || hasServerErrors}
-        loading={false}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        {currentStep === steps.FIRST && (
-          <AuthFormStep1
-            clientErrors={clientErrors}
-            handleSubmit={handleSubmit}
-            hasClientErrors={hasClientErrors}
-            hasServerErrors={hasServerErrors}
-            onSubmit={onSubmit}
-            serverErrors={serverErrors}
-            submitting={submitting}
-            t={t}
-          />
-        )}
+    handleSubmit(event, values => onSubmit(values))
+  },
+  onRegisterClick: props => () => {
+    const {
+      onSubmit,
+      handleSubmit
+    } = props
 
-        {currentStep === steps.REGISTER_OK && (
-          <h1>{t('form:auth.department_confirm')}</h1>
-        )}
-      </UIForm>
-    )
+    handleSubmit(event, values => onSubmit(values))
   }
+}
+
+function AuthForm(props) {
+  const {
+    currentStep,
+    clientErrors,
+    serverErrors,
+    ...rest
+  } = props
+
+  const hasClientErrors = Array.isArray(clientErrors) && clientErrors.length > 0
+  const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+
+  return (
+    <UIForm
+      error={hasClientErrors || hasServerErrors}
+      loading={false}
+    >
+      {currentStep === authStepsTypes.FIRST && (
+        <AuthFormStep1
+          clientErrors={clientErrors}
+          hasClientErrors={hasClientErrors}
+          hasServerErrors={hasServerErrors}
+          serverErrors={serverErrors}
+          {...rest}
+        />
+      )}
+
+      {currentStep === authStepsTypes.REGISTER_OK && (
+        <h1>{t('form:auth.department_confirm')}</h1>
+      )}
+    </UIForm>
+  )
 }
 
 export default compose(
   reduxForm({
     form: 'AuthForm'
   }),
+  withHandlers(handlers),
   pure
 )(AuthForm)

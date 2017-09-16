@@ -6,6 +6,7 @@ export const settingsState = {
   i18n: {
     initialized: false
   },
+  offlineMode: false,
   title: null,
   user: {
     location: {
@@ -22,6 +23,9 @@ export function settingsReducer(state = settingsState, {payload, type}) {
   switch (type) {
     case settingsActions.I18N_INITIALIZED:
       return setIn(state, ['i18n', 'initialized'], true)
+
+    case settingsActions.OFFLINE_MODE:
+      return set(state, 'offlineMode', true)
 
     case settingsActions.SET_DEPARTMENT:
       return setIn(state, ['user', 'location', 'department'], payload.department)

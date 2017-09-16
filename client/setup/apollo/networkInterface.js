@@ -6,9 +6,9 @@ import debug from 'helpers/debug'
 import { authMiddleware } from './auth'
 import { errorAfterware } from './error'
 
-let offlineMode = false
 
-const uri = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:4000/graphql'
+//const uri = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:4000/graphql'
+const uri = 'http://localhost:4000/graphql?locale=fr'
 
 const apolloFetch = createApolloFetch({uri})
   .use(authMiddleware)
@@ -16,15 +16,15 @@ const apolloFetch = createApolloFetch({uri})
 
 export default {
   query: (req) => {
-    if (offlineMode) {
+    if (window.offlineMode) {
       return
     }
 
     return apolloFetch({...req, query: print(req.query)}).catch(error => {
       if (error.name === 'TypeError') {
         if (error.message === 'Failed to fetch') {
-          debug('we are offline')
-          offlineMode = true
+          debug('GraphQL server is offline')
+          window.offlineMode = true
         }
       }
     })

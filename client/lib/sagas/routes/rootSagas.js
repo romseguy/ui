@@ -1,4 +1,5 @@
-import { call, put, select, take } from 'redux-saga/effects'
+import { channel } from 'redux-saga'
+import { call, fork, put, select, take } from 'redux-saga/effects'
 
 import { query } from 'helpers/apollo'
 import { personToNode, placeToNode } from 'lib/factories'
@@ -16,10 +17,10 @@ import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
 
 export function* rootSaga(payload, settings) {
-  const {client, prevRouteType} = settings
+  const {client, prevRoute} = settings
 
-  if (![routerActions.ROOT].includes(prevRouteType)) {
-    const {places} = yield call(query, {client, query: placesQuery}, {from: '/'})
+  if (![routerActions.ROOT].includes(prevRoute.type)) {
+    const {places} = yield call(query, {client, query: placesQuery}, {cache: true, from: '/'})
     yield put(mapActions.setNodes(places.map((place, nodeId) => placeToNode(nodeId, place))))
   }
 
@@ -32,20 +33,43 @@ export function* aboutSaga(payload, settings) {
 }
 
 export function* authSaga(payload, settings) {
-  const {currentUser} = settings
+  const {currentUser, prevRoute} = settings
 
   if (currentUser) {
     yield put(routerActions.rootRoute())
-  } else {
-    yield put(modalActions.setModal(modalConstants.AUTH, {
-      isOpen: true,
-      modalProps: {
-        size: 'small',
-        basic: true,
-        closeOnRootNodeClick: false
-      }
-    }))
+    return
   }
+
+  const onCloseChannel = channel()
+
+  yield put(modalActions.setModal(modalConstants.AUTH, {
+    isOpen: true,
+    modalProps: {
+      size: 'small',
+      basic: true,
+      closeOnRootNodeClick: false,
+      onClose: () => {
+        onCloseChannel.put({})
+      }
+    }
+  }))
+
+  yield fork(function*() {
+    yield take(onCloseChannel)
+    onCloseChannel.close()
+    yield put(modalActions.setModal(modalConstants.AUTH, {
+      isOpen: false
+    }))
+    if (prevRoute.type === '') {
+      yield put(routerActions.rootRoute())
+    } else {
+      if (prevRoute.requiresAuth) {
+        yield put(routerActions.rootRoute())
+      } else {
+        yield put({type: prevRoute.type})
+      }
+    }
+  })
 
   yield call(setDepartmentTitleSaga)
 }
@@ -64,9 +88,9 @@ export function* logoutSaga(payload, settings) {
 
 export function* placeViewSaga(payload, settings) {
   const {name: placeName} = payload
-  const {client, prevRouteType} = settings
+  const {client, prevRoute} = settings
 
-  if (![].includes(prevRouteType)) {
+  if (![].includes(prevRoute.type)) {
     const {place} = yield call(query, {client, query: placeQuery, variables: {title: placeName}}, {
       cache: true,
       from: '/place/view'
