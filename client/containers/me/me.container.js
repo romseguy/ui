@@ -75,10 +75,12 @@ const handlers = {
   },
 
   onModeChange: props => async key => {
-    const {doUpdateUserPlaces, nodes, routes, onModeChange} = props
+    const {doUpdateUserPlaces, nodes, routes, routeType, onModeChange} = props
     const {meRoute} = routes
 
-    meRoute()
+    if (routeType !== routerActions.ME) {
+      meRoute()
+    }
 
     await Promise.all([
       doUpdateUserPlaces({nodes}),

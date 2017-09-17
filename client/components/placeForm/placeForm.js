@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
-import scriptLoader from 'react-async-script-loader'
+import React from 'react'
 import { translate } from 'react-i18next'
-import { compose, pure } from 'recompose'
+import { compose, pure, withHandlers } from 'recompose'
 import { reduxForm } from 'redux-form'
 
 import { Form as UIForm } from 'components/layout'
@@ -13,144 +12,119 @@ import PlaceFormSelectFields from './placeFormSelectFields'
 import PlaceFormSelector from './placeFormSelector'
 
 
-class PlaceForm extends Component {
-
-  state = {
-    isLoading: true
-  }
-
-  componentDidMount() {
-    const {isLoading, isScriptLoaded, isScriptLoadSucceed} = this.props
-
-    if (!isLoading) { // parent data container finished loading
-      if (isScriptLoaded) {
-        if (isScriptLoadSucceed) {
-          this.setIsLoading(false)
-        } else {
-          this.setIsLoading(null)
-        }
-      }
-    }
-  }
-
-  componentWillReceiveProps({isLoading, isScriptLoaded, isScriptLoadSucceed}) {
-    if (!isLoading) { // parent data container finished loading
-      if (isScriptLoaded) { // script finished loading
-        if (isScriptLoadSucceed) {
-          this.setIsLoading(false)
-        } else {
-          this.setIsLoading(null)
-        }
-      }
-    }
-  }
-
-  setIsLoading(isLoading) {
-    this.setState(p => ({isLoading}))
-  }
-
-  handleSaveClick = event => {
+const handlers = {
+  onSaveClick: props => event => {
     const {
       onSubmit,
       handleSubmit
-    } = this.props
+    } = props
 
     handleSubmit(event, values => onSubmit(values))
-  }
+  },
 
-  handleViewClick = event => {
+  onViewClick: props => event => {
     const {
       formValues,
       onViewClick
-    } = this.props
+    } = props
 
     typeof onViewClick === 'function' && onViewClick(formValues)
   }
+}
 
-  render() {
-    const {
-      disconnectedPlaces,
-      formValues,
-      routeType,
-      routeTypes,
-      serverErrors,
-      submitting,
-      t,
-      title,
-      userLocation,
-      onMapClick,
-      onSuggestSelect
-    } = this.props
+function PlaceForm(props) {
+  const {
+    disconnectedPlaces,
+    formValues,
+    isLoading,
+    routeType,
+    routeTypes,
+    serverErrors,
+    setIsLoading,
+    submitting,
+    t,
+    title,
+    userLocation,
+    onMapClick,
+    onSaveClick,
+    onSuggestSelect,
+    onViewClick
+  } = props
 
-    const {
-      isLoading
-    } = this.state
+  const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+  const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && disconnectedPlaces.length > 0
+  const showSelectFields = !isLoading && formValues.action === 'select'
 
-    const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+  let showFields = false
 
-    // google lib failed loading: warn the user
-    if (process.env.NODE_ENV !== 'development' && isLoading === null) {
-      return <span>{t('form:failed_loading')}</span>
-    }
-
-    const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && disconnectedPlaces.length > 0
-    const showSelectFields = !isLoading && formValues.action === 'select'
-    const showFields = !isLoading && (formValues.action === 'create' || routeType === routeTypes.ME_PLACE_EDIT || routeType === routeTypes.ME_PLACES_ADD && !disconnectedPlaces.length)
-
-    return (
-      <PlaceFormLayout fluid>
-        <PlaceFormHeader
-          routeType={routeType}
-          routeTypes={routeTypes}
-          t={t}
-          title={title}
-        />
-
-        <UIForm
-          error={hasServerErrors}
-          loading={isLoading}
-        >
-          {showSelector && (
-            <PlaceFormSelector t={t}/>
-          )}
-
-          {showSelectFields && (
-            <PlaceFormSelectFields
-              disconnectedPlaces={disconnectedPlaces}
-              formValues={formValues}
-              submitting={submitting}
-              t={t}
-              onSaveClick={this.handleSaveClick}
-              onViewClick={this.handleViewClick}
-            />
-          )}
-
-          {showFields && (
-            <PlaceFormFields
-              formValues={formValues}
-              hasServerErrors={hasServerErrors}
-              readOnly={false}
-              serverErrors={serverErrors}
-              submitting={submitting}
-              t={t}
-              userLocation={userLocation}
-              onMapClick={onMapClick}
-              onSaveClick={this.handleSaveClick}
-              onSuggestSelect={onSuggestSelect}
-            />
-          )}
-        </UIForm>
-      </PlaceFormLayout>
-    )
+  if (formValues.action === 'create') {
+    showFields = true
   }
+  else if (formValues.action === 'select') {
+    showFields = false
+  }
+  else if (!isLoading) {
+    if (routeType === routeTypes.ME_PLACE_EDIT) {
+      showFields = true
+    } else if (routeType === routeTypes.ME_PLACES_ADD && !disconnectedPlaces.length) {
+      showFields = true
+    }
+  }
+
+  return (
+    <PlaceFormLayout fluid>
+      <PlaceFormHeader
+        routeType={routeType}
+        routeTypes={routeTypes}
+        t={t}
+        title={title}
+      />
+
+      <UIForm
+        error={hasServerErrors}
+        loading={isLoading}
+      >
+        {showSelector && (
+          <PlaceFormSelector t={t}/>
+        )}
+
+        {showSelectFields && (
+          <PlaceFormSelectFields
+            disconnectedPlaces={disconnectedPlaces}
+            formValues={formValues}
+            submitting={submitting}
+            t={t}
+            onSaveClick={onSaveClick}
+            onViewClick={onViewClick}
+          />
+        )}
+
+        {showFields && (
+          <PlaceFormFields
+            formValues={formValues}
+            hasServerErrors={hasServerErrors}
+            readOnly={false}
+            serverErrors={serverErrors}
+            setIsLoading={setIsLoading}
+            submitting={submitting}
+            t={t}
+            userLocation={userLocation}
+            onMapClick={onMapClick}
+            onSaveClick={onSaveClick}
+            onSuggestSelect={onSuggestSelect}
+          />
+        )}
+      </UIForm>
+    </PlaceFormLayout>
+  )
 }
 
 export default compose(
-  scriptLoader('https://maps.googleapis.com/maps/api/js?key=AIzaSyCZbB5gENry_UJNvwtOStrRqTt7sTi0E9k&libraries=places'),
   reduxForm({
     form: 'PlaceForm',
     enableReinitialize: true
   }),
   translate(),
+  withHandlers(handlers),
   pure
 )(PlaceForm)

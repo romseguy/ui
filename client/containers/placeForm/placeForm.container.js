@@ -14,7 +14,7 @@ import { getGeocodedDepartment, getGeocodedProperty } from 'lib/api/geo'
 import { formValuesToPlace, placeToNode } from 'lib/factories'
 import roleTypes from 'lib/maps/roleTypes'
 
-import { canvasActions, getCanvasNodes } from 'core/canvas'
+import { canvasActions, getCanvasNodes, getCanvasNodesLoading } from 'core/canvas'
 import { getPlaceFormValues } from 'core/form'
 import { routerActions } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
@@ -69,6 +69,8 @@ export const handlers = {
       meRoute
     } = routes
 
+    setServerErrors([])
+
     let {nodes} = props
     const selectedNode = nodes.find(node => node.selected)
 
@@ -109,7 +111,7 @@ export const handlers = {
       mePlaceEditRoute(title)
     }
     else if (formValues.action === 'select') {
-      let {data: {place}} = await query({
+      let {place} = await query({
         client,
         query: placeQuery,
         variables: {title: formValues.selectedPlaceTitle},
@@ -194,14 +196,16 @@ function PlaceFormContainer(props) {
 const mapStateToProps = state => {
   const formValues = getPlaceFormValues(state)
   const nodes = getCanvasNodes(state)
+  const nodesLoading = getCanvasNodesLoading(state)
   const title = getTitle(state)
   const userLocation = getUserLocation(state)
 
   return {
     formValues,
-    userLocation,
+    isLoading: nodesLoading,
     nodes,
-    title
+    title,
+    userLocation
   }
 }
 

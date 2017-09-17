@@ -103,7 +103,7 @@ class MainPanelContainer extends Component {
   setToolboxIsOpen = (key, isOpen) => {
     this.setState(p => ({
       toolboxes: p.toolboxes.map(toolbox => {
-        if (toolbox.key === key) {
+        if (toolbox.key === key || key === '*') {
           const active = isOpen === undefined ? !toolbox.props.isOpen : isOpen
           return {
             ...toolbox,
@@ -229,6 +229,7 @@ class MainPanelContainer extends Component {
     const {canvasActions} = this.props
     const {addNode} = canvasActions
     addNode(node)
+    this.setToolboxIsOpen('*', false)
   }
 
   render() {

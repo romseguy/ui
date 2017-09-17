@@ -11,7 +11,9 @@ import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
 
 
 function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
-  const {myPlaces} = yield call(query, {client, query: myPlacesQuery}, {cache: true, from: '/me'})
+  yield put(canvasActions.setNodesLoading(true))
+  const {myPlaces} = yield call(query, {client, query: myPlacesQuery}, {from: '/me'})
+
   let nodes = myPlaces.map((userPlace, nodeId) => userPlaceToNode(nodeId, userPlace))
 
   if (selectedPlaceTitle) {
@@ -19,25 +21,29 @@ function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
   }
 
   yield put(canvasActions.setNodes(nodes))
+  yield put(canvasActions.setNodesLoading(false))
 }
 
 export function* meSaga(payload, settings) {
-  const {client, prevRoute} = settings
+  const {client, onEnter, prevRoute} = settings
 
-  if (![
-    routerActions.ME_PLACE_EDIT,
-    routerActions.ME_PLACE_VIEW,
-    routerActions.ME_PLACES_ADD
+  if (onEnter || ![
+      routerActions.ME_PLACE_EDIT,
+      routerActions.ME_PLACE_VIEW,
+      routerActions.ME_PLACES_ADD
     ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
 }
 
 export function* mePlaceEditSaga(payload, settings) {
-  const {client, i18n, onEnter} = settings
+  const {client, i18n, onEnter, prevRoute} = settings
   const {name: placeTitle} = payload
 
-  if (onEnter) {
+  if (onEnter || ![
+      routerActions.ME,
+      routerActions.ME_PLACES_ADD
+    ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client, placeTitle)
   }
 
@@ -46,9 +52,11 @@ export function* mePlaceEditSaga(payload, settings) {
 }
 
 export function* mePlacesAddSaga(payload, settings) {
-  const {client, onEnter} = settings
+  const {client, onEnter, prevRoute} = settings
 
-  if (onEnter) {
+  if (onEnter || ![
+      routerActions.ME
+    ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
 }

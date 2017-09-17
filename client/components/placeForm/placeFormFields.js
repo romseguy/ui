@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import scriptLoader from 'react-async-script-loader'
+import { compose } from 'recompose'
 import { Field } from 'redux-form'
 
 import { PlaceFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
@@ -16,16 +18,26 @@ class PlaceFormFields extends Component {
     super(props)
     this.state = {
       center: this.getMapCenter(props),
+      isLoading: true,
       zoom: 14
     }
   }
 
   componentDidMount() {
-    this.titleInput.getRenderedComponent().focusInput()
+    const {isScriptLoaded, isScriptLoadSucceed, setIsLoading} = this.props
+    setIsLoading(true)
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState(p => ({center: this.getMapCenter(nextProps)}))
+  componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed, setIsLoading}) {
+    if (isScriptLoaded) { // script finished loading
+      setIsLoading(false)
+
+      if (isScriptLoadSucceed) {
+        this.setIsLoading(false)
+      } else {
+        this.setIsLoading(null)
+      }
+    }
   }
 
   getMapCenter(props = this.props) {
@@ -43,6 +55,10 @@ class PlaceFormFields extends Component {
     let longitude = hasMarker ? marker[1] : userLocation.lng
 
     return [latitude, longitude]
+  }
+
+  setIsLoading = (isLoading) => {
+    this.setState(p => ({isLoading}))
   }
 
   handleBoundsChange = ({center, zoom, bounds, initial}) => {
@@ -78,8 +94,18 @@ class PlaceFormFields extends Component {
 
     const {
       center,
+      isLoading,
       zoom
     } = this.state
+
+    if (isLoading) {
+      return null
+    }
+
+    // google lib failed loading: warn the user
+    if (isLoading === null && process.env.NODE_ENV !== 'development') {
+      return <span>{t('form:failed_loading')}</span>
+    }
 
     return (
       <Grid verticalAlign="middle">
@@ -165,4 +191,6 @@ class PlaceFormFields extends Component {
   }
 }
 
-export default PlaceFormFields
+export default compose(
+  scriptLoader('https://maps.googleapis.com/maps/api/js?key=AIzaSyCZbB5gENry_UJNvwtOStrRqTt7sTi0E9k&libraries=places')
+)(PlaceFormFields)

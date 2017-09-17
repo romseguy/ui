@@ -1,7 +1,5 @@
 import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { canvasActions } from 'core/canvas'
-import { mapActions } from 'core/map'
 import { settingsActions } from 'core/settings'
 
 import { getResponseData } from 'helpers/apollo'
@@ -41,45 +39,9 @@ function* mutationResultSaga(payload) {
   }
 }
 
-function* queryInitSaga(payload) {
-  const {operationName} = payload
-
-  if (operationName === 'places') {
-    yield put(mapActions.setNodesLoading(true))
-  }
-  else if (operationName === 'myPlaces') {
-    yield put(canvasActions.setNodesLoading(true))
-  }
-}
-
-function* queryResultSaga(payload) {
-  const {operationName} = payload
-
-  if (operationName === 'myPlaces') {
-    yield put(canvasActions.setNodesLoading(false))
-  }
-  else if (operationName === 'places') {
-    yield put(mapActions.setNodesLoading(false))
-  }
-}
-
-function* queryResultClientSaga(payload) {
-  const {operationName} = payload
-
-  if (operationName === 'myPlaces') {
-    yield put(canvasActions.setNodesLoading(false))
-  }
-  else if (operationName === 'places') {
-    yield put(mapActions.setNodesLoading(false))
-  }
-}
-
 export function* apolloSaga() {
   yield all([
     call(startupSaga),
-    takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga),
-    takeEvery('APOLLO_QUERY_INIT', queryInitSaga),
-    takeEvery('APOLLO_QUERY_RESULT', queryResultSaga),
-    takeEvery('APOLLO_QUERY_RESULT_CLIENT', queryResultClientSaga)
+    takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga)
   ])
 }

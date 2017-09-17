@@ -9,8 +9,6 @@ export const canvasActions = {
   UNSELECT_NODES: 'UNSELECT_NODES',
   REMOVE_NODE: 'REMOVE_NODE',
 
-  REFETCH_MY_PLACES: 'REFETCH_MY_PLACES',
-
   addNode: (node) => ({
     type: canvasActions.ADD_NODE,
     payload: {node}

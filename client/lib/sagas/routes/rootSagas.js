@@ -16,13 +16,35 @@ import placesQuery from 'graphql/queries/places.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
 
-export function* rootSaga(payload, settings) {
-  const {client, prevRoute} = settings
+function* setNodesFromPlaceSaga(client, placeTitle) {
+  yield put(mapActions.setNodesLoading(true))
 
-  if (![routerActions.ROOT].includes(prevRoute.type)) {
-    const {places} = yield call(query, {client, query: placesQuery}, {cache: true, from: '/'})
-    yield put(mapActions.setNodes(places.map((place, nodeId) => placeToNode(nodeId, place))))
-  }
+  const {place} = yield call(query, {
+    client,
+    query: placeQuery,
+    variables: {title: placeTitle}
+  }, {
+    cache: true,
+    from: '/place/view'
+  })
+
+  yield put(canvasActions.setNodes(place.users.map((person, nodeId) => personToNode(nodeId, person))))
+  yield put(canvasActions.setNodesLoading(false))
+}
+
+function* setNodesFromPlacesSaga(client) {
+  yield put(mapActions.setNodesLoading(true))
+
+  const {places} = yield call(query, {client, query: placesQuery}, {from: '/'})
+
+  yield put(mapActions.setNodes(places.map((place, nodeId) => placeToNode(nodeId, place))))
+  yield put(mapActions.setNodesLoading(false))
+}
+
+export function* rootSaga(payload, settings) {
+  const {client} = settings
+
+  yield call(setNodesFromPlacesSaga, client)
 
   yield call(setDepartmentTitleSaga)
 }
@@ -87,18 +109,12 @@ export function* logoutSaga(payload, settings) {
 }
 
 export function* placeViewSaga(payload, settings) {
-  const {name: placeName} = payload
-  const {client, prevRoute} = settings
+  const {name} = payload
+  const {client} = settings
+  const placeTitle = decodeURIComponent(name)
 
-  if (![].includes(prevRoute.type)) {
-    const {place} = yield call(query, {client, query: placeQuery, variables: {title: placeName}}, {
-      cache: true,
-      from: '/place/view'
-    })
-    yield put(canvasActions.setNodes(place.users.map((person, nodeId) => personToNode(nodeId, person))))
-  }
-
-  yield call(setTitleSaga, `${placeName}`)
+  yield call(setNodesFromPlaceSaga, client, placeTitle)
+  yield call(setTitleSaga, `${placeTitle}`)
 }
 
 export function* userViewSaga(payload, settings) {

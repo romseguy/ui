@@ -12,26 +12,40 @@ import placesQuery from 'graphql/queries/places.query.graphql'
 
 
 class PlaceFormDataContainer extends Component {
+  state = {
+    isLoading: true,
+  }
+
   componentWillReceiveProps(nextProps) {
     const {
+      isLoading,
+      place,
       routes,
       routeType
-    } = this.props
+    } = nextProps
 
-    if (routeType === routerActions.ME_PLACE_EDIT && !nextProps.isLoading && !nextProps.place) {
-      routes.meRoute()
+    if (isLoading !== this.state.isLoading) {
+      if (!isLoading ) {
+        if (routeType === routerActions.ME_PLACE_EDIT && !place) {
+          routes.meRoute()
+        } else {
+          this.setIsLoading(isLoading)
+        }
+      }
     }
   }
 
-  render() {
-    const {
-      ...props
-    } = this.props
+  setIsLoading = (isLoading) => {
+    this.setState(p => ({isLoading}))
+  }
 
+  render() {
     return (
       <PlaceForm
-        {...props}
+        {...this.props}
+        {...this.state}
         routeTypes={routerActions}
+        setIsLoading={this.setIsLoading}
       />
     )
   }

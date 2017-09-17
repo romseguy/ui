@@ -30,7 +30,6 @@ if (module.hot) {
 }
 
 if (process.env.NODE_ENV === 'development' && window.debug) {
-  window.client = client
   window.perf = require('react-addons-perf')
   window.store = store
   window.s = store.getState
