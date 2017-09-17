@@ -1,22 +1,10 @@
 import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { settingsActions } from 'core/settings'
-
 import { getResponseData } from 'helpers/apollo'
 import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
 
+import { settingsActions } from 'core/settings'
 
-function* startupSaga() {
-  const {result} = yield take('APOLLO_QUERY_RESULT')
-
-  if (!result || result.message === 'Failed to fetch') {
-    yield put({type: settingsActions.OFFLINE_MODE})
-    yield call(setErrorModalSaga, {
-      title: 'System error',
-      errors: ['Server is offline']
-    })
-  }
-}
 
 function* mutationResultSaga(payload) {
   const {operationName, result} = payload
@@ -36,6 +24,18 @@ function* mutationResultSaga(payload) {
   }
   else if (operationName === 'logout') {
     yield call([localStorage, localStorage.setItem], 'token', null)
+  }
+}
+
+function* startupSaga() {
+  const {result} = yield take('APOLLO_QUERY_RESULT')
+
+  if (!result || result.message === 'Failed to fetch') {
+    yield put({type: settingsActions.OFFLINE_MODE})
+    yield call(setErrorModalSaga, {
+      title: 'System error',
+      errors: ['Server is offline']
+    })
   }
 }
 

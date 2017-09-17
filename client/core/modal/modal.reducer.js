@@ -16,7 +16,12 @@ export function modalReducer(state = modalState, {payload, type}) {
     case modalActions.SET_MODAL:
       return {
         modals: merge(state.modals, {
-          [payload.modalType]: payload.modalProps
+          [payload.modalType]: {
+            ...payload.modalComponentProps,
+            modalProps: {
+              ...payload.modalProps
+            }
+          }
         })
       }
 

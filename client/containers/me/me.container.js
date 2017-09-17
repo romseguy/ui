@@ -9,7 +9,6 @@ import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
 import symbolTypes from 'lib/maps/symbolTypes'
 
-import deleteUserPlaceMutation from 'graphql/mutations/deleteUserPlace.mutation.graphql'
 import updateUserPlacesMutation from 'graphql/mutations/updateUserPlaces.mutation.graphql'
 // todo: import updateUserUsersMutation from 'graphql/mutations/updateUserUsersMutation.graphql'
 
@@ -57,11 +56,7 @@ const handlers = {
   },
 
   onDeleteSelectedNode: props => node => {
-    const {doDeleteUserPlace, onDeleteSelectedNode} = props
-
-    if (node.idServer) {
-      doDeleteUserPlace({placeId: node.idServer})
-    }
+    const {onDeleteSelectedNode} = props
 
     typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(node)
   },
@@ -82,10 +77,7 @@ const handlers = {
       meRoute()
     }
 
-    await Promise.all([
-      doUpdateUserPlaces({nodes}),
-      // todo: doUpdateUserUsers({nodes})
-    ])
+    doUpdateUserPlaces({nodes})
 
     typeof onModeChange === 'function' && onModeChange(key)
   },
@@ -180,20 +172,6 @@ const mapStateToProps = state => {
   return {}
 }
 
-const deleteUserPlaceMutationConfig = {
-  props({ownProps, mutate}) {
-    return {
-      doDeleteUserPlace({placeId}){
-        return mutate({
-          variables: {
-            placeId: Number(placeId)
-          }
-        })
-      }
-    }
-  }
-}
-
 const updateUserPlacesMutationConfig = {
   props({ownProps, mutate}) {
     return {
@@ -242,7 +220,6 @@ const updateUserPlacesMutationConfig = {
 
 export default compose(
   connect(mapStateToProps),
-  graphql(deleteUserPlaceMutation, deleteUserPlaceMutationConfig),
   graphql(updateUserPlacesMutation, updateUserPlacesMutationConfig),
   // todo: graphql(updateUserUsersMutation, updateUserUsersMutationConfig)
   withHandlers(handlers),

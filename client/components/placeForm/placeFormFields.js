@@ -24,18 +24,19 @@ class PlaceFormFields extends Component {
   }
 
   componentDidMount() {
-    const {isScriptLoaded, isScriptLoadSucceed, setIsLoading} = this.props
-    setIsLoading(true)
+    const {setIsScriptLoading} = this.props
+    setIsScriptLoading(true)
   }
 
-  componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed, setIsLoading}) {
+  componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed, setIsScriptLoading}) {
     if (isScriptLoaded) { // script finished loading
-      setIsLoading(false)
+      setIsScriptLoading(false)
+      this.setState({isLoading: false})
 
       if (isScriptLoadSucceed) {
-        this.setIsLoading(false)
+        setIsScriptLoading(false)
       } else {
-        this.setIsLoading(null)
+        setIsScriptLoading(null)
       }
     }
   }
@@ -55,10 +56,6 @@ class PlaceFormFields extends Component {
     let longitude = hasMarker ? marker[1] : userLocation.lng
 
     return [latitude, longitude]
-  }
-
-  setIsLoading = (isLoading) => {
-    this.setState(p => ({isLoading}))
   }
 
   handleBoundsChange = ({center, zoom, bounds, initial}) => {
@@ -83,11 +80,13 @@ class PlaceFormFields extends Component {
     const {
       formValues,
       hasServerErrors,
+      isScriptLoading,
       readOnly,
       serverErrors,
       submitting,
       t,
       userLocation,
+      valid,
       onMapClick,
       onSaveClick
     } = this.props
@@ -103,7 +102,7 @@ class PlaceFormFields extends Component {
     }
 
     // google lib failed loading: warn the user
-    if (isLoading === null && process.env.NODE_ENV !== 'development') {
+    if (isScriptLoading === null && process.env.NODE_ENV !== 'development') {
       return <span>{t('form:failed_loading')}</span>
     }
 
@@ -177,7 +176,7 @@ class PlaceFormFields extends Component {
         <Row>
           <Col>
             <Button
-              disabled={submitting}
+              disabled={submitting || !valid}
               positive
               onClick={onSaveClick}
             >{

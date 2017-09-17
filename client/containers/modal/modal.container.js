@@ -5,73 +5,21 @@ import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 
-import { modalActions, modalConstants, getModals } from 'core/modal'
+import debug from 'helpers/debug'
+import withModal from 'lib/decorators/withModal'
 
-import AuthFormContainer from 'containers/authForm'
-import { Button, Container, Header, Icon, Modal } from 'components/layout'
-import SetLocationForm from 'components/setLocationForm'
+import { modalActions, getModals } from 'core/modal'
+
+import { Icon } from 'components/layout'
+import modalComponents from './modals'
+import confirmComponents from './confirms'
 
 
-const withModal = (modalProps, modalComponentProps) => {
-  return function(ModalComponent) {
-    if (!modalProps.open) {
-      return null
-    }
-
-    return (
-      <ModalComponent
-        modalProps={modalProps}
-        {...modalComponentProps}
-      />
-    )
-  }
-}
-
-const modalComponents = {
-  [modalConstants.AUTH]: function AuthModal({modalProps}) {
-    return (
-      <Modal {...modalProps}>
-        <AuthFormContainer/>
-      </Modal>
-    )
-  },
-  [modalConstants.ERROR]: ({modalProps, errors = [], title}) => (
-    <Modal {...modalProps}>
-      <Header>
-        <Icon name="warning sign"/>
-        {title}
-      </Header>
-      <Modal.Content>
-        <ul>
-          {errors.map((error, id) => <li key={`error-${id}`}>{error.message || error}</li>)}
-        </ul>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button inverted onClick={modalProps.onClose}>
-          <Icon name="checkmark"/> OK
-        </Button>
-      </Modal.Actions>
-    </Modal>
-  ),
-  [modalConstants.SET_LOCATION]: ({modalProps, center, t, title, onSubmit, onSuggestSelect}) => {
-    const handleSubmit = values => onSubmit(values, modalProps.onClose)
-
-    return (
-      <Modal {...modalProps}>
-        <Header
-          icon="world"
-          content={title}
-        />
-        <SetLocationForm
-          center={center}
-          t={t}
-          onSubmit={handleSubmit}
-          onSuggestSelect={onSuggestSelect}
-        />
-      </Modal>
-    )
-  }
-}
+const closeIcon = (
+  <div style={{position: 'absolute', top: -15, right: 0}}>
+    <Icon name="close" fitted style={{cursor: 'pointer', color: 'white'}}/>
+  </div>
+)
 
 function ModalContainer({modals, t, setModal}) {
   const modalTypes = Object.keys(modals)
@@ -80,31 +28,41 @@ function ModalContainer({modals, t, setModal}) {
     return null
   }
 
-  const closeIcon = (
-    <div style={{position: 'absolute', top: -15, right: 0}}>
-      <Icon name="close" fitted style={{cursor: 'pointer', color: 'white'}}/>
-    </div>
-  )
-
   return (
     <div>
       {modalTypes.map(modalType => {
-        const modalComponent = modalComponents[modalType]
-        let {modalProps, ...modalComponentProps} = modals[modalType]
+        let {modalProps, ...modalComponentProps} = modals[modalType] // get modal state
+        let modalComponent = null
 
-        modalProps = {
-          closeIcon,
-          onClose: () => setModal(modalType, {isOpen: false}),
-          open: modalComponentProps.isOpen,
-          ...modalProps
+        if (modalComponents[modalType]) {
+          modalComponent = modalComponents[modalType]
+          modalProps = {
+            closeIcon,
+            onClose: () => setModal(modalType, {}, {open: false}),
+            ...modalProps
+          }
+        } else if (confirmComponents[modalType]) {
+          modalComponent = confirmComponents[modalType]
+          modalProps = {
+            onCancel: () => setModal(modalType, {}, {open: false}),
+            onConfirm: () => setModal(modalType, {}, {open: false}),
+            ...modalProps
+          }
+        }
+
+        if (!modalComponent) {
+          debug('modal.container: a component could not be matched with type: ' + modalType)
+          return null
         }
 
         modalComponentProps = {
+          isOpen: modalProps.open,
           key: `modal-${modalType}`,
           t,
           ...modalComponentProps
         }
 
+        // apply hoc
         return withModal(modalProps, modalComponentProps)(modalComponent)
       })}
     </div>

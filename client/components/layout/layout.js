@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid as UIGrid, Icon as UIIcon } from 'semantic-ui-react'
+import { Grid as UIGrid } from 'semantic-ui-react'
 import styled from 'styled-components'
 
 

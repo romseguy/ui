@@ -13,7 +13,7 @@ import placesQuery from 'graphql/queries/places.query.graphql'
 
 class PlaceFormDataContainer extends Component {
   state = {
-    isLoading: true,
+    isScriptLoading: false
   }
 
   componentWillReceiveProps(nextProps) {
@@ -24,19 +24,13 @@ class PlaceFormDataContainer extends Component {
       routeType
     } = nextProps
 
-    if (isLoading !== this.state.isLoading) {
-      if (!isLoading ) {
-        if (routeType === routerActions.ME_PLACE_EDIT && !place) {
-          routes.meRoute()
-        } else {
-          this.setIsLoading(isLoading)
-        }
-      }
+    if (!isLoading && routeType === routerActions.ME_PLACE_EDIT && !place) {
+      routes.meRoute()
     }
   }
 
-  setIsLoading = (isLoading) => {
-    this.setState(p => ({isLoading}))
+  setIsScriptLoading = (isScriptLoading) => {
+    this.setState(p => ({isScriptLoading}))
   }
 
   render() {
@@ -45,7 +39,7 @@ class PlaceFormDataContainer extends Component {
         {...this.props}
         {...this.state}
         routeTypes={routerActions}
-        setIsLoading={this.setIsLoading}
+        setIsScriptLoading={this.setIsScriptLoading}
       />
     )
   }
@@ -139,7 +133,6 @@ const myPlacesQueryConfig = {
     } = ownProps
 
     const props = {
-      disconnectedPlaces: [],
       initialValues,
       isLoading: isLoading || loading,
       mine: false
@@ -147,9 +140,13 @@ const myPlacesQueryConfig = {
 
     if (!loading && myPlaces) {
       // filters out places already belonging to myPlaces
-      props.disconnectedPlaces = places.filter(place => {
+      const disconnectedPlaces = places.filter(place => {
         return !myPlaces.find(userPlace => userPlace.place.id === place.id)
       })
+
+      if (disconnectedPlaces.length > 0) {
+        props.disconnectedPlaces = disconnectedPlaces
+      }
 
       if (place) {
         props.mine = myPlaces.find(myPlace => myPlace.id === place.id)

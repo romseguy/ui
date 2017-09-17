@@ -37,13 +37,15 @@ function PlaceForm(props) {
     disconnectedPlaces,
     formValues,
     isLoading,
+    isScriptLoading,
     routeType,
     routeTypes,
     serverErrors,
-    setIsLoading,
+    setIsScriptLoading,
     submitting,
     t,
     title,
+    valid,
     userLocation,
     onMapClick,
     onSaveClick,
@@ -52,24 +54,40 @@ function PlaceForm(props) {
   } = props
 
   const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
-  const showSelector = isLoading || routeType === routeTypes.ME_PLACES_ADD && disconnectedPlaces.length > 0
   const showSelectFields = !isLoading && formValues.action === 'select'
 
   let showFields = false
+  let showSelector = false
 
   if (formValues.action === 'create') {
     showFields = true
+    showSelector = true
   }
   else if (formValues.action === 'select') {
     showFields = false
+    showSelector = true
   }
-  else if (!isLoading) {
+  else {
     if (routeType === routeTypes.ME_PLACE_EDIT) {
+      showSelector = false
       showFields = true
-    } else if (routeType === routeTypes.ME_PLACES_ADD && !disconnectedPlaces.length) {
-      showFields = true
+    } else if (routeType === routeTypes.ME_PLACES_ADD) {
+      if (isLoading) {
+        showSelector = true
+      } else if (isScriptLoading) {
+        showFields = true
+      }
+      else {
+        if (disconnectedPlaces) {
+          showSelector = true
+        } else {
+          showFields = true
+        }
+      }
     }
   }
+
+  console.log('fields/selector/loading/script', showFields, showSelector, isLoading, isScriptLoading)
 
   return (
     <PlaceFormLayout fluid>
@@ -82,7 +100,7 @@ function PlaceForm(props) {
 
       <UIForm
         error={hasServerErrors}
-        loading={isLoading}
+        loading={isLoading || isScriptLoading}
       >
         {showSelector && (
           <PlaceFormSelector t={t}/>
@@ -94,6 +112,7 @@ function PlaceForm(props) {
             formValues={formValues}
             submitting={submitting}
             t={t}
+            valid={valid}
             onSaveClick={onSaveClick}
             onViewClick={onViewClick}
           />
@@ -105,9 +124,10 @@ function PlaceForm(props) {
             hasServerErrors={hasServerErrors}
             readOnly={false}
             serverErrors={serverErrors}
-            setIsLoading={setIsLoading}
+            setIsScriptLoading={setIsScriptLoading}
             submitting={submitting}
             t={t}
+            valid={valid}
             userLocation={userLocation}
             onMapClick={onMapClick}
             onSaveClick={onSaveClick}

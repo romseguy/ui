@@ -22,6 +22,7 @@ import { getTitle, getUserLocation } from 'core/settings'
 import createPlaceMutation from 'graphql/mutations/createPlace.mutation.graphql'
 import createUserPlaceMutation from 'graphql/mutations/createUserPlace.mutation.graphql'
 import updatePlaceMutation from 'graphql/mutations/updatePlace.mutation.graphql'
+import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
 import placeQuery from 'graphql/queries/place.query.graphql'
 import PlaceFormDataContainer from 'dataContainers/placeForm'
 
@@ -235,7 +236,10 @@ const createUserPlaceMutationConfig = {
         return mutate({
           variables: {
             userPlace
-          }
+          },
+          refetchQueries: [{
+            query: myPlacesQuery
+          }]
         })
       }
     }

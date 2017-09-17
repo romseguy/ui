@@ -1,5 +1,7 @@
 export const modalConstants = {
   AUTH: 'AUTH',
+  CONFIRM: 'CONFIRM',
+  CONFIRM_DELETE_PLACE: 'CONFIRM_DELETE_PLACE',
   ERROR: 'ERROR',
   SET_LOCATION: 'SET_LOCATION'
 }

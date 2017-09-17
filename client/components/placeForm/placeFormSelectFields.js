@@ -19,6 +19,7 @@ function PlaceFormSelectFields(props) {
     formValues,
     submitting,
     t,
+    valid,
     onSaveClick,
     onViewClick
   } = props
@@ -43,26 +44,18 @@ function PlaceFormSelectFields(props) {
         validate={[required({msg: t('errors:required')})]}
       />
 
-      <Row>
-        <Col mobile={8}>
-          <Button
-            disabled={submitting}
-            positive
-            onClick={onSaveClick}
-          >{t('form:place.select_save')}
-          </Button>
-        </Col>
-        <Col mobile={8}>
-          {formValues.selectedPlaceTitle && (
-            <Button
-              disabled={submitting}
-              onClick={onViewClick}
-            >
-              {t('form:place.select_view')}
-            </Button>
-          )}
-        </Col>
-      </Row>
+      <Button
+        disabled={submitting || !valid}
+        positive
+        onClick={onSaveClick}
+      >{t('form:place.select_save')}
+      </Button>
+      <Button
+        disabled={submitting || !valid}
+        onClick={onViewClick}
+      >
+        {t('form:place.select_view')}
+      </Button>
     </Grid>
   )
 }

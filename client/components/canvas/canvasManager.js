@@ -136,11 +136,9 @@ class CanvasManager extends Component {
      - GUARDIAN: choose whether delete the place, just user_place, or both
      - FOLLOWER: confirm user_place deletion
      */
-    const confirmed = window.confirm(t('canvas:entities.delete_confirm') + ' ' + node.name)
+    //const confirmed = window.confirm(t('canvas:entities.delete_confirm') + ' ' + node.name)
 
-    if (confirmed) {
-      typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(node)
-    }
+    typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(node)
   }
   handleToolbarEditClick = node => {
     // NIY

@@ -1,16 +1,22 @@
 export const canvasActions = {
   ADD_NODE: 'ADD_NODE',
+  DELETE_SERVER_NODE: 'DELETE_SERVER_NODE',
   HOVER_NODE: 'HOVER_NODE',
+  REMOVE_NODE: 'REMOVE_NODE',
   SELECT_ALL_NODES: 'SELECT_ALL_NODES',
   SELECT_NODE: 'SELECT_NODE',
   SELECT_NODES: 'SELECT_NODES',
   SET_CANVAS_NODES: 'SET_CANVAS_NODES',
   SET_CANVAS_NODES_LOADING: 'SET_CANVAS_NODES_LOADING',
   UNSELECT_NODES: 'UNSELECT_NODES',
-  REMOVE_NODE: 'REMOVE_NODE',
 
   addNode: (node) => ({
     type: canvasActions.ADD_NODE,
+    payload: {node}
+  }),
+
+  deleteServerNode: (node) => ({
+    type: canvasActions.DELETE_SERVER_NODE,
     payload: {node}
   }),
 
@@ -27,12 +33,6 @@ export const canvasActions = {
     payload: {node}
   }),
 
-  selectAllNodes: (selected) => ({
-    type: canvasActions.SELECT_ALL_NODES,
-    payload: {
-      selected
-    }
-  }),
   selectNode: (selected, node) => ({
     type: canvasActions.SELECT_NODE,
     payload: {
@@ -40,7 +40,8 @@ export const canvasActions = {
       selected
     }
   }),
-  selectNodes: (selectedNodeIds) => ({
+
+  selectNodes: (selectedNodeIds /* omit => unselect all nodes */) => ({
     type: canvasActions.SELECT_NODES,
     payload: {selectedNodeIds}
   }),
@@ -55,7 +56,7 @@ export const canvasActions = {
     payload: {loading}
   }),
 
-  unselectNodes: (unselectedNodeIds) => ({
+  unselectNodes: (unselectedNodeIds /* omit => unselect all nodes */) => ({
     type: canvasActions.UNSELECT_NODES,
     payload: {unselectedNodeIds}
   })

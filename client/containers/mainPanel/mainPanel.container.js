@@ -9,6 +9,7 @@ import { getCanvasNodeAnchorTooltipName } from 'helpers/tooltips'
 import { createModes, createToolboxes } from 'lib/factories'
 import modeTypes from 'lib/maps/modeTypes'
 import sizeTypes from 'lib/maps/sizeTypes'
+import entityTypes from 'lib/maps/entityTypes'
 
 import { canvasActions, getCanvasNodes, getCanvasNodesLoading, getSelectedNodeIds } from 'core/canvas'
 import { mapActions, getMapCenter, getMapNodes, getMapNodesLoading } from 'core/map'
@@ -65,7 +66,7 @@ class MainPanelContainer extends Component {
   }
 
   componentDidMount() {
-    this.setState(MainPanelContainer.getDimensions(window))
+    this.setDimensions()
     window.addEventListener('resize', this.handleResize)
   }
 
@@ -77,6 +78,10 @@ class MainPanelContainer extends Component {
     this.setState(p => ({
       currentMode: modeKey
     }))
+  }
+
+  setDimensions = () => {
+    this.setState(p => MainPanelContainer.getDimensions(window))
   }
 
   setToolboxDisabled = (key, disabled) => {
@@ -146,15 +151,17 @@ class MainPanelContainer extends Component {
 
   handleCanvasClick = () => {
     const {canvasActions} = this.props
-    const {selectAllNodes} = canvasActions
-    selectAllNodes(false)
+    const {unselectNodes} = canvasActions
+    unselectNodes()
     this.setToolboxIsOpen('*', false)
   }
 
   handleDeleteSelectedNode = node => {
-    const {canvasActions} = this.props
-    const {removeNode} = canvasActions
-    removeNode(node)
+    const {deleteServerNode} = this.props
+
+    if (Object.keys(entityTypes).includes(node.type)) {
+      deleteServerNode(node)
+    }
   }
 
   handleMapClick = args => {
@@ -163,8 +170,8 @@ class MainPanelContainer extends Component {
 
   handleModeChange = modeKey => {
     const {canvasActions} = this.props
-    const {selectAllNodes} = canvasActions
-    selectAllNodes(false)
+    const {unselectNodes} = canvasActions
+    unselectNodes()
 
     this.setCurrentMode(modeKey)
 
@@ -328,6 +335,7 @@ const mapStateToProps = (state, {routeType}) => {
 
 const mapDispatchToProps = (dispatch, {routeType}) => {
   const actions = {
+    deleteServerNode: bindActionCreators(canvasActions.deleteServerNode, dispatch),
     hideTooltip: bindActionCreators(tooltipActions.hide, dispatch),
     showTooltip: bindActionCreators(tooltipActions.show, dispatch)
   }

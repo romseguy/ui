@@ -1,6 +1,7 @@
 export {
   Accordion,
   Button,
+  Confirm,
   Container,
   Form,
   Header,

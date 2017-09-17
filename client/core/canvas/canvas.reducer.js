@@ -3,12 +3,12 @@ import { merge, set, setIn, updateIn, push } from 'zaphod/compat'
 
 import { canvasActions } from './canvas.actions'
 
+
 export const canvasState = {
   nodes: [],
   nodesLoading: false,
   selectedNodeIds: []
 }
-
 
 export function canvasReducer(state = canvasState, {payload, type}) {
   switch (type) {
@@ -17,6 +17,10 @@ export function canvasReducer(state = canvasState, {payload, type}) {
         ...payload.node,
         id: nodes.length
       }))
+
+    case canvasActions.DELETE_SERVER_NODE:
+      // core.canvas.saga.deleteServerNodeSaga
+      return state
 
     case canvasActions.HOVER_NODE:
       return updateIn(state, ['nodes'], nodes => nodes.map(node => {
@@ -28,13 +32,8 @@ export function canvasReducer(state = canvasState, {payload, type}) {
       }))
 
     case canvasActions.REMOVE_NODE:
-      return updateIn(state, ['nodes'], nodes => nodes.filter(node => node.id !== payload.node.id))
-
-    case canvasActions.SELECT_ALL_NODES:
-      state = updateIn(state, ['nodes'], nodes => nodes.map(node => ({...node, selected: payload.selected})))
-
-      state = set(state, 'selectedNodeIds', payload.selected ? state.nodes.map(node => node.id) : [])
-
+      state = updateIn(state, ['nodes'], nodes => nodes.filter(node => node.id !== payload.node.id))
+      state = updateIn(state, ['selectedNodeIds'], nodeIds => nodeIds.filter(nodeId => nodeId !== payload.node.id))
       return state
 
     case canvasActions.SELECT_NODE:
@@ -60,12 +59,14 @@ export function canvasReducer(state = canvasState, {payload, type}) {
       return state
 
     case canvasActions.SELECT_NODES:
+      const selectAll = !payload.selectedNodeIds
+
       state = updateIn(state, ['selectedNodeIds'], selectedNodeIds => {
-        return R.unionWith(R.equals, selectedNodeIds, payload.selectedNodeIds)
+        return selectAll ? state.nodes.map(node => node.id) : R.unionWith(R.equals, selectedNodeIds, payload.selectedNodeIds)
       })
 
       state = updateIn(state, ['nodes'], nodes => nodes.map(node => {
-          if (payload.selectedNodeIds.includes(node.id)) {
+          if (selectAll || payload.selectedNodeIds.includes(node.id)) {
             return {...node, selected: true}
           }
           return node
@@ -81,12 +82,14 @@ export function canvasReducer(state = canvasState, {payload, type}) {
       return set(state, 'nodesLoading', payload.loading)
 
     case canvasActions.UNSELECT_NODES:
+      const unselectAll = !payload.selectedNodeIds
+
       state = updateIn(state, ['selectedNodeIds'], selectedNodeIds => {
-        return selectedNodeIds.filter(selectedNodeId => !payload.unselectedNodeIds.includes(selectedNodeId))
+        return unselectAll ? [] : selectedNodeIds.filter(selectedNodeId => !payload.unselectedNodeIds.includes(selectedNodeId))
       })
 
       state = updateIn(state, ['nodes'], nodes => nodes.map(node => {
-        if (payload.unselectedNodeIds.includes(node.id)) {
+        if (unselectAll || payload.unselectedNodeIds.includes(node.id)) {
           return {...node, selected: false}
         }
         return node
