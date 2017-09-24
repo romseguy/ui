@@ -1,9 +1,9 @@
 import React from 'react'
 import { DragSource, DropTarget } from 'react-dnd'
 import { compose, pure } from 'recompose'
-
+import canvasItemTypes from 'lib/maps/canvasItemTypes'
 import CanvasNode from './canvasNode'
-import CanvasItemTypes from './canvasItemTypes'
+
 
 function DraggableCanvasNode(props) {
   const {
@@ -91,7 +91,7 @@ const dropItemTypes = (props) => {
 }
 
 export default compose(
-  DragSource(CanvasItemTypes.CANVAS_NODE, dragItemSpec, sourceCollect),
+  DragSource(canvasItemTypes.CANVAS_NODE, dragItemSpec, sourceCollect),
   DropTarget(dropItemTypes, dropItemSpec, targetCollect),
   pure
 )(DraggableCanvasNode)

@@ -8,8 +8,9 @@ export default function withModal(modalProps, modalComponentProps) {
       return null
     }
 
-    debug('[withModal.modalProps]', modalProps)
-    debug('[withModal.modalComponentProps]', modalComponentProps)
+    //debug('[withModal.modalProps]', modalProps)
+    //debug('[withModal.modalComponentProps]', modalComponentProps)
+
     return (
       <ModalComponent
         modalProps={modalProps}

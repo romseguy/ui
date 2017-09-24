@@ -3,9 +3,11 @@ import { all, call, fork, getContext, put, select, take, takeEvery } from 'redux
 
 import { mutate } from 'helpers/apollo'
 import entityTypes from 'lib/maps/entityTypes'
+import modalTypes from 'lib/maps/modalTypes'
+import { toggleDeleteNodeConfirmSaga } from 'lib/sagas'
 
 import { canvasActions } from 'core/canvas'
-import { modalActions, modalConstants } from 'core/modal'
+import { modalActions } from 'core/modal'
 
 import deletePlaceMutation from 'graphql/mutations/deletePlace.mutation.graphql'
 import deleteUserPlaceMutation from 'graphql/mutations/deleteUserPlace.mutation.graphql'
@@ -17,32 +19,27 @@ function* deleteServerNodeSaga({payload}) {
 
   if (payload.node.type === entityTypes.PLACE) {
     if (payload.node.mine) {
-      const options = [{
-        label: i18n.t('canvas:confirm.delete_place.options.both.label'),
-        labels: [
-          i18n.t('canvas:confirm.delete_place.options.both.labels.0'),
-          i18n.t('canvas:confirm.delete_place.options.both.labels.1'),
-        ],
-        submitIconName: 'warning sign',
-        submitLabel: i18n.t('canvas:confirm.delete_place.options.both.submit_label', {name: payload.node.name}),
-      }, {
-        label: i18n.t('canvas:confirm.delete_place.options.only.label'),
-        submitIconName: 'checkmark',
-        submitLabel: i18n.t('canvas:confirm.delete_place.options.only.submit_label')
-      }]
-
       const onConfirmChannel = channel()
       const modalComponentProps = {
         content: i18n.t('canvas:confirm.delete_place.content', {name: payload.node.name}),
-        options,
+        options: [{
+          label: i18n.t('canvas:confirm.delete_place.options.both.label'),
+          labels: [
+            i18n.t('canvas:confirm.delete_place.options.both.labels.0'),
+            i18n.t('canvas:confirm.delete_place.options.both.labels.1'),
+          ],
+          submitIconName: 'warning sign',
+          submitLabel: i18n.t('canvas:confirm.delete_place.options.both.submit_label', {name: payload.node.name}),
+        }, {
+          label: i18n.t('canvas:confirm.delete_place.options.only.label'),
+          submitIconName: 'checkmark',
+          submitLabel: i18n.t('canvas:confirm.delete_place.options.only.submit_label')
+        }],
         title: i18n.t('canvas:confirm.delete_place.title'),
         onConfirm: deleteBoth => onConfirmChannel.put({deleteBoth})
       }
 
-      yield put(modalActions.setModal(modalConstants.CONFIRM_DELETE_PLACE, modalComponentProps, {
-        basic: true,
-        open: true
-      }))
+      yield call(toggleDeleteNodeConfirmSaga, {modalComponentProps}, {node: payload.node})
 
       // onConfirm callback
       const {deleteBoth} = yield take(onConfirmChannel)
@@ -69,7 +66,8 @@ function* deleteServerNodeSaga({payload}) {
       yield all(effects)
       yield put(canvasActions.removeNode(payload.node))
 
-      yield put(modalActions.setModal(modalConstants.CONFIRM_DELETE_PLACE, {}, {open: false}))
+      yield call(toggleDeleteNodeConfirmSaga, {}, {node: payload.node})
+      yield put(modalActions.setModal(modalTypes.CONFIRM_DELETE_PLACE, {}, {open: false}))
 
       // todo: display toast with rollback option
     }

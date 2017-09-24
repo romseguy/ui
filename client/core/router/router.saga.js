@@ -3,10 +3,10 @@ import { call, fork, getContext, put, select, spawn, take } from 'redux-saga/eff
 import { delay } from 'redux-saga'
 
 import { getPrevRouteType } from 'core/router'
-import routes from 'core/routes'
+import routes from 'lib/maps/routes'
 import { getOfflineMode } from 'core/settings'
 
-import getCurrentUserSaga from 'lib/sagas/getCurrentUser.saga'
+import { getCurrentUserSaga } from 'lib/sagas'
 
 import { routerActions } from './router.actions'
 

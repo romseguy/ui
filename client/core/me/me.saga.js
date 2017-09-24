@@ -2,7 +2,7 @@ import { call, getContext, fork, put, takeEvery } from 'redux-saga/effects'
 import { meActions } from 'core/me'
 import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import { query } from 'helpers/apollo'
-import watchQuerySaga from 'lib/sagas/watchQuery.saga'
+import { watchQuerySaga } from 'lib/sagas'
 
 
 export function* meSaga() {

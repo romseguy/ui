@@ -9,19 +9,19 @@ import { compose, pure } from 'recompose'
 
 import geo from 'lib/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'lib/api/geo'
+import modalTypes from 'lib/maps/modalTypes'
 import sizeTypes from 'lib/maps/sizeTypes'
 
 import { mapActions } from 'core/map'
-import { modalActions, modalConstants } from 'core/modal'
+import { modalActions } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { settingsActions, getCity, getDepartment, getTitle, getUserLocation } from 'core/settings'
 
 import placeQuery from 'graphql/queries/place.query.graphql'
-import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
-import Icon from 'components/icon'
-import { NoPadCol as Col, Grid } from 'components/layout'
+import Icon, { TextIcon } from 'components/icon'
+import { NoPadCol as Col, Dropdown, Grid, Menu } from 'components/layout'
 import { HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
 
 
@@ -42,8 +42,8 @@ class HeaderContainer extends Component {
   handleLocationIconClick = event => {
     const {
       client,
-      rootRoute,
       routePayload,
+      routes,
       routeType,
       setCenter,
       userLocation,
@@ -65,24 +65,12 @@ class HeaderContainer extends Component {
       })
 
       setCenter([place.latitude, place.longitude])
-      rootRoute()
+      routes.rootRoute()
     }
     else {
       setCenter([userLocation.lat, userLocation.lng])
-      rootRoute()
+      routes.rootRoute()
     }
-  }
-
-  handleLogout = event => {
-    const {doLogout, rootRoute} = this.props
-
-    doLogout({
-      refetchQueries: [{
-        query: currentUserQuery
-      }]
-    }).then(() => {
-      rootRoute()
-    })
   }
 
   handleResize = () => {
@@ -103,14 +91,9 @@ class HeaderContainer extends Component {
     } = this.props
 
     if ([routerActions.ROOT].includes(routeType)) {
-      setModal(modalConstants.SET_LOCATION, {
-        isOpen: true,
+      const modalComponentProps = {
         center: [userLocation.lat, userLocation.lng],
-        modalProps: {
-          size: 'small',
-          closeIcon: null
-        },
-
+        title: t('form:setLocation.header'),
         onSubmit: async function handleSetLocationFormSubmit(values, onClose) {
           let {city, department, marker} = values
           let geocodingResult = null
@@ -145,9 +128,10 @@ class HeaderContainer extends Component {
           const res = await geo.getReverseGeocoding(lat, lng)
           const department = getGeocodedDepartment(res)
           change('SetLocationForm', 'department', department)
-        },
-        title: t('form:setLocation.header')
-      })
+        }
+      }
+
+      setModal(modalTypes.SET_LOCATION, modalComponentProps, {basic: true, closeIcon: null, open: true, size: 'small'})
     }
   }
 
@@ -156,13 +140,15 @@ class HeaderContainer extends Component {
       city,
       currentUser,
       department,
-      routeType,
       routePayload,
+      routeType,
+      routes,
       t
     } = this.props
 
     const monadIcon = <Icon name="monad" height={16} width={16}/>
     const placeIcon = <Icon name="place" height={16} width={16}/>
+    const parrotIcon = <TextIcon alt="Perroquet" name="parrot" title="Perroquet"/>
 
     let connectIcon = null
     let connectIconTitle = t('header:connect.title.place')
@@ -236,16 +222,8 @@ class HeaderContainer extends Component {
             <Col
               tablet={6}
             >
-              <HeaderLinkRaw href="http://pairroquet.com">
-                {t('app_title')}
-              </HeaderLinkRaw>
-
               <HeaderLink to={routerActions.rootRoute()}>
                 {t('header:map')}
-              </HeaderLink>
-
-              <HeaderLink to={routerActions.tutorialRoute()}>
-                {t('header:tutorial')}
               </HeaderLink>
             </Col>
 
@@ -275,24 +253,34 @@ class HeaderContainer extends Component {
           tablet={4}
           textAlign={isMobile ? 'left' : 'right'}
         >
-          {currentUser ? (
-            <div>
-              <HeaderLink to={routerActions.meRoute()}>
-                {currentUser.username}
-              </HeaderLink>
+          {currentUser && (
+            <HeaderLink to={routerActions.meRoute()}>
+              {currentUser.username}
+            </HeaderLink>
+          )}
 
-              <HeaderLink
-                to={routerActions.logoutRoute()}
-                shouldDispatch={false}
-                onClick={this.handleLogout}
-              >
-                {t('header:logout')}
-              </HeaderLink>
-            </div>
+          <HeaderLink to={routerActions.aboutRoute()} style={{marginRight: 0}}>
+            <Icon
+              name="question circle"
+              title={t('header:about')}
+            />
+          </HeaderLink>
+
+          {currentUser ? (
+            <Dropdown
+              className="right"
+              pointing={true}
+            >
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  content={<HeaderLinkRaw>{t('header:logout')}</HeaderLinkRaw>}
+                  onClick={e => routes.logoutRoute()}
+                >
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           ) : (
-            <div>
-              <HeaderLink to={routerActions.authRoute()}>{t('header:login')}</HeaderLink>
-            </div>
+            <HeaderLink to={routerActions.authRoute()}>{t('header:login')}</HeaderLink>
           )}
         </Col>
       </HeaderGrid>
@@ -318,7 +306,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   change,
-  rootRoute: routerActions.rootRoute,
   setCity: settingsActions.setCity,
   setDepartment: settingsActions.setDepartment,
   setLocation: settingsActions.setLocation,

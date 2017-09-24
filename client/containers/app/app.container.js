@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { compose, getContext, pure, withProps } from 'recompose'
+import { compose, getContext, pure } from 'recompose'
 
-import { query } from 'helpers/apollo'
+import bindActionCreators from 'helpers/bindActionCreators'
 
 import { getCurrentUser } from 'core/me'
+import { routerActions } from 'core/router'
 
 import Footer from 'containers/footer'
 import Header from 'containers/header'
@@ -19,7 +20,7 @@ import { Layout } from 'components/layout'
 class App extends Component {
   render() {
     const {
-      currentUser
+      ...props
     } = this.props
 
     return (
@@ -28,15 +29,13 @@ class App extends Component {
 
         <Layout
           header={
-            <Header
-              currentUser={currentUser}
-            />
+            <Header {...props}/>
           }
           footer={
             <Footer/>
           }
         >
-          <Router currentUser={currentUser}/>
+          <Router {...props}/>
         </Layout>
 
         <Modals/>
@@ -51,8 +50,14 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    routes: bindActionCreators(routerActions, dispatch)
+  }
+}
+
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   getContext({client: PropTypes.object}),
   pure
 )(App)

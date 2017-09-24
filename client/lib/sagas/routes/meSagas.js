@@ -5,7 +5,7 @@ import { routerActions } from 'core/router'
 
 import { query } from 'helpers/apollo'
 import { userPlaceToNode } from 'lib/factories'
-import setTitleSaga from 'lib/sagas/setTitle.saga'
+import { setTitleSaga } from 'lib/sagas'
 
 import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
 

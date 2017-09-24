@@ -7,8 +7,8 @@ import cx from 'classnames'
 
 import invert from 'helpers/invert'
 import getClientPosition from 'helpers/getClientPosition'
+import canvasItemTypes from 'lib/maps/canvasItemTypes'
 
-import CanvasItemTypes from './canvasItemTypes'
 import DraggableCanvasNode from './draggableCanvasNode'
 import { pan, zoom } from './canvasUtils'
 
@@ -182,17 +182,15 @@ const dropCanvasSpec = {
     const {matrix, zoomLevel} = component.state
     const {onToolboxItemDrop, onNodeDragEnd} = component.props
 
-    if (itemType === CanvasItemTypes.CANVAS_NODE) {
+    if (itemType === canvasItemTypes.CANVAS_NODE) {
       const x = Math.round(item.node.x + (delta.x / zoomLevel))
       const y = Math.round(item.node.y + (delta.y / zoomLevel))
       onNodeDragEnd(item.node, x, y)
     }
-    else if (itemType === CanvasItemTypes.TOOLBOX_ITEM) {
+    else if (itemType === canvasItemTypes.TOOLBOX_ITEM) {
       const canvasPosition = component.svg.getBoundingClientRect()
-      const matrixDeltaX = matrix[4] < 0 ? Math.abs(matrix[4]) : -matrix[4]
-      const matrixDeltaY = matrix[5] < 0 ? Math.abs(matrix[5]) : -matrix[5]
-      let x = (invert(matrix[4]) + delta.x + initial.x - canvasPosition.left - item.itemAttributes.width / 1.8) / zoomLevel
-      let y = (invert(matrix[5]) + delta.y + initial.y - canvasPosition.top - item.itemAttributes.height / 1.8) / zoomLevel
+      const x = (invert(matrix[4]) + delta.x + initial.x - canvasPosition.left - item.itemAttributes.width / 1.8) / zoomLevel
+      const y = (invert(matrix[5]) + delta.y + initial.y - canvasPosition.top - item.itemAttributes.height / 1.8) / zoomLevel
       onToolboxItemDrop(item, x, y)
     }
   },

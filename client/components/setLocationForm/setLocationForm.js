@@ -129,7 +129,7 @@ class SetLocationForm extends Component {
         </Modal.Content>
 
         <Modal.Actions>
-          <Button type="submit">
+          <Button inverted type="submit">
             <Icon name="checkmark"/> {t('form:setLocation.save')}
           </Button>
         </Modal.Actions>

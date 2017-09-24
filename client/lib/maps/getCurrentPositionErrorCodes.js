@@ -1,4 +1,0 @@
-export default {
-  USER_DENIED_GEOLOCATION: 1,
-  USER_IS_OFFLINE: 2
-}

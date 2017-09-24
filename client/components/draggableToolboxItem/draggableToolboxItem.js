@@ -1,7 +1,7 @@
 import React from 'react'
 import { DragSource } from 'react-dnd'
 
-import CanvasItemTypes from '../canvas/canvasItemTypes'
+import canvasItemTypes from 'lib/maps/canvasItemTypes'
 
 
 class DraggableToolboxItem extends React.Component {
@@ -49,4 +49,4 @@ const collect = (connect, monitor) => {
   }
 }
 
-export default DragSource(CanvasItemTypes.TOOLBOX_ITEM, toolboxItemSource, collect)(DraggableToolboxItem)
+export default DragSource(canvasItemTypes.TOOLBOX_ITEM, toolboxItemSource, collect)(DraggableToolboxItem)

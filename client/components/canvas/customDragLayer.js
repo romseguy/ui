@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { DragLayer } from 'react-dnd'
+import canvasItemTypes from 'lib/maps/canvasItemTypes'
 import CanvasNode from './canvasNode'
-import CanvasItemTypes from './canvasItemTypes'
 
 const layerStyles = {
   position: 'fixed',
@@ -14,7 +14,8 @@ const layerStyles = {
 }
 
 const getItemStyles = (props, zoomLevel) => {
-  const {initialOffset, currentOffset} = props
+  const {currentOffset, initialOffset, item, itemType} = props
+
   if (!initialOffset || !currentOffset) {
     return {
       display: 'none'
@@ -22,9 +23,13 @@ const getItemStyles = (props, zoomLevel) => {
   }
 
   let {x, y} = currentOffset
-  const yOffset = props.item.itemAttributes ? props.item.itemAttributes.titleYOffset : 0
 
-  const transform = `translate(${x}px, ${y - yOffset/1.6}px)` + (zoomLevel ? ` scale(${zoomLevel})` : '')
+  if (itemType === canvasItemTypes.CANVAS_NODE) {
+    x += item.node.width / 2
+  }
+
+  const transform = `translate(${x}px, ${y}px)` + (zoomLevel ? ` scale(${zoomLevel})` : '')
+
   return {
     transform,
     WebkitTransform: transform,
@@ -59,7 +64,7 @@ class CustomDragLayer extends Component {
     }
 
     switch (itemType) {
-      case CanvasItemTypes.CANVAS_NODE:
+      case canvasItemTypes.CANVAS_NODE:
         return (
           <svg style={layerStyles}>
             <g style={getItemStyles(this.props, item.zoomLevel)}>
@@ -70,7 +75,7 @@ class CustomDragLayer extends Component {
             </g>
           </svg>
         )
-      case CanvasItemTypes.TOOLBOX_ITEM:
+      case canvasItemTypes.TOOLBOX_ITEM:
         return (
           <div className='canvas-toolbox' style={layerStyles}>
             <ul className='toolbox-items-list' style={getItemStyles(this.props)}>

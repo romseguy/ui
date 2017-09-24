@@ -16,6 +16,23 @@ const geoApi = {
   getReverseGeocoding(lat, lng){
     this.opts.baseURI = `https://api-adresse.data.gouv.fr/reverse`
     return this.get(`/?lon=${lng}&lat=${lat}`)
+  },
+
+  async getLocationData(lat, lng) {
+    const {body: {features}} = await this.getReverseGeocoding(lat, lng)
+
+    if (!features.length) {
+      return
+    }
+
+    const {city, context} = features[0].properties
+
+    const matches = context.match(/[0-9]{2}, ([^,]+)/i)
+
+    return {
+      department: matches[1],
+      city
+    }
   }
 }
 

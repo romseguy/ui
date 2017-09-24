@@ -1,7 +1,7 @@
 import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
 import { getResponseData } from 'helpers/apollo'
-import setErrorModalSaga from 'lib/sagas/setErrorModal.saga'
+import { toggleErrorModalSaga } from 'lib/sagas'
 
 import { settingsActions } from 'core/settings'
 
@@ -14,9 +14,11 @@ function* mutationResultSaga(payload) {
     const data = yield call(getResponseData, payload)
 
     if (!data) {
-      yield call(setErrorModalSaga, {
-        title: i18n.t('errors:modal.unknown.title'),
-        errors: [result /*i18n.t('errors:modal.unknown.content')*/]
+      yield call(toggleErrorModalSaga, {
+        modalComponentProps: {
+          title: i18n.t('errors:modal.unknown.title'),
+          errors: [result /*i18n.t('errors:modal.unknown.content')*/]
+        }
       })
     }
 
@@ -32,9 +34,11 @@ function* startupSaga() {
 
   if (!result || result.message === 'Failed to fetch') {
     yield put({type: settingsActions.OFFLINE_MODE})
-    yield call(setErrorModalSaga, {
-      title: 'System error',
-      errors: ['Server is offline']
+    yield call(toggleErrorModalSaga, {
+      modalComponentProps: {
+        title: 'System error',
+        errors: ['Server is offline']
+      }
     })
   }
 }

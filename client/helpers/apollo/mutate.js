@@ -4,7 +4,6 @@ import debug from 'helpers/debug'
 
 async function mutate(client, {mutation, refetchQueries, variables}, {from} = {}) {
   let log = noop
-  console.log('muta', mutation)
 
   if (process.env.NODE_ENV === 'development') {
     const operationName = mutation.definitions[0].name.value

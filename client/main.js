@@ -10,7 +10,7 @@ import configureWindow from 'setup/window'
 import Root from 'setup/react/root'
 
 import reducers from 'core/reducers'
-import routes from 'core/routes'
+import routes from 'lib/maps/routes'
 import rootSaga from 'core/saga'
 
 

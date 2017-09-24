@@ -3,10 +3,8 @@ import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 
-import bindActionCreators from 'helpers/bindActionCreators'
-
 import { routerActions, getPayload, getPrevRouteType, getRouteType } from 'core/router'
-import routes from 'core/routes'
+import routes from 'lib/maps/routes'
 
 import MainPanelContainer from 'containers/mainPanel'
 import MeContainer from 'containers/me'
@@ -163,14 +161,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-    routes: bindActionCreators(routerActions, dispatch)
-  }
-}
-
 export default compose(
   translate(),
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(mapStateToProps),
   pure
 )(RouterContainer)

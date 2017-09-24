@@ -3,7 +3,6 @@ import { translate } from 'react-i18next'
 import { compose, pure } from 'recompose'
 import styled from 'styled-components'
 
-import breakpoints from 'lib/maps/breakpoints'
 import sizeTypes from 'lib/maps/sizeTypes'
 
 import { routerActions } from 'core/router'
@@ -23,12 +22,9 @@ function FooterContainer({t}) {
   const isMobile = window.currentBreakpoint === sizeTypes.MOBILE
 
   return (
-    <FooterGrid
-      columns={2}
-      stackable
-    >
+    <FooterGrid>
       <Col
-        tablet={13}
+        textAlign={isMobile ? 'left': 'right'}
       >
         <Parrot
           height={14}
@@ -40,13 +36,6 @@ function FooterContainer({t}) {
         <FooterLink to={routerActions.aboutRoute()}>
           {t('about')}
         </FooterLink>
-      </Col>
-
-      <Col
-        tablet={3}
-        textAlign={isMobile ? 'left': 'right'}
-      >
-        <Icon name="flag outline"/>+{' '}<Icon name="leaf"/>={' '}<Icon name="heart"/>
       </Col>
     </FooterGrid>
   )

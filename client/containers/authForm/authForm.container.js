@@ -7,9 +7,10 @@ import { compose, pure, withHandlers, withState } from 'recompose'
 
 import { formatErrorMessage } from 'helpers/apollo'
 import { authStepsTypes, authTypes } from 'lib/maps/auth'
+import modalTypes from 'lib/maps/modalTypes'
 
 import { getAuthFormValues } from 'core/form'
-import { modalActions, modalConstants } from 'core/modal'
+import { modalActions } from 'core/modal'
 import { routerActions } from 'core/router'
 
 import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
@@ -45,7 +46,7 @@ const handlers = {
             const result = await doRegister(formValues)
 
             if (!result.stack) {
-              setModal(modalConstants.AUTH, {isOpen: false})
+              setModal(modalTypes.AUTH, {}, {open: false})
               rootRoute()
               // todo: setCurrentStep(authStepsTypes.REGISTER_OK)
             }
@@ -59,7 +60,7 @@ const handlers = {
         else {
           try {
             await doLogin(formValues)
-            setModal(modalConstants.AUTH, {isOpen: false})
+            setModal(modalTypes.AUTH, {}, {open: false})
             rootRoute()
           } catch (error) {
             setServerErrors(getServerErrors(error))

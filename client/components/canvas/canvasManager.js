@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
 
 import withDragDropContext from 'lib/decorators/withDragDropContext'
+import canvasItemTypes from 'lib/maps/canvasItemTypes'
 
 import Toolbar from 'components/toolbar'
 import { CanvasTooltips, ToolboxTooltips } from 'components/tooltips'
 
 import Canvas from './canvas'
-import CanvasItemTypes from './canvasItemTypes'
 import CanvasLayout from './canvasLayout'
 import CustomDragLayer from './customDragLayer'
 
 
-const canvasDropItemTypes = [CanvasItemTypes.CANVAS_NODE, CanvasItemTypes.TOOLBOX_ITEM]
+const canvasDropItemTypes = [canvasItemTypes.CANVAS_NODE, canvasItemTypes.TOOLBOX_ITEM]
 
 class CanvasManager extends Component {
   constructor(props) {

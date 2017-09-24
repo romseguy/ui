@@ -12,7 +12,9 @@ export default function* setTitleSaga(title, {i18n} = {}) {
     }
   }
 
-  yield put(settingsActions.setTitle(title))
+  yield put(settingsActions.setTitle(
+    typeof title === 'function' ? title() : title
+  ))
 }
 
 

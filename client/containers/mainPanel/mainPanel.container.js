@@ -157,10 +157,12 @@ class MainPanelContainer extends Component {
   }
 
   handleDeleteSelectedNode = node => {
-    const {deleteServerNode} = this.props
+    const {canvasActions} = this.props
 
-    if (Object.keys(entityTypes).includes(node.type)) {
-      deleteServerNode(node)
+    if (node.isNew) {
+      canvasActions.removeNode(node)
+    } else if (Object.keys(entityTypes).includes(node.type)) {
+      canvasActions.deleteServerNode(node)
     }
   }
 
@@ -335,7 +337,6 @@ const mapStateToProps = (state, {routeType}) => {
 
 const mapDispatchToProps = (dispatch, {routeType}) => {
   const actions = {
-    deleteServerNode: bindActionCreators(canvasActions.deleteServerNode, dispatch),
     hideTooltip: bindActionCreators(tooltipActions.hide, dispatch),
     showTooltip: bindActionCreators(tooltipActions.show, dispatch)
   }

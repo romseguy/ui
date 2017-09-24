@@ -1,4 +1,4 @@
-export const modalConstants = {
+export default {
   AUTH: 'AUTH',
   CONFIRM: 'CONFIRM',
   CONFIRM_DELETE_PLACE: 'CONFIRM_DELETE_PLACE',

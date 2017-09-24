@@ -87,8 +87,6 @@ function PlaceForm(props) {
     }
   }
 
-  console.log('fields/selector/loading/script', showFields, showSelector, isLoading, isScriptLoading)
-
   return (
     <PlaceFormLayout fluid>
       <PlaceFormHeader

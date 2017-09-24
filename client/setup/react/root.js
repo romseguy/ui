@@ -2,7 +2,7 @@ import React from 'react'
 import { ApolloProvider as Provider } from 'react-apollo'
 import { I18nextProvider } from 'react-i18next'
 
-import App from 'dataContainers/app'
+import App from 'containers/app'
 
 
 function Root({client, i18n, store}) {

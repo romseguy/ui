@@ -15,6 +15,7 @@ import {
 
 import { routerActions } from 'core/router'
 
+
 export default {
   [routerActions.NOT_FOUND]: {
     path: '/notFound',

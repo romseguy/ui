@@ -2,7 +2,7 @@ import React from 'react'
 import Icon from 'components/icon'
 
 
-function TutorialIcon(props) {
+function TextIcon(props) {
   let height = undefined
   let width = undefined
 
@@ -23,4 +23,4 @@ function TutorialIcon(props) {
   )
 }
 
-export default TutorialIcon
+export default TextIcon

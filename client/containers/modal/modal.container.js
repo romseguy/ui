@@ -56,7 +56,6 @@ function ModalContainer({modals, t, setModal}) {
         }
 
         modalComponentProps = {
-          isOpen: modalProps.open,
           key: `modal-${modalType}`,
           t,
           ...modalComponentProps

@@ -3,14 +3,13 @@ import { call, fork, put, select, take } from 'redux-saga/effects'
 
 import { query } from 'helpers/apollo'
 import { personToNode, placeToNode } from 'lib/factories'
-import setDepartmentTitleSaga from 'lib/sagas/setDepartmentTitle.saga'
-import setTitleSaga from 'lib/sagas/setTitle.saga'
+import { setDepartmentTitleSaga, setTitleSaga, toggleAuthModalSaga } from 'lib/sagas'
 
 import { canvasActions } from 'core/canvas'
 import { mapActions } from 'core/map'
-import { modalActions, modalConstants } from 'core/modal'
 import { routerActions } from 'core/router'
 
+import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import placeQuery from 'graphql/queries/place.query.graphql'
 import placesQuery from 'graphql/queries/places.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
@@ -42,16 +41,18 @@ function* setNodesFromPlacesSaga(client) {
 }
 
 export function* rootSaga(payload, settings) {
-  const {client} = settings
+  const {client, onEnter, prevRoute} = settings
 
-  yield call(setNodesFromPlacesSaga, client)
+  if (onEnter || [routerActions.ME].includes(prevRoute.type)) {
+    yield call(setNodesFromPlacesSaga, client)
+  }
 
   yield call(setDepartmentTitleSaga)
 }
 
 export function* aboutSaga(payload, settings) {
   const {i18n} = settings
-  yield call(setTitleSaga, i18n.t('about'), {i18n: true})
+  yield call(setTitleSaga, () => i18n.t('about'), {i18n: true})
 }
 
 export function* authSaga(payload, settings) {
@@ -64,24 +65,21 @@ export function* authSaga(payload, settings) {
 
   const onCloseChannel = channel()
 
-  yield put(modalActions.setModal(modalConstants.AUTH, {
-    isOpen: true,
+  yield call(toggleAuthModalSaga, {
     modalProps: {
-      size: 'small',
-      basic: true,
-      closeOnRootNodeClick: false,
       onClose: () => {
         onCloseChannel.put({})
       }
     }
-  }))
+  })
 
   yield fork(function*() {
     yield take(onCloseChannel)
+
     onCloseChannel.close()
-    yield put(modalActions.setModal(modalConstants.AUTH, {
-      isOpen: false
-    }))
+
+    yield call(toggleAuthModalSaga)
+
     if (prevRoute.type === '') {
       yield put(routerActions.rootRoute())
     } else {
@@ -101,7 +99,10 @@ export function* logoutSaga(payload, settings) {
 
   if (currentUser) {
     yield call([client, client.mutate], {
-      mutation: logoutMutation
+      mutation: logoutMutation,
+      refetchQueries: [{
+        query: currentUserQuery
+      }]
     })
   }
 
