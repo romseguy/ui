@@ -7,7 +7,7 @@ import { Label } from 'components/layout'
 import Toolbox, { ToolboxMenu } from 'components/toolbox'
 
 
-function SymbolsToolbox({symbols, isOpen, onClose}) {
+function SymbolsToolbox({isOpen, symbols, t, onClose}) {
   if (!isOpen) {
     return null
   }
@@ -19,6 +19,9 @@ function SymbolsToolbox({symbols, isOpen, onClose}) {
       onClose={onClose}
     >
       <ToolboxMenu>
+        {!symbols || !symbols.length && (
+          <span>{t('canvas:toolboxes.symbols.empty')}</span>
+        )}
         {symbols.map(symbol => {
           return (
             <Origin

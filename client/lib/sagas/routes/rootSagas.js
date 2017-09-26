@@ -24,7 +24,7 @@ function* setNodesFromPlaceSaga(client, placeTitle) {
     variables: {title: placeTitle}
   }, {
     cache: true,
-    from: '/place/view'
+    from: 'setNodesFromPlaceSaga'
   })
 
   yield put(canvasActions.setNodes(place.users.map((person, nodeId) => personToNode(nodeId, person))))
@@ -43,9 +43,13 @@ function* setNodesFromPlacesSaga(client) {
 export function* rootSaga(payload, settings) {
   const {client, onEnter, prevRoute} = settings
 
-  if (onEnter || [routerActions.ME].includes(prevRoute.type)) {
-    yield call(setNodesFromPlacesSaga, client)
-  }
+  /*  if (onEnter || [
+   routerActions.ME,
+   routerActions.ME_PLACE_VIEW,
+   routerActions.ME_P
+   ].includes(prevRoute.type)) {*/
+  yield call(setNodesFromPlacesSaga, client)
+  //}
 
   yield call(setDepartmentTitleSaga)
 }
@@ -110,12 +114,48 @@ export function* logoutSaga(payload, settings) {
 }
 
 export function* placeViewSaga(payload, settings) {
-  const {name} = payload
+  const {} = payload
   const {client} = settings
-  const placeTitle = decodeURIComponent(name)
+  const placeTitle = decodeURIComponent(payload.placeTitle)
 
   yield call(setNodesFromPlaceSaga, client, placeTitle)
   yield call(setTitleSaga, `${placeTitle}`)
+}
+
+export function* placeSymbolsAddSaga(payload, settings) {
+  const {} = payload
+  const {client, i18n} = settings
+
+  const placeTitle = decodeURIComponent(payload.placeTitle)
+  const prefix = `form:symbol.${payload.symbolType.toLowerCase()}`
+  const title = i18n.t(
+    `${prefix}.header.add`,
+    {
+      symbolType: i18n.t(`${prefix}.label`),
+      placeTitle
+    }
+  )
+
+  yield call(setNodesFromPlaceSaga, client, placeTitle)
+  yield call(setTitleSaga, title, {i18n: true})
+}
+
+export function* placeSymbolEditSaga(payload, settings) {
+  const {} = payload
+  const {i18n} = settings
+
+  const placeTitle = decodeURIComponent(payload.placeTitle)
+  const prefix = `form:symbol.${payload.symbolType.toLowerCase()}`
+  const title = i18n.t(
+    `${prefix}.header.edit`,
+    {
+      symbolType: i18n.t(`${prefix}.label`),
+      placeTitle
+    }
+  )
+
+  yield call(setNodesFromPlaceSaga, client, placeTitle)
+  yield call(setTitleSaga, title, {i18n: true})
 }
 
 export function* userViewSaga(payload, settings) {

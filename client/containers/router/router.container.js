@@ -78,7 +78,11 @@ class RouterContainer extends Component {
     if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
       sidePanelEl = <PlaceFormContainer {...this.props} routeType={routeType}/>
     }
-    if ([routerActions.ME_SYMBOLS_ADD, routerActions.ME_SYMBOL_EDIT].includes(routeType)) {
+    if ([
+        routerActions.ME_SYMBOLS_ADD,
+        routerActions.ME_SYMBOL_EDIT,
+        routerActions.PLACE_SYMBOLS_ADD
+      ].includes(routeType)) {
       sidePanelEl = <SymbolForm {...this.props}/>
     }
     else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
@@ -114,8 +118,9 @@ class RouterContainer extends Component {
     }
     else if (
       [
-        routerActions.PLACE_VIEW,
-        routerActions.ME_PLACE_VIEW
+        routerActions.ME_PLACE_VIEW,
+        routerActions.PLACE_SYMBOLS_ADD,
+        routerActions.PLACE_VIEW
       ].includes(routeType)
     ) {
       container = PlaceContainer

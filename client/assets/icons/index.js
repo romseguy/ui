@@ -39,6 +39,7 @@ const entities = {
 }
 
 const symbols = {
+  parrot,
   notification
 }
 

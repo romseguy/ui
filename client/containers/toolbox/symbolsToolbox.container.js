@@ -3,9 +3,9 @@ import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 
-import { routerActions, getRouteType } from 'core/router'
+import { getRouteType } from 'core/router'
 
-import symbolTypes from 'lib/maps/symbolTypes'
+import routes from 'lib/maps/routes'
 import { toolboxSymbols } from 'lib/factories'
 
 import SymbolsToolbox from 'components/symbolsToolbox'
@@ -19,7 +19,9 @@ function SymbolsToolboxContainer(props) {
 
 
 const mapStateToProps = (state, {t}) => {
-  const symbols = [toolboxSymbols[symbolTypes.NOTIFICATION]({t})]
+  const routeType = getRouteType(state)
+  const {allowedSymbolTypes = []} = routes[routeType]
+  const symbols = allowedSymbolTypes.map(symbolType => toolboxSymbols[symbolType]({t}))
 
   return {
     symbols

@@ -1,43 +1,93 @@
 import React, { Component } from 'react'
 import { Field } from 'redux-form'
 
-import {
-  Button,
-  Col,
-  Grid,
-  Row
-} from 'components/layout'
+import { required } from 'helpers/form/validators'
+import { SymbolFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
+
+import InputField from 'components/inputField'
+import TextareaField from 'components/textareaField'
+
+import { Button, NoPadCol as Col, Grid, Message, Row } from 'components/layout'
 
 
 class SymbolFormFields extends Component {
   render() {
-    const {formValues, readOnly, t} = this.props
+    const {
+      formValues,
+      hasServerErrors,
+      isScriptLoading,
+      prefix,
+      readOnly,
+      serverErrors,
+      submitting,
+      valid,
+      onSaveClick
+    } = this.props
+
+    const t = (path, options) => {
+      if (prefix) {
+        return this.props.t(prefix + path, options)
+      }
+
+      return this.props.t('loading')
+    }
 
     return (
-      <Grid>
-        {/* todo: create name with presets for commonly used symbols and symbols create by monads on the platform */}
-        <Row>
-          <Col mobile={16} tablet={16} computer={5}>
-            <label htmlFor="name">{t('form:symbol.name')}</label>
-          </Col>
+      <Grid verticalAlign="middle">
+        <Col width={16}>
+          {t('description')}
+        </Col>
 
-          <Col mobile={16} tablet={16} computer={11}>
-            <Field name="title" component="input" type="text" id="name" disabled={readOnly}/>
-          </Col>
-        </Row>
+        <Field
+          name="title"
+          component={InputField}
+          type="text"
+          breakpoints={breakpoints}
+          label={t('fields.title')}
+          ref={node => this.titleInput = node}
+          withRef
+          validate={[required({msg: t('errors:required')})]}
+        />
 
-        {/* todo:
-          - either choose the node_background from a list of presets
-          - or from upload form
-          */}
+        <Field
+          name="body"
+          component={TextareaField}
+          breakpoints={breakpoints}
+          label={t('fields.body')}
+          ref={node => this.textareaInput = node}
+          withRef
+          validate={[required({msg: t('errors:required')})]}
+        />
 
-        {/* todo:
-          - create selector for custom fields (add a map, add text, attach file
-          */}
+        {hasServerErrors && (
+          <Row>
+            <Col width={16}>
+              <Message
+                size="tiny"
+                error
+              >
+                <Message.Header>{t('errors:symbol.fixForm')}</Message.Header>
+                <Message.List>
+                  {serverErrors.map(({message}, i) => (
+                    <Message.Item key={`serverError-${i}`}>
+                      {message}
+                    </Message.Item>
+                  ))}
+                </Message.List>
+              </Message>
+            </Col>
+          </Row>
+        )}
 
         <Row>
           <Col>
-            <Button type="submit">{t('form:symbol.save')}</Button>
+            <Button
+              disabled={submitting || !valid}
+              positive
+              onClick={onSaveClick}
+            >{
+              t('form:symbol.save')}
+            </Button>
           </Col>
         </Row>
 

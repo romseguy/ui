@@ -46,10 +46,10 @@ export function NodeAnchorTooltips({t}) {
 
         if (discoveryMode) {
           if (type === entityTypes.PLACE) {
-            width =  410
+            width =  220
           }
           else if (type === entityTypes.PERSON) {
-            width = 480
+            width = 280
           }
         }  else if (editMode) {
           width = 160
@@ -67,7 +67,7 @@ export function NodeAnchorTooltips({t}) {
             <Grid style={{width: `${width}px`}}>
               {!discoveryMode && (
                 <Row>
-                  <Col width={5}>
+                  <Col tablet={5}>
                     <Icon
                       name="mouseDrag"
                       width={29}
@@ -80,14 +80,14 @@ export function NodeAnchorTooltips({t}) {
                 </Row>
               )}
               <Row>
-                <Col width={discoveryMode ? 2 : 5}>
+                <Col tablet={discoveryMode ? 3 : 5}>
                   <Icon
                     name="mouseLeftClick"
                     width={16}
                     height={16}
                   />
                 </Col>
-                <Col width={discoveryMode ? 14 : 11}>
+                <Col tablet={discoveryMode ? 13 : 11}>
                   {discoveryMode ? t(`canvas:tooltips.${type.toLowerCase()}_node_anchor`) : (selected ? 'déselectionner' : 'sélectionner')}
                 </Col>
               </Row>

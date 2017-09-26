@@ -183,9 +183,6 @@ class MainPanelContainer extends Component {
     } else if (modeKey === modeTypes.EDIT) {
       this.setToolboxDisabled('entities', false)
       this.setToolboxDisabled('symbols', false)
-    } else if (modeKey === modeTypes.NOTIFICATION) {
-      this.setToolboxDisabled('entities', true)
-      this.setToolboxDisabled('symbols', true)
     }
   }
 
@@ -302,11 +299,10 @@ const mapStateToProps = (state, {routeType}) => {
   if ([routerActions.ROOT].includes(routeType)) {
     const center = getMapCenter(state)
     const nodes = getMapNodes(state)
-    const isLoading =
 
-      props.isLoading = props.isLoading || getMapNodesLoading(state) || center === null
+    props.isLoading = props.isLoading || getMapNodesLoading(state) || center === null
 
-    if (!isLoading) {
+    if (!props.isLoading) {
       props.center = center
       props.nodes = nodes
     }

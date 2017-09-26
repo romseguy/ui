@@ -1,13 +1,12 @@
 import React from 'react'
-import { translate } from 'react-i18next'
 import { compose, pure, withHandlers } from 'recompose'
 import { reduxForm } from 'redux-form'
 
 import { Form as UIForm } from 'components/layout'
 
+import PlaceFormFields from './placeFormFields'
 import PlaceFormHeader from './placeFormHeader'
 import PlaceFormLayout from './placeFormLayout'
-import PlaceFormFields from './placeFormFields'
 import PlaceFormSelectFields from './placeFormSelectFields'
 import PlaceFormSelector from './placeFormSelector'
 
@@ -90,8 +89,7 @@ function PlaceForm(props) {
   return (
     <PlaceFormLayout fluid>
       <PlaceFormHeader
-        routeType={routeType}
-        routeTypes={routeTypes}
+        isLoading={isLoading}
         t={t}
         title={title}
       />
@@ -142,7 +140,6 @@ export default compose(
     form: 'PlaceForm',
     enableReinitialize: true
   }),
-  translate(),
   withHandlers(handlers),
   pure
 )(PlaceForm)

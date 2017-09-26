@@ -24,12 +24,12 @@ function MapPlaceNodeAnchorTooltip({t}) {
 
   return (
     <Tooltip name={tooltipName}>
-      <Grid style={{width: '410px'}}>
+      <Grid style={{width: '220px'}}>
         <Row>
-          <Col width={2}>
+          <Col tablet={3}>
             <Icon name="mouseLeftClick" width={16} height={16}/>
           </Col>
-          <Col width={14}>
+          <Col tablet={13}>
             {t('map:tooltips.place_node_anchor')}
           </Col>
         </Row>

@@ -103,10 +103,6 @@ const handlers = {
           selectNode(true, node)
         }
         break
-
-      case modeTypes.NOTIFICATION:
-        // todo
-        break
     }
 
     typeof onNodeAnchorClick === 'function' && onNodeAnchorClick(node)

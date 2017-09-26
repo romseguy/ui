@@ -6,11 +6,15 @@ import { change } from 'redux-form'
 import { compose, pure, withHandlers } from 'recompose'
 
 import roleTypes from 'lib/maps/roleTypes'
-import { getTitle, getUserLocation } from 'core/settings'
+
+import { canvasActions, getCanvasNodes, getCanvasNodesLoading } from 'core/canvas'
 import { routerActions, getPayload, getRouteType } from 'core/router'
+import { getTitle, getUserLocation } from 'core/settings'
 
 import { Container } from 'components/layout'
 import SymbolForm, { SymbolFormHeader } from 'components/symbolForm'
+
+import SymbolFormDataContainer from './symbolForm.dataContainer'
 
 //import symbolFormQuery from './symbol.form.query.graphql'
 //import createSymbolMutation from './createSymbol.mutation.graphql'
@@ -42,60 +46,27 @@ const handlers = {
 
 function SymbolFormContainer(props) {
   const {
-    // state
-    formValues,
-    initialValues,
-    userLocation,
-    disconnectedSymbols,
-    routeType,
-    title,
-    // options
-    isLoading,
-    mustCreate,
-    // actions
-    t,
-    onSubmit,
-    onSuggestSelect
+    ...rest
   } = props
 
   return (
-    <Container fluid>
-      <SymbolFormHeader
-        routeType={routeType}
-        routeTypes={routerActions}
-        t={t}
-        title={title}
-      />
-      <SymbolForm
-        formValues={formValues}
-        initialValues={initialValues}
-        isLoading={isLoading}
-        userLocation={userLocation}
-        mustCreate={mustCreate}
-        disconnectedSymbols={disconnectedSymbols}
-        routeType={routeType}
-        routeTypes={routerActions}
-        t={t}
-        onSubmit={onSubmit}
-        onSuggestSelect={onSuggestSelect}
-      />
-    </Container>
+    <SymbolFormDataContainer
+      {...rest}
+    />
   )
 }
 
 
 const mapStateToProps = state => {
-  const routeType = getRouteType(state)
-  const {name: symbolName} = getPayload(state)
-  const userLocation = getUserLocation(state)
+  const nodesLoading = getCanvasNodesLoading(state)
   const title = getTitle(state)
+  const userLocation = getUserLocation(state)
 
   return {
     formValues: state.form.SymbolForm ? state.form.SymbolForm.values : {},
+    isLoading: nodesLoading,
+    title,
     userLocation,
-    symbolName,
-    routeType,
-    title
   }
 }
 

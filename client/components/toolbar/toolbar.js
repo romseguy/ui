@@ -63,10 +63,14 @@ function Toolbar(props) {
           {modes.map(mode => {
             const {
               disabled,
+              height,
               iconId,
+              iconName,
               key,
+              margin,
               labels,
-              text
+              text,
+              width
             } = mode
 
             const active = currentMode === key
@@ -79,11 +83,14 @@ function Toolbar(props) {
               <ToolbarIcon
                 active={active}
                 disabled={disabled}
+                height={height}
                 id={iconId}
                 key={key}
-                margin='0.4rem 0.4rem 0 0'
+                margin={margin}
+                name={iconName}
                 text={text}
                 title={title}
+                width={width}
                 onClick={e => onModeClick(e, key, disabled)}
               />
             )

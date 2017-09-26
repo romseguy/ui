@@ -99,7 +99,7 @@ class Canvas extends React.Component {
       canvasWidth = 1396,
       connectDropTarget,
       currentMode,
-      nodes = [],
+      nodes,
       readOnly = false,
       toolboxes,
       zoomLevel,

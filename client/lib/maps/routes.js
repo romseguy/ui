@@ -1,16 +1,22 @@
 import React from 'react'
 
+import symbolTypes from 'lib/maps/symbolTypes'
+
 import {
+  notFoundSaga,
   rootSaga,
   aboutSaga,
   authSaga,
   logoutSaga,
-  placeViewSaga,
-  userViewSaga,
-  notFoundSaga,
+  // auth required
   meSaga,
   mePlacesAddSaga,
   mePlaceEditSaga,
+  meSymbolsAddSaga,
+  placeSymbolsAddSaga,
+  placeSymbolEditSaga,
+  placeViewSaga,
+  userViewSaga,
 } from 'lib/sagas/routes'
 
 import { routerActions } from 'core/router'
@@ -51,12 +57,28 @@ export default {
     requiresAuth: true
   },
   [routerActions.PLACE_VIEW]: {
-    path: '/place/:name',
+    path: '/place/:placeTitle',
     saga: placeViewSaga
   },
   [routerActions.PLACE_EDIT]: {
     path: '/place/:name/edit',
     requiresAuth: true
+  },
+  [routerActions.PLACE_SYMBOLS_ADD]: {
+    allowedSymbolTypes: [
+      symbolTypes.PARROT
+    ],
+    path: '/place/:placeTitle/symbols/add/:symbolType',
+    requiresAuth: true,
+    saga: placeSymbolsAddSaga
+  },
+  [routerActions.PLACE_SYMBOL_EDIT]: {
+    allowedSymbolTypes: [
+      symbolTypes.PARROT
+    ],
+    path: '/place/:placeTitle/symbols/add/:symbolType',
+    requiresAuth: true,
+    saga: placeSymbolEditSaga
   },
 
   [routerActions.USER_VIEW]: {
@@ -77,7 +99,7 @@ export default {
     saga: mePlacesAddSaga
   },
   [routerActions.ME_PLACE_VIEW]: {
-    path: '/me/place/:name',
+    path: '/me/place/:placeTitle',
     requiresAuth: true
   },
   [routerActions.ME_PLACE_EDIT]: {
@@ -87,8 +109,10 @@ export default {
   },
 
   [routerActions.ME_SYMBOLS_ADD]: {
-    path: '/me/symbols/add',
-    requiresAuth: true
+    allowedSymbolTypes: [],
+    path: '/me/symbols/:name/add',
+    requiresAuth: true,
+    saga: meSymbolsAddSaga
   },
   [routerActions.ME_SYMBOL_VIEW]: {
     path: '/me/symbol/:name',

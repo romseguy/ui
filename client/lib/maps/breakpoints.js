@@ -57,3 +57,20 @@ export const PlaceFormBreakpoints = {
     widescreen: 11
   }
 }
+
+export const SymbolFormBreakpoints = {
+  label: {
+    mobile: 16,
+    tablet: 16,
+    computer: 4,
+    largeScreen: 4,
+    widescreen: 4
+  },
+  input: {
+    mobile: 15,
+    tablet: 15,
+    computer: 11,
+    largeScreen: 11,
+    widescreen: 11
+  }
+}

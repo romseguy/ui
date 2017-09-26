@@ -10,6 +10,8 @@ export const routerActions = {
   PLACES_ADD: 'PLACES_ADD_ROUTE',
   PLACE_VIEW: 'PLACE_VIEW_ROUTE',
   PLACE_EDIT: 'PLACE_EDIT_ROUTE',
+  PLACE_SYMBOLS_ADD: 'PLACE_SYMBOLS_ADD',
+  PLACE_SYMBOL_EDIT: 'PLACE_SYMBOL_EDIT',
 
   ME: 'ME_ROUTE',
   
@@ -59,10 +61,10 @@ export const routerActions = {
     payload: {
     }
   }),
-  placeViewRoute: (name) => ({
+  placeViewRoute: (placeTitle) => ({
     type: routerActions.PLACE_VIEW,
     payload: {
-      name
+      placeTitle
     }
   }),
   placeEditRoute: (name) => ({
@@ -71,7 +73,13 @@ export const routerActions = {
       name
     }
   }),
-  
+  placeSymbolsAddRoute: (name) => ({
+    type: routerActions.PLACE_SYMBOLS_ADD,
+    payload: {
+      name
+    }
+  }),
+
   userViewRoute: (name) => ({
     type: routerActions.USER_VIEW,
     payload: {
@@ -100,10 +108,10 @@ export const routerActions = {
     }
   }),
   
-  meSymbolsAddRoute: (symbolType) => ({
+  meSymbolsAddRoute: (name) => ({
     type: routerActions.ME_SYMBOLS_ADD,
     payload: {
-      symbolType
+      name: name.toLowerCase()
     }
   }),
   meSymbolViewRoute: (name) => ({

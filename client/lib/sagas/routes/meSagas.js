@@ -38,7 +38,7 @@ export function* meSaga(payload, settings) {
 
 export function* mePlaceEditSaga(payload, settings) {
   const {client, i18n, onEnter, prevRoute} = settings
-  const {name: placeTitle} = payload
+  const {placeTitle} = payload
 
   if (onEnter || ![
       routerActions.ME,
@@ -47,7 +47,6 @@ export function* mePlaceEditSaga(payload, settings) {
     yield call(setNodesFromMyPlacesSaga, client, placeTitle)
   }
 
-  // todo: 404 place
   yield call(setTitleSaga, `${i18n.t('form:place.header_edit')} ${placeTitle}`, {i18n: true})
 }
 
@@ -58,5 +57,14 @@ export function* mePlacesAddSaga(payload, settings) {
       routerActions.ME
     ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client)
+  }
+}
+
+export function* meSymbolsAddSaga(payload, settings) {
+  const {name: symbolType} = payload
+  const {currentRoute} = settings
+
+  if (!currentRoute.allowedSymbolTypes.includes(symbolType.toUpperCase())) {
+    yield put(routerActions.meRoute())
   }
 }

@@ -15,7 +15,7 @@ function HeaderTitle(props) {
     locationIconTitle,
     onEntityIconClick,
     onLocationIconClick,
-    onClick,
+    onTitleClick,
     onConnectIconClick
   } = props
 
@@ -40,16 +40,16 @@ function HeaderTitle(props) {
           </span>
       )}
 
-      {onClick && (
+      {onTitleClick && (
         <HeaderLinkRaw
           title={title}
-          onClick={onClick}
+          onClick={onTitleClick}
         >
           {children}
         </HeaderLinkRaw>
       )}
 
-      {!onClick && (
+      {!onTitleClick && (
         <span title={title}>{children}</span>
       )}
 

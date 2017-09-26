@@ -1,43 +1,52 @@
-import React, { Component } from 'react'
-import { compose, pure } from 'recompose'
+import React from 'react'
+import { compose, pure, withHandlers } from 'recompose'
 import { reduxForm } from 'redux-form'
 
-import { Form as UIForm, Loader } from 'components/layout'
+import { Form as UIForm } from 'components/layout'
 
 import SymbolFormFields from './symbolFormFields'
+import SymbolFormHeader from './symbolFormHeader'
+import SymbolFormLayout from './symbolFormLayout'
 
 
-class SymbolForm extends Component {
-  render() {
+const handlers = {
+  onSaveClick: props => event => {
     const {
-      formValues,
-      userLocation,
-      t,
-      handleSubmit,
-      onSuggestSelect
-    } = this.props
+      onSubmit,
+      handleSubmit
+    } = props
 
-    if (this.props.isLoading) {
-      return <Loader active inline="centered"/>
-    }
+    handleSubmit(event, values => onSubmit(values))
+  }
+}
 
-    let readOnly = false
+function SymbolForm(props) {
+  const {
+    isLoading,
+    isScriptLoading,
+    serverErrors,
+    ...rest
+  } = props
 
-    return (
+  const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+
+  return (
+    <SymbolFormLayout fluid>
+      <SymbolFormHeader
+        {...rest}
+      />
+
       <UIForm
-        loading={false}
-        onSubmit={handleSubmit}
+        error={hasServerErrors}
+        loading={isLoading || isScriptLoading}
       >
         <SymbolFormFields
-          formValues={formValues}
-          readOnly={readOnly}
-          t={t}
-          userLocation={userLocation}
-          onSuggestSelect={onSuggestSelect}
+          {...rest}
+          readOnly={false}
         />
       </UIForm>
-    )
-  }
+    </SymbolFormLayout>
+  )
 }
 
 export default compose(
@@ -45,5 +54,6 @@ export default compose(
     form: 'SymbolForm',
     enableReinitialize: true
   }),
+  withHandlers(handlers),
   pure
 )(SymbolForm)

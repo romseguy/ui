@@ -9,12 +9,14 @@ function ToolbarIcon(props) {
   const {
     active,
     disabled,
+    height,
     id,
     margin,
     name,
     style,
     text,
     title,
+    width,
     onClick
   } = props
 
@@ -31,9 +33,11 @@ function ToolbarIcon(props) {
     >
       {text ? text : (
         <Icon
+          height={height}
           id={id}
           name={name}
           margin={margin}
+          width={width}
         />
       )}
     </ToolbarIconLink>

@@ -24,7 +24,7 @@ import createUserPlaceMutation from 'graphql/mutations/createUserPlace.mutation.
 import updatePlaceMutation from 'graphql/mutations/updatePlace.mutation.graphql'
 import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
 import placeQuery from 'graphql/queries/place.query.graphql'
-import PlaceFormDataContainer from 'dataContainers/placeForm'
+import PlaceFormDataContainer from './placeForm.dataContainer'
 
 
 function getServerErrors(error, props) {

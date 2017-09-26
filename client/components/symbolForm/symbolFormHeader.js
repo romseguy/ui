@@ -7,19 +7,20 @@ const Content = styled(Header.Content)`
 padding: 1rem;
 `
 
-function SymbolFormHeader({routeType, routeTypes, t, title}) {
+function SymbolFormHeader(props) {
+  const {
+    isLoading,
+    t,
+    title
+  } = props
+
   let iconName = 'linkify'
   let label = ''
 
-  if (
-    routeType === routeTypes.ME_SYMBOL_EDIT
-  ) {
-    label = title === null ? t('loading') : `Modifier ${title}`
-  }
-  else if (
-    routeType === routeTypes.ME_SYMBOLS_ADD
-  ) {
-    label = t('form:symbol.header_add')
+  if (isLoading) {
+    label = t('loading')
+  } else {
+    label = title
   }
 
   return (
@@ -27,7 +28,7 @@ function SymbolFormHeader({routeType, routeTypes, t, title}) {
       as="h2"
       dividing
     >
-      <Icon name={iconName} />
+      <Icon name={iconName}/>
       <Content>
         {label}
       </Content>

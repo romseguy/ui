@@ -39,6 +39,7 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
     const settings = {
       client: yield getContext('client'),
       i18n: yield getContext('i18n'),
+      currentRoute,
       currentUser,
       onEnter: prevRouteType === '',
       prevRoute: {...routes[prevRouteType], type: prevRouteType}

@@ -7,20 +7,20 @@ const Content = styled(Header.Content)`
 padding: 1rem;
 `
 
-function PlaceFormHeader({routeType, routeTypes, t, title}) {
+function PlaceFormHeader(props) {
+  const {
+    isLoading,
+    t,
+    title
+  } = props
+
   let iconName = 'linkify'
   let label = ''
 
-  if (
-    routeType === routeTypes.PLACE_EDIT ||
-    routeType === routeTypes.ME_PLACE_EDIT
-  ) {
-    label = title ? title : t('loading')
-  }
-  else if (
-    routeType === routeTypes.ME_PLACES_ADD
-  ) {
-    label = t('form:place.header_add')
+  if (isLoading) {
+    label = t('loading')
+  } else {
+    label = title
   }
 
   return (
@@ -28,7 +28,7 @@ function PlaceFormHeader({routeType, routeTypes, t, title}) {
       as="h2"
       dividing
     >
-      <Icon name={iconName} />
+      <Icon name={iconName}/>
       <Content>
         {label}
       </Content>

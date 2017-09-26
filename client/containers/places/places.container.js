@@ -8,7 +8,9 @@ const handlers = {
     const {center, zoom, bounds, initial} = data
     const {mapActions} = props
 
-    mapActions.setCenter(center)
+    if (Array.isArray(center) && center.length === 2) {
+      mapActions.setCenter(center)
+    }
   },
 
   onNodeAnchorClick: props => node => {

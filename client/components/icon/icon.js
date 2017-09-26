@@ -162,7 +162,16 @@ function Icon(props) {
   const src = icons[name]
 
   if (src) {
-    return <Image src={src} width={width} height={height} {...rest}/>
+    return (
+      <Image
+        src={src}
+        width={width}
+        height={height}
+        style={{
+          margin: props.margin
+        }}
+      />
+    )
   } else if (name) {
     return <UIIcon name={name} {...rest}/>
   }

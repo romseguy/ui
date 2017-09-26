@@ -15,20 +15,13 @@ const getAnchor = createSelector(
   (latitude, longitude) => [latitude, longitude]
 )
 
-const getMapCenter = createSelector(
-  r => r.center,
-  r => r.userLocation,
-  (center, userLocation) => center.length ? center : [userLocation.lat, userLocation.lng]
-)
-
-
 class MapManager extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
       zoom: 14,
-      provider: 'outdoors'
+      provider: 'osm'
     }
   }
 
@@ -56,7 +49,6 @@ class MapManager extends Component {
       mapWidth,
       nodes,
       t,
-      userLocation,
       onNodeAnchorClick,
       onNodeAnchorMouseOver,
       onNodeAnchorMouseOut,
@@ -74,7 +66,7 @@ class MapManager extends Component {
         <MapTooltips t={t}/>
 
         <Map
-          center={getMapCenter({center, userLocation})}
+          center={center}
           zoom={zoom}
           provider={providers[provider]}
           onBoundsChanged={this.handleBoundsChange}

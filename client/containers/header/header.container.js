@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { graphql } from 'react-apollo'
-import { getContext } from 'recompose'
+import { compose, getContext, pure, withHandlers } from 'recompose'
 import { change } from 'redux-form'
 import { connect } from 'react-redux'
-import { compose, pure } from 'recompose'
 
+import { query } from 'helpers/apollo'
 import geo from 'lib/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'lib/api/geo'
 import modalTypes from 'lib/maps/modalTypes'
@@ -25,21 +25,13 @@ import { NoPadCol as Col, Dropdown, Grid, Menu } from 'components/layout'
 import { HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
 
 
-class HeaderContainer extends Component {
-  componentDidMount() {
-    window.addEventListener('resize', this.handleResize)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
-  }
-
-  handleConnectIconClick = event => {
+const handlers = {
+  onConnectIconClick: props => event => {
     // todo: route /me/place/:name/connect
     // todo: check wheter user is connected to the place already and display unlinkify icon -> confirm modal -> delete userplace
-  }
+  },
 
-  handleLocationIconClick = event => {
+  onLocationIconClick: props => event => {
     const {
       client,
       routePayload,
@@ -48,7 +40,7 @@ class HeaderContainer extends Component {
       setCenter,
       userLocation,
       onLocationIconClick
-    } = this.props
+    } = props
 
     if ([routerActions.ROOT].includes(routeType)) {
       setCenter([userLocation.lat, userLocation.lng])
@@ -58,10 +50,15 @@ class HeaderContainer extends Component {
         routerActions.ME_PLACE_VIEW,
         routerActions.PLACE_VIEW
       ].includes(routeType) && routePayload.name) {
-      const {name: placeName} = routePayload
-      const {place} = client.readQuery({
+      const {placeTitle} = routePayload
+      console.log('hein')
+      const {place} = query({
+        client,
         query: placeQuery,
-        variables: {title: placeName},
+        variables: {title: placeTitle}
+      }, {
+        cache: true,
+        from: 'handleLocationIconClick'
       })
 
       setCenter([place.latitude, place.longitude])
@@ -71,13 +68,9 @@ class HeaderContainer extends Component {
       setCenter([userLocation.lat, userLocation.lng])
       routes.rootRoute()
     }
-  }
+  },
 
-  handleResize = () => {
-    this.forceUpdate()
-  }
-
-  handleTitleClick = event => {
+  onTitleClick: props => event => {
     const {
       change,
       routeType,
@@ -88,7 +81,7 @@ class HeaderContainer extends Component {
       setModal,
       t,
       userLocation
-    } = this.props
+    } = props
 
     if ([routerActions.ROOT].includes(routeType)) {
       const modalComponentProps = {
@@ -134,8 +127,26 @@ class HeaderContainer extends Component {
       setModal(modalTypes.SET_LOCATION, modalComponentProps, {basic: true, closeIcon: null, open: true, size: 'small'})
     }
   }
+}
+
+class HeaderContainer extends Component {
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  }
+
+  handleResize = () => {
+    this.forceUpdate()
+  }
 
   render() {
+    // this is why we use forceUpdate
+    const isMobile = window.currentBreakpoint === sizeTypes.MOBILE
+    const isTablet = window.currentBreakpoint === sizeTypes.TABLET
+
     const {
       city,
       currentUser,
@@ -143,12 +154,12 @@ class HeaderContainer extends Component {
       routePayload,
       routeType,
       routes,
-      t
+      t,
+      ...rest
     } = this.props
 
     const monadIcon = <Icon name="monad" height={16} width={16}/>
     const placeIcon = <Icon name="place" height={16} width={16}/>
-    const parrotIcon = <TextIcon alt="Perroquet" name="parrot" title="Perroquet"/>
 
     let connectIcon = null
     let connectIconTitle = t('header:connect.title.place')
@@ -156,12 +167,8 @@ class HeaderContainer extends Component {
     let entityIconTitle = ''
     let locationIcon = <Icon name="location arrow"/>
     let locationIconTitle = t('header:location.title.default')
-    let {title} = this.props
+    let {title, onTitleClick} = this.props
     let subtitle = ''
-
-    let onLocationIconClick = this.handleLocationIconClick
-    let onTitleClick = this.handleTitleClick
-    let onConnectIconClick = this.handleConnectIconClick
 
     if ([
         routerActions.ME,
@@ -181,14 +188,17 @@ class HeaderContainer extends Component {
       entityIcon = placeIcon
       entityIconTitle = t('header:entityIcon.title.person') + ` ${routePayload.name}`
       onTitleClick = null
+      title = routePayload.name
     } else if ([
-        routerActions.PLACE_VIEW
+        routerActions.PLACE_VIEW,
+        routerActions.PLACE_SYMBOLS_ADD
       ].includes(routeType)) {
       connectIcon = <Icon name="linkify"/>
       entityIcon = placeIcon
-      entityIconTitle = t('header:entityIcon.title.place') + ` ${routePayload.name}`
+      entityIconTitle = t('header:entityIcon.title.place') + ` ${routePayload.placeTitle}`
       locationIconTitle = t('header:location.title.place')
       onTitleClick = null
+      title = routePayload.placeTitle
     } else {
       entityIcon = null
 
@@ -203,9 +213,6 @@ class HeaderContainer extends Component {
         subtitle = t('header:title')
       }
     }
-
-    const isMobile = window.currentBreakpoint === sizeTypes.MOBILE
-    const isTablet = window.currentBreakpoint === sizeTypes.TABLET
 
     return (
       <HeaderGrid
@@ -239,9 +246,7 @@ class HeaderContainer extends Component {
                 locationIcon={locationIcon}
                 locationIconTitle={locationIconTitle}
                 title={subtitle}
-                onLocationIconClick={onLocationIconClick}
-                onClick={onTitleClick}
-                onConnectIconClick={onConnectIconClick}
+                {...rest}
               >
                 {title}
               </HeaderTitle>
@@ -320,5 +325,6 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   graphql(logoutMutation, logoutMutationConfig),
   getContext({client: PropTypes.object}),
+  withHandlers(handlers),
   pure
 )(HeaderContainer)

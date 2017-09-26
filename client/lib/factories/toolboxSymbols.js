@@ -12,13 +12,13 @@ const abstractToolboxSymbol = {
 }
 
 export const toolboxSymbols = {
-  [symbolTypes.NOTIFICATION]: ({t}) => ({
+  [symbolTypes.PARROT]: ({t}) => ({
     ...abstractToolboxSymbol,
-    iconName: 'notification',
-    iconNameSelected: 'notification',
-    label: t('canvas:toolboxes.symbols.notification.label'),
-    name: t('canvas:symbols.notification.new'),
-    tooltipName: getSymbolsTooboxTooltipName({type: symbolTypes.NOTIFICATION}),
-    type: symbolTypes.NOTIFICATION,
+    iconName: 'parrot',
+    iconNameSelected: 'parrot',
+    label: t('canvas:toolboxes.symbols.parrot.label'),
+    name: t('canvas:symbols.parrot.new'),
+    tooltipName: getSymbolsTooboxTooltipName({type: symbolTypes.PARROT}),
+    type: symbolTypes.PARROT,
   })
 }

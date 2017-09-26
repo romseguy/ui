@@ -24,8 +24,12 @@ class PlaceFormDataContainer extends Component {
       routeType
     } = nextProps
 
-    if (!isLoading && routeType === routerActions.ME_PLACE_EDIT && !place) {
-      routes.meRoute()
+    if (!isLoading) {
+      if ([routerActions.ME_PLACE_EDIT].includes(routeType)) {
+        if (!place) {
+          routes.notFoundRoute()
+        }
+      }
     }
   }
 
@@ -34,10 +38,18 @@ class PlaceFormDataContainer extends Component {
   }
 
   render() {
+    const {
+      ...props
+    } = this.props
+
+    const {
+      ...state
+    } = this.state
+
     return (
       <PlaceForm
-        {...this.props}
-        {...this.state}
+        {...props}
+        {...state}
         routeTypes={routerActions}
         setIsScriptLoading={this.setIsScriptLoading}
       />
@@ -50,7 +62,7 @@ const placeQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        title: props.routePayload.name || ''
+        title: props.routePayload.placeTitle || ''
       }
     }
   },

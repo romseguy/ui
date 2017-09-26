@@ -3,13 +3,13 @@ import scriptLoader from 'react-async-script-loader'
 import { compose } from 'recompose'
 import { Field } from 'redux-form'
 
-import { PlaceFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
 import keepCities from 'helpers/keepCities'
 import { required } from 'helpers/form/validators'
+import { PlaceFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
 
 import GeosuggestField from 'components/geosuggestField'
 import InputField from 'components/inputField'
-import { Grid, Button, Row, NoPadCol as Col, Message } from 'components/layout'
+import { Button, NoPadCol as Col, Grid, Message, Row } from 'components/layout'
 import MapField from 'components/mapField'
 
 
