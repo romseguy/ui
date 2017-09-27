@@ -6,8 +6,9 @@ import { required } from 'helpers/form/validators'
 
 import {
   Button,
-  NoPadCol as Col,
   Grid,
+  Message,
+  NoPadCol as Col,
   Row
 } from 'components/layout'
 import SelectField from 'components/selectField'
@@ -16,7 +17,8 @@ import SelectField from 'components/selectField'
 function PlaceFormSelectFields(props) {
   const {
     disconnectedPlaces,
-    formValues,
+    hasServerErrors,
+    serverErrors,
     submitting,
     t,
     valid,
@@ -43,6 +45,26 @@ function PlaceFormSelectFields(props) {
         }) : []}
         validate={[required({msg: t('errors:required')})]}
       />
+
+      {hasServerErrors && (
+        <Row>
+          <Col width={16}>
+            <Message
+              size="tiny"
+              error
+            >
+              <Message.Header>{t('errors:place.fixForm')}</Message.Header>
+              <Message.List>
+                {serverErrors.map(({message}, i) => (
+                  <Message.Item key={`serverError-${i}`}>
+                    {message}
+                  </Message.Item>
+                ))}
+              </Message.List>
+            </Message>
+          </Col>
+        </Row>
+      )}
 
       <Button
         disabled={submitting || !valid}

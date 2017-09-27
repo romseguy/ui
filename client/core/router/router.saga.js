@@ -15,7 +15,6 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
   const currentRoute = routes[routeType]
 
   if (routeType === NOT_FOUND) {
-    yield put(routerActions.notFoundRoute())
     return
   }
 
@@ -27,7 +26,7 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
 
   const currentUser = yield call(getCurrentUserSaga)
 
-  if (currentRoute.requiresAuth) {
+  if (currentRoute.requiresAuth !== false) {
     if (!currentUser) {
       yield put(routerActions.authRoute())
       return

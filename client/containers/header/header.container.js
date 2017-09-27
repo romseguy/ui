@@ -51,7 +51,6 @@ const handlers = {
         routerActions.PLACE_VIEW
       ].includes(routeType) && routePayload.name) {
       const {placeTitle} = routePayload
-      console.log('hein')
       const {place} = query({
         client,
         query: placeQuery,

@@ -7,16 +7,10 @@ import CanvasNode from './canvasNode'
 
 function DraggableCanvasNode(props) {
   const {
-    node,
     connectDragSource,
-    currentMode,
-    foreignObjectSupport,
     isDragging,
-    readOnly,
-    onAnchorClick,
-    onAnchorMouseOver,
-    onAnchorMouseOut,
-    onHeaderClick
+    node,
+    ...rest
   } = props
 
   if (isDragging) {
@@ -26,14 +20,8 @@ function DraggableCanvasNode(props) {
   let content = (
     <g transform={`translate(${node.x}, ${node.y})`}>
       <CanvasNode
+        {...rest}
         node={node}
-        currentMode={currentMode}
-        foreignObjectSupport={foreignObjectSupport}
-        readOnly={readOnly}
-        onAnchorClick={onAnchorClick}
-        onAnchorMouseOver={onAnchorMouseOver}
-        onAnchorMouseOut={onAnchorMouseOut}
-        onHeaderClick={onHeaderClick}
       />
     </g>
   )

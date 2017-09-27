@@ -16,6 +16,7 @@ import { mapActions, getMapCenter, getMapNodes, getMapNodesLoading } from 'core/
 import { routerActions } from 'core/router'
 import { getUserLocation } from 'core/settings'
 
+import Icon from 'components/icon'
 import { Loader } from 'components/layout'
 
 
@@ -38,6 +39,7 @@ class MainPanelContainer extends Component {
       canvasWidth -= 30
     }
     else if (currentBreakpoint === sizeTypes.COMPUTER) {
+      canvasWidth -= 30
     }
 
     return {
@@ -241,6 +243,7 @@ class MainPanelContainer extends Component {
   render() {
     const {
       container,
+      error,
       isLoading,
       ...props
     } = this.props
@@ -255,6 +258,15 @@ class MainPanelContainer extends Component {
       return (
         <div style={{minHeight: mapHeight}}>
           <Loader active inline="centered" style={{position: 'absolute', top: mapHeight / 2, left: mapWidth / 2}}/>
+        </div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div style={{display: 'table-cell', height: mapHeight, textAlign: 'center', verticalAlign: 'middle', width: mapWidth}}>
+          <h1><Icon name="parrot" height={32}/> 404</h1>
+          <p>{error}.</p>
         </div>
       )
     }

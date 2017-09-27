@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { compose, getContext, pure } from 'recompose'
 
@@ -17,31 +17,29 @@ import Router from 'containers/router'
 import { Layout } from 'components/layout'
 
 
-class App extends Component {
-  render() {
-    const {
-      ...props
-    } = this.props
+function App(props) {
+  const {
+    ...rest
+  } = props
 
-    return (
-      <div>
-        <Helmet/>
+  return (
+    <div>
+      <Helmet/>
 
-        <Layout
-          header={
-            <Header {...props}/>
-          }
-          footer={
-            <Footer/>
-          }
-        >
-          <Router {...props}/>
-        </Layout>
+      <Layout
+        header={
+          <Header {...rest}/>
+        }
+        footer={
+          <Footer/>
+        }
+      >
+        <Router {...rest}/>
+      </Layout>
 
-        <Modals/>
-      </div>
-    )
-  }
+      <Modals/>
+    </div>
+  )
 }
 
 const mapStateToProps = state => {

@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
+import { NOT_FOUND } from 'redux-first-router'
+
+import debug from 'helpers/debug'
+import routes from 'lib/maps/routes'
 
 import { routerActions, getPayload, getPrevRouteType, getRouteType } from 'core/router'
-import routes from 'lib/maps/routes'
 
 import MainPanelContainer from 'containers/mainPanel'
 import MeContainer from 'containers/me'
@@ -23,10 +26,6 @@ import { MapManager } from 'components/map'
 import SidePanel from 'components/sidePanel'
 
 
-function Route404({t}) {
-  return <div>{t('not_found')}</div>
-}
-
 class RouterContainer extends Component {
   render() {
     const {
@@ -39,8 +38,13 @@ class RouterContainer extends Component {
 
     let {routeType} = this.props
 
-    if (routeType === routerActions.NOT_FOUND) {
-      return <Route404 t={t}/>
+    if (routeType === NOT_FOUND) {
+      return (
+        <MainPanelContainer
+          {...this.props}
+          error={t('not_found')}
+        />
+      )
     }
 
     const {
@@ -120,7 +124,7 @@ class RouterContainer extends Component {
       [
         routerActions.ME_PLACE_VIEW,
         routerActions.PLACE_SYMBOLS_ADD,
-        routerActions.PLACE_VIEW
+        routerActions.PLACE_VIEW,
       ].includes(routeType)
     ) {
       container = PlaceContainer
@@ -134,6 +138,8 @@ class RouterContainer extends Component {
       container = UserContainer
       control = CanvasManager
     }
+
+    debug('router.container.routeType', routeType)
 
     return (
       <div>

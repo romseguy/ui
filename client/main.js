@@ -9,8 +9,9 @@ import configureRender from 'setup/react'
 import configureWindow from 'setup/window'
 import Root from 'setup/react/root'
 
-import reducers from 'core/reducers'
 import routes from 'lib/maps/routes'
+
+import reducers from 'core/reducers'
 import rootSaga from 'core/saga'
 
 

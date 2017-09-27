@@ -6,7 +6,7 @@ import { compose, pure, withHandlers } from 'recompose'
 import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
 
-import UserDataContainer from 'dataContainers/user'
+import UserDataContainer from './user.dataContainer'
 
 
 const handlers = {

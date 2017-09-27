@@ -33,65 +33,20 @@ const handlers = {
 
 function PlaceForm(props) {
   const {
-    disconnectedPlaces,
-    formValues,
+    hasServerErrors,
     isLoading,
     isScriptLoading,
-    routeType,
-    routeTypes,
-    serverErrors,
-    setIsScriptLoading,
-    submitting,
-    t,
-    title,
-    valid,
-    userLocation,
-    onMapClick,
-    onSaveClick,
-    onSuggestSelect,
-    onViewClick
+    showFields,
+    showSelectFields,
+    showSelector,
+    ...rest
   } = props
 
-  const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
-  const showSelectFields = !isLoading && formValues.action === 'select'
-
-  let showFields = false
-  let showSelector = false
-
-  if (formValues.action === 'create') {
-    showFields = true
-    showSelector = true
-  }
-  else if (formValues.action === 'select') {
-    showFields = false
-    showSelector = true
-  }
-  else {
-    if (routeType === routeTypes.ME_PLACE_EDIT) {
-      showSelector = false
-      showFields = true
-    } else if (routeType === routeTypes.ME_PLACES_ADD) {
-      if (isLoading) {
-        showSelector = true
-      } else if (isScriptLoading) {
-        showFields = true
-      }
-      else {
-        if (disconnectedPlaces) {
-          showSelector = true
-        } else {
-          showFields = true
-        }
-      }
-    }
-  }
 
   return (
     <PlaceFormLayout fluid>
       <PlaceFormHeader
-        isLoading={isLoading}
-        t={t}
-        title={title}
+        {...rest}
       />
 
       <UIForm
@@ -99,35 +54,25 @@ function PlaceForm(props) {
         loading={isLoading || isScriptLoading}
       >
         {showSelector && (
-          <PlaceFormSelector t={t}/>
+          <PlaceFormSelector
+            {...rest}
+          />
         )}
 
         {showSelectFields && (
           <PlaceFormSelectFields
-            disconnectedPlaces={disconnectedPlaces}
-            formValues={formValues}
-            submitting={submitting}
-            t={t}
-            valid={valid}
-            onSaveClick={onSaveClick}
-            onViewClick={onViewClick}
+            {...rest}
+            hasServerErrors={hasServerErrors}
           />
         )}
 
         {showFields && (
           <PlaceFormFields
-            formValues={formValues}
+            {...rest}
             hasServerErrors={hasServerErrors}
+            isLoading={isLoading}
+            isScriptLoading={isScriptLoading}
             readOnly={false}
-            serverErrors={serverErrors}
-            setIsScriptLoading={setIsScriptLoading}
-            submitting={submitting}
-            t={t}
-            valid={valid}
-            userLocation={userLocation}
-            onMapClick={onMapClick}
-            onSaveClick={onSaveClick}
-            onSuggestSelect={onSuggestSelect}
           />
         )}
       </UIForm>

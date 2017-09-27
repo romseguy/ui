@@ -28,7 +28,13 @@ class PlaceFormFields extends Component {
     setIsScriptLoading(true)
   }
 
-  componentWillReceiveProps({isScriptLoaded, isScriptLoadSucceed, setIsScriptLoading}) {
+  componentWillReceiveProps(nextProps) {
+    const {isLoading, isScriptLoaded, isScriptLoadSucceed, setIsScriptLoading} = nextProps
+
+    if (this.props.isLoading && !isLoading) {
+      this.setState({center: this.getMapCenter(nextProps)})
+    }
+
     if (isScriptLoaded) { // script finished loading
       setIsScriptLoading(false)
       this.setState({isLoading: false})
@@ -41,7 +47,7 @@ class PlaceFormFields extends Component {
     }
   }
 
-  getMapCenter(props = this.props) {
+  getMapCenter(props) {
     const {
       formValues,
       userLocation
@@ -78,7 +84,6 @@ class PlaceFormFields extends Component {
 
   render() {
     const {
-      formValues,
       hasServerErrors,
       isScriptLoading,
       readOnly,

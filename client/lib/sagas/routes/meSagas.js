@@ -25,15 +25,16 @@ function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
 }
 
 export function* meSaga(payload, settings) {
-  const {client, onEnter, prevRoute} = settings
+  const {client, i18n, onEnter, prevRoute} = settings
 
   if (onEnter || ![
       routerActions.ME_PLACE_EDIT,
-      routerActions.ME_PLACE_VIEW,
       routerActions.ME_PLACES_ADD
     ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
+
+  yield call(setTitleSaga, i18n.t('my_profile'), {i18n: true})
 }
 
 export function* mePlaceEditSaga(payload, settings) {
@@ -47,17 +48,19 @@ export function* mePlaceEditSaga(payload, settings) {
     yield call(setNodesFromMyPlacesSaga, client, placeTitle)
   }
 
-  yield call(setTitleSaga, `${i18n.t('form:place.header_edit')} ${placeTitle}`, {i18n: true})
+  yield call(setTitleSaga, `${i18n.t('form:place.title_edit')} ${placeTitle}`, {i18n: true})
 }
 
 export function* mePlacesAddSaga(payload, settings) {
-  const {client, onEnter, prevRoute} = settings
+  const {client, i18n, onEnter, prevRoute} = settings
 
   if (onEnter || ![
       routerActions.ME
     ].includes(prevRoute.type)) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
+
+  yield call(setTitleSaga, i18n.t('form:place.title_add'), {i18n: true})
 }
 
 export function* meSymbolsAddSaga(payload, settings) {

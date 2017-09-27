@@ -15,7 +15,7 @@ export function* modalSaga() {
             const prevRouteType = yield select(getPrevRouteType)
             const prevRoute = routes[prevRouteType]
 
-            if(prevRouteType === '' || prevRouteType === routerActions.NOT_FOUND || prevRoute.requiresAuth) {
+            if(prevRouteType === '' || prevRouteType === NOT_FOUND || prevRoute.requiresAuth) {
               yield put(routerActions.rootRoute())
               return
             }

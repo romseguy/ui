@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { compose, pure } from 'recompose'
 
+import debug from 'helpers/debug'
+
 import { routerActions } from 'core/router'
 
 import PlaceForm from 'components/placeForm'
@@ -27,6 +29,7 @@ class PlaceFormDataContainer extends Component {
     if (!isLoading) {
       if ([routerActions.ME_PLACE_EDIT].includes(routeType)) {
         if (!place) {
+          debug('place 404')
           routes.notFoundRoute()
         }
       }
@@ -39,19 +42,65 @@ class PlaceFormDataContainer extends Component {
 
   render() {
     const {
+      disconnectedPlaces,
+      formValues,
+      isLoading,
+      routeType,
+      serverErrors,
       ...props
     } = this.props
 
     const {
+      isScriptLoading,
       ...state
     } = this.state
+
+    const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
+    let showFields = false
+    const showSelectFields = !isLoading && formValues.action === 'select'
+    let showSelector = false
+
+    if (formValues.action === 'create') {
+      showFields = true
+      showSelector = true
+    }
+    else if (formValues.action === 'select') {
+      showFields = false
+      showSelector = true
+    }
+    else {
+      if (routeType === routerActions.ME_PLACE_EDIT) {
+        showSelector = false
+        showFields = true
+      } else if (routeType === routerActions.ME_PLACES_ADD) {
+        if (isLoading) {
+          showSelector = true
+        } else if (isScriptLoading) {
+          showFields = true
+        }
+        else {
+          if (disconnectedPlaces) {
+            showSelector = true
+          } else {
+            showFields = true
+          }
+        }
+      }
+    }
 
     return (
       <PlaceForm
         {...props}
         {...state}
-        routeTypes={routerActions}
+        formValues={formValues}
+        hasServerErrors={hasServerErrors}
+        isLoading={isLoading}
+        isScriptLoading={isScriptLoading}
+        serverErrors={serverErrors}
         setIsScriptLoading={this.setIsScriptLoading}
+        showFields={showFields}
+        showSelectFields={showSelectFields}
+        showSelector={showSelector}
       />
     )
   }

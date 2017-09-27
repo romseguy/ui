@@ -1,3 +1,6 @@
+import { NOT_FOUND } from 'redux-first-router'
+
+
 export const routerActions = {
   ROOT: 'ROOT_ROUTE',
 
@@ -29,10 +32,8 @@ export const routerActions = {
   
   USER_VIEW: 'USER_VIEW_ROUTE',
 
-  NOT_FOUND: 'NOT_FOUND_ROUTE',
-
   notFoundRoute: () => ({
-    type: routerActions.NOT_FOUND
+    type: NOT_FOUND
   }),
 
   rootRoute: (payload) => ({
@@ -101,10 +102,10 @@ export const routerActions = {
     type: routerActions.ME_PLACE_VIEW,
     payload
   }),
-  mePlaceEditRoute: (name) => ({
+  mePlaceEditRoute: (placeTitle) => ({
     type: routerActions.ME_PLACE_EDIT,
     payload: {
-      name
+      placeTitle
     }
   }),
   

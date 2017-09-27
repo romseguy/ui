@@ -3,7 +3,7 @@ export function getCanvasNodeAnchorTooltipName(modeKey, node) {
 }
 
 export function getCanvasNodeHeaderTooltipName({isNew, mine}) {
-  return `canvas-node__header${mine && '--mine'}${isNew && '--isNew'}`
+  return `canvas-node__header${mine === true ? '--mine' : ''}${isNew === true ? '--isNew' : ''}`
 }
 
 export function getMapNodeAnchorTooltipName({type}) {

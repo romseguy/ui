@@ -43,14 +43,7 @@ function* setNodesFromPlacesSaga(client) {
 export function* rootSaga(payload, settings) {
   const {client, onEnter, prevRoute} = settings
 
-  /*  if (onEnter || [
-   routerActions.ME,
-   routerActions.ME_PLACE_VIEW,
-   routerActions.ME_P
-   ].includes(prevRoute.type)) {*/
   yield call(setNodesFromPlacesSaga, client)
-  //}
-
   yield call(setDepartmentTitleSaga)
 }
 
@@ -115,10 +108,16 @@ export function* logoutSaga(payload, settings) {
 
 export function* placeViewSaga(payload, settings) {
   const {} = payload
-  const {client} = settings
+  const {client, prevRoute} = settings
   const placeTitle = decodeURIComponent(payload.placeTitle)
 
-  yield call(setNodesFromPlaceSaga, client, placeTitle)
+  if (![
+      routerActions.PLACE_SYMBOLS_ADD,
+      routerActions.PLACE_SYMBOL_EDIT
+    ].includes(prevRoute.type)) {
+    yield call(setNodesFromPlaceSaga, client, placeTitle)
+  }
+
   yield call(setTitleSaga, `${placeTitle}`)
 }
 
