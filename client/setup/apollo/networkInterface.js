@@ -7,8 +7,7 @@ import { authMiddleware } from './auth'
 import { errorAfterware } from './error'
 
 
-//const uri = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:4000/graphql'
-const uri = 'http://localhost:4000/graphql?locale=fr'
+const uri = `${process.env.REACT_APP_GRAPHQL_URL}?locale=fr`
 
 const apolloFetch = createApolloFetch({uri})
   .use(authMiddleware)
