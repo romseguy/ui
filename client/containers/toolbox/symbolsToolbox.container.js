@@ -3,9 +3,8 @@ import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 
-import { getRouteType } from 'core/router'
+import { getRouteType, routes } from 'core/router'
 
-import routes from 'lib/maps/routes'
 import { toolboxSymbols } from 'lib/factories'
 
 import SymbolsToolbox from 'components/symbolsToolbox'

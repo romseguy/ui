@@ -5,9 +5,8 @@ import { compose, pure, withState } from 'recompose'
 import { NOT_FOUND } from 'redux-first-router'
 
 import debug from 'helpers/debug'
-import routes from 'lib/maps/routes'
 
-import { routerActions, getPayload, getPrevRouteType, getRouteType } from 'core/router'
+import { routerActions, getPayload, getPrevRouteType, getRouteType, routes } from 'core/router'
 
 import MainPanelContainer from 'containers/mainPanel'
 import PlaceFormContainer from 'containers/placeForm'

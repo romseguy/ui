@@ -2,6 +2,8 @@ import React from 'react'
 import { NOT_FOUND } from 'redux-first-router'
 
 import symbolTypes from 'lib/maps/symbolTypes'
+
+import { routerActions } from 'core/router'
 import {
   notFoundSaga,
   rootSaga,
@@ -17,9 +19,7 @@ import {
   placeSymbolEditSaga,
   placeViewSaga,
   userViewSaga,
-} from 'lib/sagas/routes'
-
-import { routerActions } from 'core/router'
+} from 'core/router/sagas'
 
 import MeContainer from 'containers/me'
 import PlaceContainer from 'containers/place'

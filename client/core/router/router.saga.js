@@ -2,8 +2,7 @@ import { isLocationAction, NOT_FOUND } from 'redux-first-router'
 import { call, fork, getContext, put, select, spawn, take } from 'redux-saga/effects'
 import { delay } from 'redux-saga'
 
-import { getPrevRouteType } from 'core/router'
-import routes from 'lib/maps/routes'
+import { getPrevRouteType, routes } from 'core/router'
 import { getOfflineMode } from 'core/settings'
 
 import { getCurrentUserSaga } from 'lib/sagas'

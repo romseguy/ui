@@ -1,2 +1,2 @@
-one single pure function per file
-for groups, create a directory
+one single pure function exported per file
+modules go in directories

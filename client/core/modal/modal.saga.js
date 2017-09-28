@@ -1,7 +1,6 @@
 import { call, put, take, takeEvery, select } from 'redux-saga/effects'
 import modalTypes from 'lib/maps/modalTypes'
-import { routerActions, getPrevRouteType } from 'core/router'
-import routes from 'lib/maps/routes'
+import { routerActions, getPrevRouteType, routes } from 'core/router'
 import { modalActions } from './modal.actions'
 
 

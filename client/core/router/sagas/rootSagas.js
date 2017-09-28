@@ -103,7 +103,7 @@ export function* authSaga(payload, settings) {
     if (prevRoute.type === '') {
       yield put(routerActions.rootRoute())
     } else {
-      if (prevRoute.requiresAuth) {
+      if (prevRoute.requiresAuth !== false) {
         yield put(routerActions.rootRoute())
       } else {
         yield put({type: prevRoute.type})
