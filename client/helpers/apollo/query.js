@@ -14,8 +14,8 @@ async function query({client, query, variables}, {cache, from} = {}) {
 
   if (cache) {
     try {
-      log(true)
       const data = client.readQuery({query, variables})
+      log(true)
 
       return data
     } catch (e) {
@@ -26,8 +26,8 @@ async function query({client, query, variables}, {cache, from} = {}) {
     }
   }
 
+  log(false)
   const {data} = await client.query({fetchPolicy: 'network-only', query, variables})
-  log(false, data)
 
   return data
 }

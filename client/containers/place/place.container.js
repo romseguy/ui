@@ -6,6 +6,8 @@ import { compose, pure, withHandlers } from 'recompose'
 import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
 
+import { routerActions } from 'core/router'
+
 import PlaceDataContainer from './place.dataContainer'
 
 
@@ -19,15 +21,21 @@ const handlers = {
   },
 
   onCanvasClick: props => () => {
-    // NIY
-    const {onCanvasClick} = props
+    const {routes, routePayload, routeType, onCanvasClick} = props
+    const {placeViewRoute} = routes
+
+    if (routeType !== routerActions.PLACE_VIEW) {
+      placeViewRoute(routePayload.placeTitle)
+    }
 
     typeof onCanvasClick === 'function' && onCanvasClick()
   },
 
   onToolboxItemDrop: props => node => {
-    // NIY
-    const {onToolboxItemDrop} = props
+    const {routePayload, routes, onToolboxItemDrop} = props
+    const {placeSymbolsAddRoute} = routes
+
+    placeSymbolsAddRoute(routePayload.placeTitle, node.type.toLowerCase())
 
     typeof onToolboxItemDrop === 'function' && onToolboxItemDrop(node)
   },
@@ -43,14 +51,11 @@ const handlers = {
 
   onModeChange: props => key => {
     const {nodes, routePayload, routes, onModeChange} = props
-    const {placeViewRoute} = routes
 
-    Promise.all([
+/*    Promise.all([
       // todo: doUpdatePlacePlaces({nodes})
       // todo: doUpdatePlaceUsers({nodes})
-    ]).then(() => {
-      placeViewRoute(routePayload)
-    })
+    ])*/
 
     typeof onModeChange === 'function' && onModeChange(key)
   },

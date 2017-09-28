@@ -33,7 +33,7 @@ function HeaderTitle(props) {
 
       {entityIcon && !onEntityIconClick && (
         <span
-          style={{borderBottom: '1px dashed black', cursor: 'help', padding: '2px'}}
+          style={{borderBottom: '1px dashed black', cursor: 'help', marginRight: '5px', paddingBottom: '2px'}}
           title={entityIconTitle}
         >
           {entityIcon}

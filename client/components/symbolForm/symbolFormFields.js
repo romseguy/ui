@@ -15,27 +15,35 @@ class SymbolFormFields extends Component {
     const {
       formValues,
       hasServerErrors,
+      isLoading,
       isScriptLoading,
+      mine,
       prefix,
       readOnly,
       serverErrors,
       submitting,
+      t,
       valid,
       onSaveClick
     } = this.props
 
-    const t = (path, options) => {
-      if (prefix) {
-        return this.props.t(prefix + path, options)
+    const tWithPrefix = (path, options) => {
+      if (isLoading) {
+        return t('loading')
       }
 
-      return this.props.t('loading')
+      return t(prefix + path, options)
     }
 
     return (
       <Grid verticalAlign="middle">
         <Col width={16}>
-          {t('description')}
+          {mine === false && (
+            <Message
+              icon="warning sign"
+              content={tWithPrefix('.description')}
+            />
+          )}
         </Col>
 
         <Field
@@ -43,7 +51,7 @@ class SymbolFormFields extends Component {
           component={InputField}
           type="text"
           breakpoints={breakpoints}
-          label={t('fields.title')}
+          label={tWithPrefix('.fields.title')}
           ref={node => this.titleInput = node}
           withRef
           validate={[required({msg: t('errors:required')})]}
@@ -53,7 +61,7 @@ class SymbolFormFields extends Component {
           name="body"
           component={TextareaField}
           breakpoints={breakpoints}
-          label={t('fields.body')}
+          label={tWithPrefix('.fields.body')}
           ref={node => this.textareaInput = node}
           withRef
           validate={[required({msg: t('errors:required')})]}
@@ -85,8 +93,8 @@ class SymbolFormFields extends Component {
               disabled={submitting || !valid}
               positive
               onClick={onSaveClick}
-            >{
-              t('form:symbol.save')}
+            >
+              {t('form:symbol.save')}
             </Button>
           </Col>
         </Row>

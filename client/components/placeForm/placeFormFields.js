@@ -14,13 +14,10 @@ import MapField from 'components/mapField'
 
 
 class PlaceFormFields extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      center: this.getMapCenter(props),
-      isLoading: true,
-      zoom: 14
-    }
+  state = {
+    center: null,
+    isLoading: true,
+    zoom: 14
   }
 
   componentDidMount() {
@@ -29,11 +26,7 @@ class PlaceFormFields extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {isLoading, isScriptLoaded, isScriptLoadSucceed, setIsScriptLoading} = nextProps
-
-    if (this.props.isLoading && !isLoading) {
-      this.setState({center: this.getMapCenter(nextProps)})
-    }
+    const {isScriptLoaded, isScriptLoadSucceed, setIsScriptLoading} = nextProps
 
     if (isScriptLoaded) { // script finished loading
       setIsScriptLoading(false)
@@ -47,11 +40,19 @@ class PlaceFormFields extends Component {
     }
   }
 
-  getMapCenter(props) {
+  getMapCenter() {
+    const {
+      center
+    } = this.state
+
+    if (center) {
+      return center
+    }
+
     const {
       formValues,
       userLocation
-    } = props
+    } = this.props
 
     const {
       marker
@@ -97,7 +98,6 @@ class PlaceFormFields extends Component {
     } = this.props
 
     const {
-      center,
       isLoading,
       zoom
     } = this.state
@@ -110,6 +110,8 @@ class PlaceFormFields extends Component {
     if (isScriptLoading === null && process.env.NODE_ENV !== 'development') {
       return <span>{t('form:failed_loading')}</span>
     }
+
+    const center = this.getMapCenter(this.props)
 
     return (
       <Grid verticalAlign="middle">
@@ -181,7 +183,7 @@ class PlaceFormFields extends Component {
         <Row>
           <Col>
             <Button
-              disabled={submitting || !valid}
+              disabled={submitting || !valid}
               positive
               onClick={onSaveClick}
             >{

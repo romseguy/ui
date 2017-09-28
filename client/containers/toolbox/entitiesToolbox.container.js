@@ -21,7 +21,7 @@ const mapStateToProps = (state, {t}) => {
   const routeType = getRouteType(state)
 
   const entities = [
-    toolboxEntities[entityTypes.CITY]({t}),
+    //toolboxEntities[entityTypes.CITY]({t}),
     toolboxEntities[entityTypes.PLACE]({t})
   ]
 
@@ -31,7 +31,7 @@ const mapStateToProps = (state, {t}) => {
       routerActions.ME_PLACES_ADD,
       routerActions.PLACE_VIEW
     ].includes(routeType)) {
-    entities.push(toolboxEntities[entityTypes.PERSON]({t}))
+    //entities.push(toolboxEntities[entityTypes.PERSON]({t}))
   }
 
   return {

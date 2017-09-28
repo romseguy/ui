@@ -12,6 +12,18 @@ function IconChevronBottom() {
   )
 }
 
+function IconChevronLeft() {
+  return (
+    <path d="M20 30 L8 16 20 2"/>
+  )
+}
+
+function IconChevronRight() {
+  return (
+    <path d="M12 30 L24 16 12 2"/>
+  )
+}
+
 function IconChevronTop() {
   return (
     <path d="M30 20 L16 8 2 20"/>
@@ -72,6 +84,8 @@ function IconVolume() {
 
 const iconComponents = {
   'chevron-bottom': IconChevronBottom,
+  'chevron-left': IconChevronLeft,
+  'chevron-right': IconChevronRight,
   'chevron-top': IconChevronTop,
   close: IconClose,
   compose: IconCompose,

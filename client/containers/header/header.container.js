@@ -21,17 +21,18 @@ import placeQuery from 'graphql/queries/place.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
 import Icon, { TextIcon } from 'components/icon'
-import { NoPadCol as Col, Dropdown, Grid, Menu } from 'components/layout'
-import { HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
+import { Dropdown, Grid, NoPadCol as Col } from 'components/layout'
+import { HeaderDropdown, HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
 
 
 const handlers = {
   onConnectIconClick: props => event => {
+    alert('todo')
     // todo: route /me/place/:name/connect
     // todo: check wheter user is connected to the place already and display unlinkify icon -> confirm modal -> delete userplace
   },
 
-  onLocationIconClick: props => event => {
+  onLocationIconClick: props => async event => {
     const {
       client,
       routePayload,
@@ -46,15 +47,11 @@ const handlers = {
       setCenter([userLocation.lat, userLocation.lng])
       typeof onLocationIconClick === 'function' && onLocationIconClick()
     }
-    else if ([
-        routerActions.ME_PLACE_VIEW,
-        routerActions.PLACE_VIEW
-      ].includes(routeType) && routePayload.name) {
-      const {placeTitle} = routePayload
-      const {place} = query({
+    else if ([routerActions.PLACE_VIEW].includes(routeType) && routePayload.placeTitle) {
+      const {place} = await query({
         client,
         query: placeQuery,
-        variables: {title: placeTitle}
+        variables: {title: routePayload.placeTitle}
       }, {
         cache: true,
         from: 'handleLocationIconClick'
@@ -165,7 +162,7 @@ class HeaderContainer extends Component {
     let entityIcon = null
     let entityIconTitle = ''
     let locationIcon = <Icon name="location arrow"/>
-    let locationIconTitle = t('header:location.title.default')
+    let locationIconTitle = t('header:location.title.default', {city})
     let {title, onTitleClick} = this.props
     let subtitle = ''
 
@@ -176,19 +173,21 @@ class HeaderContainer extends Component {
         routerActions.ME_USERS_ADD,
         routerActions.ME_USER_EDIT
       ].includes(routeType)) {
-      title = ''
       entityIconTitle = t('header:my_profile')
 
       entityIcon = monadIcon
       onTitleClick = null
-    } else if ([
+    }
+    else if ([
         routerActions.USER_VIEW
       ].includes(routeType)) {
-      entityIcon = placeIcon
-      entityIconTitle = t('header:entityIcon.title.person') + ` ${routePayload.name}`
+      entityIcon = monadIcon
+      entityIconTitle = t('header:entityIcon.title.person') + ` ${routePayload.username}`
+      locationIcon = null
       onTitleClick = null
-      title = routePayload.name
-    } else if ([
+      title = routePayload.username
+    }
+    else if ([
         routerActions.PLACE_VIEW,
         routerActions.PLACE_SYMBOLS_ADD
       ].includes(routeType)) {
@@ -198,7 +197,8 @@ class HeaderContainer extends Component {
       locationIconTitle = t('header:location.title.place')
       onTitleClick = null
       title = routePayload.placeTitle
-    } else {
+    }
+    else {
       entityIcon = null
 
       if (city === null) {
@@ -208,7 +208,7 @@ class HeaderContainer extends Component {
         title = t('header:title')
       }
       else {
-        title = city
+        title = t('header:title_city', {city})
         subtitle = t('header:title')
       }
     }
@@ -238,6 +238,7 @@ class HeaderContainer extends Component {
               textAlign={isMobile ? 'left' : 'center'}
             >
               <HeaderTitle
+                {...rest}
                 connectIcon={connectIcon}
                 connectIconTitle={connectIconTitle}
                 entityIcon={entityIcon}
@@ -245,7 +246,7 @@ class HeaderContainer extends Component {
                 locationIcon={locationIcon}
                 locationIconTitle={locationIconTitle}
                 title={subtitle}
-                {...rest}
+                onTitleClick={onTitleClick}
               >
                 {title}
               </HeaderTitle>
@@ -258,7 +259,10 @@ class HeaderContainer extends Component {
           textAlign={isMobile ? 'left' : 'right'}
         >
           {currentUser && (
-            <HeaderLink to={routerActions.meRoute()}>
+            <HeaderLink
+              to={routerActions.meRoute()}
+              style={{marginRight: '5px'}}
+            >
               {currentUser.username}
             </HeaderLink>
           )}
@@ -271,7 +275,7 @@ class HeaderContainer extends Component {
           </HeaderLink>
 
           {currentUser ? (
-            <Dropdown
+            <HeaderDropdown
               className="right"
               pointing={true}
             >
@@ -282,7 +286,7 @@ class HeaderContainer extends Component {
                 >
                 </Dropdown.Item>
               </Dropdown.Menu>
-            </Dropdown>
+            </HeaderDropdown>
           ) : (
             <HeaderLink to={routerActions.authRoute()}>{t('header:login')}</HeaderLink>
           )}

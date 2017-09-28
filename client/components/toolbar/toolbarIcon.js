@@ -1,4 +1,5 @@
 import React from 'react'
+import {compose, pure} from 'recompose'
 import Icon from 'components/icon'
 import ToolbarIconLink from './toolbarIconLink'
 
@@ -8,13 +9,12 @@ const noop = () => {}
 function ToolbarIcon(props) {
   const {
     active,
+    children,
     disabled,
     height,
     id,
     margin,
     name,
-    style,
-    text,
     title,
     width,
     onClick
@@ -25,13 +25,9 @@ function ToolbarIcon(props) {
       active={active}
       disabled={disabled}
       onClick={disabled ? noop : onClick}
-      style={{
-        fontSize: text ? '1.5rem' : '1rem',
-        ...style
-      }}
       title={title}
     >
-      {text ? text : (
+      {children ? children : (
         <Icon
           height={height}
           id={id}
@@ -44,5 +40,5 @@ function ToolbarIcon(props) {
   )
 }
 
-export default ToolbarIcon
+export default compose(pure)(ToolbarIcon)
 

@@ -3,11 +3,11 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { compose, pure, withHandlers } from 'recompose'
 
-import { routerActions } from 'core/router'
-
 import entityTypes from 'lib/maps/entityTypes'
 import modeTypes from 'lib/maps/modeTypes'
 import symbolTypes from 'lib/maps/symbolTypes'
+
+import { routerActions } from 'core/router'
 
 import updateUserPlacesMutation from 'graphql/mutations/updateUserPlaces.mutation.graphql'
 // todo: import updateUserUsersMutation from 'graphql/mutations/updateUserUsersMutation.graphql'
@@ -59,6 +59,11 @@ const handlers = {
     const {onDeleteSelectedNode} = props
 
     typeof onDeleteSelectedNode === 'function' && onDeleteSelectedNode(node)
+  },
+
+  onDetailsClick: props => node => {
+    alert('todo')
+    // todo: CanvasManager.displaySidePanel=true
   },
 
   onEditSelectedNode: props => node => {
@@ -130,9 +135,12 @@ const handlers = {
   },
 
   onToolboxItemDrop: props => node => {
-    const {onToolboxItemDrop, routes} = props
+    const {canvasActions, routes, onToolboxItemDrop} = props
+    const {selectNode} = canvasActions
     const {mePlacesAddRoute, meSymbolsAddRoute, meUsersAddRoute} = routes
     const {type} = node
+
+    selectNode(true, node)
 
     if (type === entityTypes.PLACE) {
       mePlacesAddRoute()
@@ -153,13 +161,19 @@ class MeContainer extends Component {
     const {
       control,
       currentMode,
+      t,
       ...props
     } = this.props
+
+    const type = `${t('prefixes.profile')} ${t('my_profile')}`
+    const detailsLabel = t('canvas:buttons.details', {type: type.toLowerCase()})
 
     return React.createElement(control, {
       ...props,
       currentMode,
-      readOnly: currentMode !== modeTypes.EDIT
+      detailsLabel,
+      readOnly: currentMode !== modeTypes.EDIT,
+      t
     })
   }
 }

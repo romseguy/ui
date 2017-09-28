@@ -10,16 +10,13 @@ export const routerActions = {
   AUTH: 'AUTH_ROUTE',
   LOGOUT: 'LOGOUT_ROUTE',
 
-  PLACES_ADD: 'PLACES_ADD_ROUTE',
   PLACE_VIEW: 'PLACE_VIEW_ROUTE',
-  PLACE_EDIT: 'PLACE_EDIT_ROUTE',
   PLACE_SYMBOLS_ADD: 'PLACE_SYMBOLS_ADD',
   PLACE_SYMBOL_EDIT: 'PLACE_SYMBOL_EDIT',
 
   ME: 'ME_ROUTE',
   
   ME_PLACES_ADD: 'ME_PLACES_ADD_ROUTE',
-  ME_PLACE_VIEW: 'ME_PLACE_VIEW_ROUTE',
   ME_PLACE_EDIT: 'ME_PLACE_EDIT_ROUTE',
 
   ME_USERS_ADD: 'ME_USERS_ADD_ROUTE',
@@ -57,34 +54,24 @@ export const routerActions = {
     type: routerActions.LOGOUT
   }),
 
-  placesAddRoute: () => ({
-    type: routerActions.PLACES_ADD,
-    payload: {
-    }
-  }),
   placeViewRoute: (placeTitle) => ({
     type: routerActions.PLACE_VIEW,
     payload: {
       placeTitle
     }
   }),
-  placeEditRoute: (name) => ({
-    type: routerActions.PLACE_EDIT,
-    payload: {
-      name
-    }
-  }),
-  placeSymbolsAddRoute: (name) => ({
+  placeSymbolsAddRoute: (placeTitle, symbolType) => ({
     type: routerActions.PLACE_SYMBOLS_ADD,
     payload: {
-      name
+      placeTitle,
+      symbolType
     }
   }),
 
-  userViewRoute: (name) => ({
+  userViewRoute: (username) => ({
     type: routerActions.USER_VIEW,
     payload: {
-      name
+      username
     }
   }),
  
@@ -97,10 +84,6 @@ export const routerActions = {
     type: routerActions.ME_PLACES_ADD,
     payload: {
     }
-  }),
-  mePlaceViewRoute: (payload) => ({
-    type: routerActions.ME_PLACE_VIEW,
-    payload
   }),
   mePlaceEditRoute: (placeTitle) => ({
     type: routerActions.ME_PLACE_EDIT,

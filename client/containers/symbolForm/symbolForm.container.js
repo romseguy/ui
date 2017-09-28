@@ -79,7 +79,7 @@ const symbolFormQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        title: props.symbolName || ''
+        title: props.symbolName
       }
     }
   },

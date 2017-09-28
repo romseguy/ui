@@ -4,6 +4,8 @@
 
 - use react-apollo `graphql` hoc for queries
 
+- alter props for children unless they render presentational components only
+
 ## can:
 
 - use react lifecycle hooks

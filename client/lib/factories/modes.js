@@ -9,7 +9,7 @@ export function createModes(t) {
       disabled: t('canvas:modes.discovery.labels.disabled'),
       inactive: t('canvas:modes.discovery.labels.inactive')
     },
-    margin: '0.4rem 0.4rem 0 0'
+    margin: '0 0.4rem 0 0'
   }, {
     iconId: 'edit',
     key: modeTypes.EDIT,
@@ -18,6 +18,6 @@ export function createModes(t) {
       disabled: t('canvas:modes.edit.labels.disabled'),
       inactive: t('canvas:modes.edit.labels.inactive')
     },
-    margin: '0.4rem 0 0 0'
+    margin: '0 0 0 0'
   }]
 }

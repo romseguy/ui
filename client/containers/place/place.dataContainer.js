@@ -1,34 +1,59 @@
 import React from 'react'
 import { graphql } from 'react-apollo'
 import { compose, pure, withHandlers } from 'recompose'
+import debug from 'helpers/debug'
 import modeTypes from 'lib/maps/modeTypes'
 import roleTypes from 'lib/maps/roleTypes'
 import myPlaceQuery from 'graphql/queries/myPlace.query.graphql'
 
 
-function PlaceDataContainer(props) {
-  const {
-    control,
-    currentMode,
-    mine,
-    modes,
-    ...rest
-  } = props
+class PlaceDataContainer extends React.Component {
+  componentWillReceiveProps(nextProps) {
+    const {
+      isLoading,
+      myPlace,
+      routes
+    } = nextProps
 
-  return React.createElement(control, {
-    ...rest,
-    currentMode,
-    modes: modes.map(mode => {
-      if (mode.key === modeTypes.EDIT) {
-        return {...mode, disabled: !mine}
+    if (!isLoading) {
+      if (!myPlace) {
+        debug('place 404')
+        routes.notFoundRoute()
       }
-      return mode
-    }),
-    readOnly: currentMode !== modeTypes.EDIT
-  })
+    }
+  }
+
+  render() {
+    const {
+      control,
+      currentMode,
+      mine,
+      modes,
+      routePayload,
+      t,
+      ...rest
+    } = this.props
+
+    const type = `${t(`prefixes.place`)} ${t(`canvas:entities.place.label`)} ${routePayload.placeTitle}`
+    const detailsLabel = t('canvas:buttons.details', {type})
+
+    return React.createElement(control, {
+      ...rest,
+      currentMode,
+      detailsLabel,
+      modes: modes.map(mode => {
+        if (mode.key === modeTypes.EDIT) {
+          return {...mode, disabled: !mine}
+        }
+        return mode
+      }),
+      readOnly: currentMode !== modeTypes.EDIT,
+      t
+    })
+  }
 }
 
-const myPlaceQueryConfig = {
+const myPlaceQueryConfig = {
   options: (props) => {
     return {
       variables: {
@@ -52,6 +77,7 @@ const myPlaceQueryConfig = {
 
     if (!loading && myPlace) {
       props.mine = myPlace.role.id === roleTypes.GUARDIAN
+      props.myPlace = myPlace
     }
 
     return props

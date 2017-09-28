@@ -21,6 +21,10 @@ cursor: ${cursor};
 :hover {
   color: ${hoverColor};
 }
+
+label {
+  cursor: ${cursor};
+}
 `
 
 export default ToolbarIconLink

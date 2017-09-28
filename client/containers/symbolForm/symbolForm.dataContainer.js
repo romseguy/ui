@@ -1,24 +1,18 @@
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
-import { compose, pure } from 'recompose'
-
+import { compose, pure, withState } from 'recompose'
+import roleTypes from 'lib/maps/roleTypes'
 import { routerActions } from 'core/router'
-
 import SymbolForm from 'components/symbolForm'
-
-import placeQuery from 'graphql/queries/place.query.graphql'
+import myPlaceQuery from 'graphql/queries/myPlace.query.graphql'
 
 
 class SymbolFormDataContainer extends Component {
-  state = {
-    isScriptLoading: false
-  }
-
   componentWillReceiveProps(nextProps) {
     const {
       currentRoute,
       isLoading,
-      place,
+      myPlace,
       routePayload,
       routes,
       routeType
@@ -26,17 +20,13 @@ class SymbolFormDataContainer extends Component {
 
     if (!isLoading) {
       if ([routerActions.PLACE_SYMBOLS_ADD, routerActions.PLACE_SYMBOL_EDIT].includes(routeType)) {
-        if (!place) {
+        if (!myPlace) {
           routes.notFoundRoute()
         } else if (!currentRoute.allowedSymbolTypes.includes(routePayload.symbolType.toUpperCase())) {
           routes.notFoundRoute()
         }
       }
     }
-  }
-
-  setIsScriptLoading = (isScriptLoading) => {
-    this.setState(p => ({isScriptLoading}))
   }
 
   render() {
@@ -68,7 +58,7 @@ class SymbolFormDataContainer extends Component {
   }
 }
 
-const placeQueryConfig = {
+const myPlaceQueryConfig = {
   skip: props => {
     if (!props.routePayload.placeTitle) {
       return true
@@ -79,13 +69,13 @@ const placeQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        title: props.routePayload.placeTitle || ''
+        title: props.routePayload.placeTitle
       }
     }
   },
   props({data, ownProps}) {
     const {
-      place,
+      myPlace,
       loading
     } = data
 
@@ -95,11 +85,12 @@ const placeQueryConfig = {
 
     const props = {
       isLoading: isLoading || loading,
-      place: null
+      myPlace: null
     }
 
-    if (!loading && place) {
-      props.place = place
+    if (!loading && myPlace) {
+      props.mine = myPlace.role.id === roleTypes.GUARDIAN
+      props.myPlace = myPlace
     }
 
     return props
@@ -107,6 +98,7 @@ const placeQueryConfig = {
 }
 
 export default compose(
-  graphql(placeQuery, placeQueryConfig),
+  withState('isScriptLoading', 'setIsScriptLoading', false),
+  graphql(myPlaceQuery, myPlaceQueryConfig),
   pure
 )(SymbolFormDataContainer)

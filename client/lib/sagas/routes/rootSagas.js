@@ -12,18 +12,19 @@ import { routerActions } from 'core/router'
 import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 import placeQuery from 'graphql/queries/place.query.graphql'
 import placesQuery from 'graphql/queries/places.query.graphql'
+import userQuery from 'graphql/queries/user.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
 
 function* setNodesFromPlaceSaga(client, placeTitle) {
-  yield put(mapActions.setNodesLoading(true))
+  yield put(canvasActions.setNodesLoading(true))
 
   const {place} = yield call(query, {
     client,
     query: placeQuery,
     variables: {title: placeTitle}
   }, {
-    cache: true,
+    cache: false,
     from: 'setNodesFromPlaceSaga'
   })
 
@@ -34,10 +35,32 @@ function* setNodesFromPlaceSaga(client, placeTitle) {
 function* setNodesFromPlacesSaga(client) {
   yield put(mapActions.setNodesLoading(true))
 
-  const {places} = yield call(query, {client, query: placesQuery}, {from: '/'})
+  const {places} = yield call(query, {
+    client,
+    query: placesQuery
+    }, {
+    from: '/',
+    cache: true
+  })
 
   yield put(mapActions.setNodes(places.map((place, nodeId) => placeToNode(nodeId, place))))
   yield put(mapActions.setNodesLoading(false))
+}
+
+function* setNodesFromUserSaga(client, username) {
+  yield put(canvasActions.setNodesLoading(true))
+
+  const {user} = yield call(query, {
+    client,
+    query: userQuery,
+    variables: {username}
+  }, {
+    cache: true,
+    from: 'setNodesFromUserSaga'
+  })
+
+  yield put(canvasActions.setNodes(user.places.map((place, nodeId) => placeToNode(nodeId, place))))
+  yield put(canvasActions.setNodesLoading(false))
 }
 
 export function* rootSaga(payload, settings) {
@@ -123,7 +146,7 @@ export function* placeViewSaga(payload, settings) {
 
 export function* placeSymbolsAddSaga(payload, settings) {
   const {} = payload
-  const {client, i18n} = settings
+  const {client, i18n, prevRoute} = settings
 
   const placeTitle = decodeURIComponent(payload.placeTitle)
   const prefix = `form:symbol.${payload.symbolType.toLowerCase()}`
@@ -135,7 +158,12 @@ export function* placeSymbolsAddSaga(payload, settings) {
     }
   )
 
-  yield call(setNodesFromPlaceSaga, client, placeTitle)
+  if (![
+      routerActions.PLACE_VIEW
+    ].includes(prevRoute.type)) {
+    yield call(setNodesFromPlaceSaga, client, placeTitle)
+  }
+
   yield call(setTitleSaga, title, {i18n: true})
 }
 
@@ -158,9 +186,10 @@ export function* placeSymbolEditSaga(payload, settings) {
 }
 
 export function* userViewSaga(payload, settings) {
-  const {name: username} = payload
-  const {i18n} = settings
+  const {username} = payload
+  const {client} = settings
 
+  yield call(setNodesFromUserSaga, client, username)
   yield call(setTitleSaga, `${username}`)
 }
 

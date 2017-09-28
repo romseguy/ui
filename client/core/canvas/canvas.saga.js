@@ -77,7 +77,7 @@ function* deleteServerNodeSaga({payload}) {
         variables: {
           placeId: Number(payload.node.idServer)
         }
-      })
+      }, {from: 'deleteServerNodeSaga'})
 
       yield put(canvasActions.removeNode(payload.node))
 

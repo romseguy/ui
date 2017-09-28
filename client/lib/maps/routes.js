@@ -2,7 +2,6 @@ import React from 'react'
 import { NOT_FOUND } from 'redux-first-router'
 
 import symbolTypes from 'lib/maps/symbolTypes'
-
 import {
   notFoundSaga,
   rootSaga,
@@ -22,6 +21,14 @@ import {
 
 import { routerActions } from 'core/router'
 
+import MeContainer from 'containers/me'
+import PlaceContainer from 'containers/place'
+import PlacesContainer from 'containers/places'
+import UserContainer from 'containers/user'
+
+import { CanvasManager } from 'components/canvas'
+import { MapManager } from 'components/map'
+
 
 export default {
   [NOT_FOUND]: {
@@ -30,6 +37,8 @@ export default {
   },
 
   [routerActions.ROOT]: {
+    container: PlacesContainer,
+    control: MapManager,
     path: '/',
     saga: rootSaga,
     requiresAuth: false
@@ -58,20 +67,21 @@ export default {
     requiresAuth: false
   },
 
-  [routerActions.PLACES_ADD]: {
-    path: '/places/add'
-  },
   [routerActions.PLACE_VIEW]: {
+    allowedSymbolTypes: [
+      symbolTypes.PARROT
+    ],
+    container: PlaceContainer,
+    control: CanvasManager,
     path: '/place/:placeTitle',
     saga: placeViewSaga
-  },
-  [routerActions.PLACE_EDIT]: {
-    path: '/place/:name/edit'
   },
   [routerActions.PLACE_SYMBOLS_ADD]: {
     allowedSymbolTypes: [
       symbolTypes.PARROT
     ],
+    container: PlaceContainer,
+    control: CanvasManager,
     path: '/place/:placeTitle/symbols/add/:symbolType',
     saga: placeSymbolsAddSaga
   },
@@ -84,28 +94,35 @@ export default {
   },
 
   [routerActions.USER_VIEW]: {
-    path: '/user/:name',
+    container: UserContainer,
+    control: CanvasManager,
+    path: '/user/:username',
     saga: userViewSaga
   },
 
   [routerActions.ME]: {
+    container: MeContainer,
+    control: CanvasManager,
     path: '/me',
     saga: meSaga
   },
 
   [routerActions.ME_PLACES_ADD]: {
+    container: MeContainer,
+    control: CanvasManager,
     path: '/me/places/add',
     saga: mePlacesAddSaga
   },
-  [routerActions.ME_PLACE_VIEW]: {
-    path: '/me/place/:placeTitle',
-  },
   [routerActions.ME_PLACE_EDIT]: {
+    container: MeContainer,
+    control: CanvasManager,
     path: '/me/place/:placeTitle/edit',
     saga: mePlaceEditSaga
   },
 
   [routerActions.ME_SYMBOLS_ADD]: {
+    container: MeContainer,
+    control: CanvasManager,
     allowedSymbolTypes: [],
     path: '/me/symbols/:name/add',
     saga: meSymbolsAddSaga
@@ -114,16 +131,22 @@ export default {
     path: '/me/symbol/:name',
   },
   [routerActions.ME_SYMBOL_EDIT]: {
+    container: MeContainer,
+    control: CanvasManager,
     path: '/me/symbol/:name/edit',
   },
 
   [routerActions.ME_USERS_ADD]: {
+    container: MeContainer,
+    control: CanvasManager,
     path: '/me/users/add',
   },
   [routerActions.ME_USER_VIEW]: {
     path: '/me/user/:name',
   },
   [routerActions.ME_USER_EDIT]: {
+    container: MeContainer,
+    control: CanvasManager,
     path: '/me/user/:name/edit',
   }
 }

@@ -92,6 +92,7 @@ class PlaceFormDataContainer extends Component {
       <PlaceForm
         {...props}
         {...state}
+        disconnectedPlaces={disconnectedPlaces}
         formValues={formValues}
         hasServerErrors={hasServerErrors}
         isLoading={isLoading}
@@ -108,10 +109,17 @@ class PlaceFormDataContainer extends Component {
 
 
 const placeQueryConfig = {
+  skip: props => {
+    if (!props.routePayload.placeTitle) {
+      return true
+    }
+
+    return false
+  },
   options: (props) => {
     return {
       variables: {
-        title: props.routePayload.placeTitle || ''
+        title: props.routePayload.placeTitle
       }
     }
   },

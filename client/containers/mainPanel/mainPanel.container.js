@@ -8,6 +8,7 @@ import debug from 'helpers/debug'
 import { getCanvasNodeAnchorTooltipName } from 'helpers/tooltips'
 import { createModes, createToolboxes } from 'lib/factories'
 import modeTypes from 'lib/maps/modeTypes'
+import routes from 'lib/maps/routes'
 import sizeTypes from 'lib/maps/sizeTypes'
 import entityTypes from 'lib/maps/entityTypes'
 
@@ -226,7 +227,7 @@ class MainPanelContainer extends Component {
   }
 
   handleResize = () => {
-    this.setState(p => MainPanelContainer.getDimensions(window))
+    this.setDimensions()
   }
 
   handleNodeHeaderClick = node => {
@@ -242,19 +243,18 @@ class MainPanelContainer extends Component {
 
   render() {
     const {
-      container,
+      control,
       error,
       isLoading,
-      ...props
+      loaded
     } = this.props
 
     const {
       mapHeight,
-      mapWidth,
-      ...state,
+      mapWidth
     } = this.state
 
-    if (isLoading) {
+    if (isLoading || !loaded) {
       return (
         <div style={{minHeight: mapHeight}}>
           <Loader active inline="centered" style={{position: 'absolute', top: mapHeight / 2, left: mapWidth / 2}}/>
@@ -264,18 +264,33 @@ class MainPanelContainer extends Component {
 
     if (error) {
       return (
-        <div style={{display: 'table-cell', height: mapHeight, textAlign: 'center', verticalAlign: 'middle', width: mapWidth}}>
+        <div style={{
+          display: 'table-cell',
+          height: mapHeight,
+          textAlign: 'center',
+          verticalAlign: 'middle',
+          width: mapWidth
+        }}>
           <h1><Icon name="parrot" height={32}/> 404</h1>
           <p>{error}.</p>
         </div>
       )
     }
 
+    if (control) {
+      return React.createElement(control, {
+        ...this.props,
+        height: mapHeight
+      })
+    }
+
+    const currentRoute = routes[this.props.routeType]
+
     if (this.props.routeType === routerActions.ROOT) {
-      return React.createElement(container, {
-        ...props,
-        mapHeight,
-        mapWidth,
+      return React.createElement(currentRoute.container, {
+        ...this.props,
+        ...this.state,
+        control: currentRoute.control,
         toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
         onMapClick: this.handleMapClick,
         onNodeAnchorClick: this.handleNodeAnchorClick,
@@ -283,9 +298,10 @@ class MainPanelContainer extends Component {
       })
     }
 
-    return React.createElement(container, {
-      ...props,
-      ...state,
+    return React.createElement(currentRoute.container, {
+      ...this.props,
+      ...this.state,
+      control: currentRoute.control,
       toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
       onCanvasClick: this.handleCanvasClick,
       onDeleteSelectedNode: this.handleDeleteSelectedNode,
@@ -304,38 +320,42 @@ const mapStateToProps = (state, {routeType}) => {
   const userLocation = getUserLocation(state)
 
   const props = {
-    isLoading: userLocation.lat === null || userLocation.lng === null
+    loaded: userLocation.lat !== null && userLocation.lng !== null
   }
 
   // control is a map
   if ([routerActions.ROOT].includes(routeType)) {
     const center = getMapCenter(state)
     const nodes = getMapNodes(state)
+    const nodesLoading = getMapNodesLoading(state)
 
-    props.isLoading = props.isLoading || getMapNodesLoading(state) || center === null
+    props.loaded = props.loaded && !nodesLoading && center !== null
 
-    if (!props.isLoading) {
-      props.center = center
+    if (!nodesLoading) {
       props.nodes = nodes
+    }
+
+    if (center) {
+      props.center = center
     }
   }
   // control is a canvas
   else {
     const nodes = getCanvasNodes(state)
-    const isLoading = getCanvasNodesLoading(state)
+    const nodesLoading = getCanvasNodesLoading(state)
     const selectedNodeIds = getSelectedNodeIds(state)
 
-    props.isLoading = props.isLoading || isLoading
+    props.loaded = props.loaded && !nodesLoading
 
-    if (!isLoading) {
+    if (!nodesLoading) {
       props.nodes = nodes
-    }
 
-    if (selectedNodeIds.length > 0) {
-      props.selectedNodeIds = selectedNodeIds
+      if (selectedNodeIds.length > 0) {
+        props.selectedNodeIds = selectedNodeIds
 
-      if (selectedNodeIds.length === 1) {
-        props.selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
+        if (selectedNodeIds.length === 1) {
+          props.selectedNode = nodes.find(node => node.id === selectedNodeIds[0])
+        }
       }
     }
   }

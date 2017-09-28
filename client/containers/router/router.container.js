@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
-import { compose, pure } from 'recompose'
+import { compose, pure, withState } from 'recompose'
 import { NOT_FOUND } from 'redux-first-router'
 
 import debug from 'helpers/debug'
@@ -10,142 +10,103 @@ import routes from 'lib/maps/routes'
 import { routerActions, getPayload, getPrevRouteType, getRouteType } from 'core/router'
 
 import MainPanelContainer from 'containers/mainPanel'
-import MeContainer from 'containers/me'
-import PlaceContainer from 'containers/place'
 import PlaceFormContainer from 'containers/placeForm'
-import PlacesContainer from 'containers/places'
-import SymbolForm from 'containers/symbolForm'
-import UserContainer from 'containers/user'
-import UserForm from 'containers/userForm'
+import SymbolFormContainer from 'containers/symbolForm'
+import UserFormContainer from 'containers/userForm'
 
 import About from 'components/about'
 import Tutorial from 'components/tutorial'
-import { CanvasManager } from 'components/canvas'
 import { Loader } from 'components/layout'
-import { MapManager } from 'components/map'
 import SidePanel from 'components/sidePanel'
 
 
-class RouterContainer extends Component {
+class RouterContainer extends React.Component {
+  state = {
+    isLoading: false
+  }
+
+  componentDidUpdate(/*prevProps, prevState*/) {
+    this.setIsLoading(false)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.routeType !== nextProps.routeType) {
+      this.setIsLoading(true)
+    }
+  }
+
+  setIsLoading(isLoading) {
+    if (this.state.isLoading !== isLoading) {
+      this.setState(p => ({isLoading}))
+    }
+  }
+
   render() {
     const {
       currentRoute = {},
       currentUser,
       prevRouteType,
-      prevRoute,
+      prevRoute = {},
+      routeType,
       t
     } = this.props
 
-    let {routeType} = this.props
+    const props = {...this.props, ...this.state}
 
     if (routeType === NOT_FOUND) {
       return (
         <MainPanelContainer
-          {...this.props}
+          {...props}
           error={t('not_found')}
         />
       )
     }
 
-    const {
-      requiresAuth
-    } = currentRoute
-
-    if (requiresAuth && routeType !== routerActions.AUTH && !currentUser) {
+    if (routeType !== routerActions.AUTH && !currentUser && currentRoute.requiresAuth !== false) {
       return <Loader indeterminate/>
     }
 
     if (routeType === routerActions.AUTH) {
-      if (prevRouteType === '') {
-        routeType = routerActions.ROOT
-      } else if (prevRoute.requiresAuth) {
-        routeType = routerActions.ROOT
-      } else {
-        routeType = prevRouteType
-      }
-    }
-
-    if (routeType === routerActions.ABOUT) {
-      return <About {...this.props}/>
-    }
-    else if (routeType === routerActions.TUTORIAL) {
       return (
-        <Tutorial
-          {...this.props}
-          routes={routerActions}
+        <MainPanelContainer
+          {...props}
+          routeType={prevRoute.requiresAuth === false ? prevRouteType : routerActions.ROOT}
         />
       )
+    }
+    else if (routeType === routerActions.LOGOUT) {
+      return null
+    }
+
+    let control = null
+
+    if (routeType === routerActions.ABOUT) {
+      control = About
+    }
+    else if (routeType === routerActions.TUTORIAL) {
+      control = <Tutorial {...props} routes={routerActions}/>
     }
 
     let sidePanelEl = null
 
     if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
-      sidePanelEl = <PlaceFormContainer {...this.props} routeType={routeType}/>
+      sidePanelEl = <PlaceFormContainer {...props} routeType={routeType}/>
     }
-    if ([
+    else if ([
         routerActions.ME_SYMBOLS_ADD,
         routerActions.ME_SYMBOL_EDIT,
         routerActions.PLACE_SYMBOLS_ADD
       ].includes(routeType)) {
-      sidePanelEl = <SymbolForm {...this.props}/>
+      sidePanelEl = <SymbolFormContainer {...props}/>
     }
     else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
-      sidePanelEl = <UserForm {...this.props}/>
+      sidePanelEl = <UserFormContainer {...props}/>
     }
-
-    let container = null
-    let control = null
-
-    if (
-      [
-        routerActions.ROOT,
-        routerActions.PLACES_ADD,
-        routerActions.PLACE_EDIT
-      ].includes(routeType)
-    ) {
-      container = PlacesContainer
-      control = MapManager
-    }
-    else if (
-      [
-        routerActions.ME,
-        routerActions.ME_PLACES_ADD,
-        routerActions.ME_PLACE_EDIT,
-        routerActions.ME_SYMBOLS_ADD,
-        routerActions.ME_SYMBOL_EDIT,
-        routerActions.ME_USERS_ADD,
-        routerActions.ME_USER_EDIT
-      ].includes(routeType)
-    ) {
-      container = MeContainer
-      control = CanvasManager
-    }
-    else if (
-      [
-        routerActions.ME_PLACE_VIEW,
-        routerActions.PLACE_SYMBOLS_ADD,
-        routerActions.PLACE_VIEW,
-      ].includes(routeType)
-    ) {
-      container = PlaceContainer
-      control = CanvasManager
-    }
-    else if (
-      [
-        routerActions.USER_VIEW
-      ].includes(routeType)
-    ) {
-      container = UserContainer
-      control = CanvasManager
-    }
-
-    debug('router.container.routeType', routeType)
 
     return (
       <div>
         <MainPanelContainer
-          {...this.props}
-          container={container}
+          {...props}
           control={control}
           routeType={routeType}
         />
@@ -155,13 +116,12 @@ class RouterContainer extends Component {
   }
 }
 
-
 const mapStateToProps = (state) => {
   const prevRouteType = getPrevRouteType(state)
+  const prevRoute = routes[prevRouteType]
   const routeType = getRouteType(state)
   const routePayload = getPayload(state)
   const currentRoute = routes[routeType]
-  const prevRoute = routes[prevRouteType]
 
   return {
     currentRoute,

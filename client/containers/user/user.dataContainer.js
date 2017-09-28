@@ -1,47 +1,52 @@
-import { compose } from 'ramda'
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
-
-import roleTypes from 'lib/maps/roleTypes'
-
-import { Loader } from 'components/layout'
-
-import entityTypes from 'lib/maps/entityTypes'
+import { compose, pure, withHandlers } from 'recompose'
+import debug from 'helpers/debug'
 import modeTypes from 'lib/maps/modeTypes'
-import symbolTypes from 'lib/maps/symbolTypes'
-
-import userQuery from './user.query.graphql'
+import userQuery from 'graphql/queries/user.query.graphql'
 
 
 class UserDataContainer extends Component {
+  componentWillReceiveProps(nextProps) {
+    const {
+      isLoading,
+      user,
+      routes
+    } = nextProps
 
-  componentDidMount() {
-    this.props.canvasActions.setNodes([])
+    if (!isLoading) {
+      if (!user) {
+        debug('user 404')
+        routes.notFoundRoute()
+      }
+    }
   }
 
   render() {
     const {
       control,
       currentMode,
-      isLoading,
       modes,
+      routePayload,
+      t,
       ...props
     } = this.props
 
-    if (isLoading) {
-      return <Loader active inline="centered"/>
-    }
-
+    const type = `${t(`prefixes.person`)} ${t(`canvas:entities.person.label`)} ${routePayload.username}`
+    const detailsLabel = t('canvas:buttons.details', {type})
+    
     return React.createElement(control, {
       ...props,
       currentMode,
+      detailsLabel,
       modes: modes.map(mode => {
         if (mode.key === modeTypes.EDIT) {
           return {...mode, disabled: true}
         }
         return mode
       }),
-      readOnly: currentMode !== modeTypes.EDIT
+      readOnly: currentMode !== modeTypes.EDIT,
+      t
     })
   }
 }
@@ -49,23 +54,35 @@ class UserDataContainer extends Component {
 
 const userQueryConfig = {
   options: (props) => {
-    const {name: username} = props.routePayload
-
     return {
       variables: {
-        username
+        username: props.routePayload.username
       }
     }
   },
-  props({ownProps, data: {loading, myPlaces, user}}) {
-    return {
-      isLoading: loading,
-      myPlaces,
+  props({data, ownProps}) {
+    const {
+      loading,
       user
+    } = data
+
+    const {
+      isLoading = false,
+    } = ownProps
+
+    const props = {
+      isLoading: isLoading || loading
     }
+
+    if (!loading && user) {
+      props.user = user
+    }
+
+    return props
   }
 }
 
 export default compose(
-  graphql(userQuery, userQueryConfig)
+  graphql(userQuery, userQueryConfig),
+  pure
 )(UserDataContainer)

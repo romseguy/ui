@@ -107,7 +107,7 @@ const userFormQueryConfig = {
   options: (props) => {
     return {
       variables: {
-        username: props.username || ''
+        username: props.username
       }
     }
   },
