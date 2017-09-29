@@ -1,5 +1,6 @@
 import React from 'react'
-import { Field } from 'redux-form'
+import { compose, withHandlers } from 'recompose'
+import { Field, formValues } from 'redux-form'
 
 import { PlaceFormBreakpoints as breakpoints } from 'lib/maps/breakpoints'
 import { required } from 'helpers/form/validators'
@@ -13,6 +14,17 @@ import {
 } from 'components/layout'
 import SelectField from 'components/selectField'
 
+
+const handlers = {
+  onViewClick: props => event => {
+    const {
+      selectedPlaceTitle,
+      onViewClick
+    } = props
+
+    typeof onViewClick === 'function' && onViewClick(selectedPlaceTitle)
+  }
+}
 
 function PlaceFormSelectFields(props) {
   const {
@@ -82,4 +94,7 @@ function PlaceFormSelectFields(props) {
   )
 }
 
-export default PlaceFormSelectFields
+export default compose(
+  formValues('selectedPlaceTitle'),
+  withHandlers(handlers)
+)(PlaceFormSelectFields)

@@ -42,7 +42,7 @@
     "redux": "3.6.0",
     "redux-first-router": "1.9.18",
     "redux-first-router-link": "1.3.0",
-    "redux-form": "6.8.0",
+    "redux-form": "7.0.4",
     "redux-saga": "0.15.3",
     "redux-tooltip": "https://github.com/romseguy/redux-tooltip/tarball/master",
     "reselect": "2.5.4",

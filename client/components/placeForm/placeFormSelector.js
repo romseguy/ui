@@ -1,4 +1,5 @@
 import React from 'react'
+import { compose } from 'recompose'
 import { Field } from 'redux-form'
 import {
   NoPadCol as Col,
@@ -53,4 +54,4 @@ function PlaceFormSelector({t}) {
   )
 }
 
-export default PlaceFormSelector
+export default compose()(PlaceFormSelector)

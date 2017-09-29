@@ -42,9 +42,6 @@ class PlaceFormDataContainer extends Component {
 
   render() {
     const {
-      disconnectedPlaces,
-      formValues,
-      isLoading,
       routeType,
       serverErrors,
       ...props
@@ -56,52 +53,16 @@ class PlaceFormDataContainer extends Component {
     } = this.state
 
     const hasServerErrors = Array.isArray(serverErrors) && serverErrors.length > 0
-    let showFields = false
-    const showSelectFields = !isLoading && formValues.action === 'select'
-    let showSelector = false
-
-    if (formValues.action === 'create') {
-      showFields = true
-      showSelector = true
-    }
-    else if (formValues.action === 'select') {
-      showFields = false
-      showSelector = true
-    }
-    else {
-      if (routeType === routerActions.ME_PLACE_EDIT) {
-        showSelector = false
-        showFields = true
-      } else if (routeType === routerActions.ME_PLACES_ADD) {
-        if (isLoading) {
-          showSelector = true
-        } else if (isScriptLoading) {
-          showFields = true
-        }
-        else {
-          if (disconnectedPlaces) {
-            showSelector = true
-          } else {
-            showFields = true
-          }
-        }
-      }
-    }
 
     return (
       <PlaceForm
         {...props}
         {...state}
-        disconnectedPlaces={disconnectedPlaces}
-        formValues={formValues}
         hasServerErrors={hasServerErrors}
-        isLoading={isLoading}
+        isEdit={routeType === routerActions.ME_PLACE_EDIT}
         isScriptLoading={isScriptLoading}
         serverErrors={serverErrors}
         setIsScriptLoading={this.setIsScriptLoading}
-        showFields={showFields}
-        showSelectFields={showSelectFields}
-        showSelector={showSelector}
       />
     )
   }
@@ -229,6 +190,5 @@ const myPlacesQueryConfig = {
 export default compose(
   graphql(placeQuery, placeQueryConfig),
   graphql(placesQuery, placesQueryConfig),
-  graphql(myPlacesQuery, myPlacesQueryConfig),
-  pure
+  graphql(myPlacesQuery, myPlacesQueryConfig)
 )(PlaceFormDataContainer)

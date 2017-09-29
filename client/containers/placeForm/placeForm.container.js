@@ -15,7 +15,6 @@ import { formValuesToPlace, placeToNode } from 'lib/factories'
 import roleTypes from 'lib/maps/roleTypes'
 
 import { canvasActions, getCanvasNodes, getCanvasNodesLoading } from 'core/canvas'
-import { getPlaceFormValues } from 'core/form'
 import { routerActions } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
 
@@ -28,11 +27,19 @@ import placesQuery from 'graphql/queries/places.query.graphql'
 import PlaceFormDataContainer from './placeForm.dataContainer'
 
 
+const refs = []
+
 function getServerErrors(error, props) {
-  error = JSON.parse(JSON.stringify(error))
-  return error.graphQLErrors.map(error => {
+  let focused = false
+
+  return JSON.parse(JSON.stringify(error)).graphQLErrors.map(error => {
     const {field_name, message, value} = error
-    props.change('PlaceForm', field_name, '')
+    const ref = refs.find(({name}) => name === field_name + 'Input')
+
+    if (ref && !focused) {
+      ref.node.getRenderedComponent().focusInput()
+      focused = true
+    }
 
     return {
       message: formatErrorMessage(message),
@@ -42,6 +49,17 @@ function getServerErrors(error, props) {
 }
 
 export const handlers = {
+  setRef: props => (name, node) => {
+    if (refs.find(ref => ref.name === name)) {
+      return
+    }
+
+    refs.push({
+      name,
+      node
+    })
+  },
+
   onMapClick: props => ({event, latLng, pixel}) => {
     const [lat, lng] = latLng
     geo.getReverseGeocoding(lat, lng).then(res => {
@@ -110,7 +128,6 @@ export const handlers = {
       }
 
       setNodes(nodes)
-      mePlaceEditRoute(title)
     }
     else if (formValues.action === 'select') {
       let {place} = await query({
@@ -183,8 +200,8 @@ export const handlers = {
     props.change('PlaceForm', 'marker', null)
   },
 
-  onViewClick: props => formValues => {
-    props.routes.placeViewRoute(formValues.selectedPlaceTitle)
+  onViewClick: props => selectedPlaceTitle => {
+    props.routes.placeViewRoute(selectedPlaceTitle)
   }
 }
 
@@ -196,14 +213,12 @@ function PlaceFormContainer(props) {
 
 
 const mapStateToProps = state => {
-  const formValues = getPlaceFormValues(state)
   const nodes = getCanvasNodes(state)
   const nodesLoading = getCanvasNodesLoading(state)
   const title = getTitle(state)
   const userLocation = getUserLocation(state)
 
   return {
-    formValues,
     isLoading: nodesLoading,
     nodes,
     title,
@@ -224,7 +239,7 @@ const createPlaceMutationConfig = {
           variables: {
             place
           },
-          refetchQueries: [{
+          refetchQueries: [{
             query: placesQuery
           }]
         })
@@ -241,7 +256,7 @@ const createUserPlaceMutationConfig = {
           variables: {
             userPlace
           },
-          refetchQueries: [{
+          refetchQueries: [{
             query: myPlacesQuery
           }]
         })
@@ -273,6 +288,5 @@ export default compose(
   graphql(updatePlaceMutation, updatePlaceMutationConfig),
   getContext({client: PropTypes.object}),
   withState('serverErrors', 'setServerErrors', []),
-  withHandlers(handlers),
-  pure
+  withHandlers(handlers)
 )(PlaceFormContainer)

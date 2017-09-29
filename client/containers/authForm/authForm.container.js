@@ -9,7 +9,6 @@ import { formatErrorMessage } from 'helpers/apollo'
 import { authStepsTypes, authTypes } from 'lib/maps/auth'
 import modalTypes from 'lib/maps/modalTypes'
 
-import { getAuthFormValues } from 'core/form'
 import { modalActions } from 'core/modal'
 import { routerActions } from 'core/router'
 
@@ -85,8 +84,7 @@ function AuthFormContainer(props) {
 
 const mapStateToProps = state => {
   return {
-    clientErrors: getFormSyncErrors('AuthForm')(state),
-    formValues: getAuthFormValues(state)
+    clientErrors: getFormSyncErrors('AuthForm')(state)
   }
 }
 

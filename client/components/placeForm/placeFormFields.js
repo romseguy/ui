@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import scriptLoader from 'react-async-script-loader'
 import { compose } from 'recompose'
-import { Field } from 'redux-form'
+import { Field, formValues } from 'redux-form'
 
 import keepCities from 'helpers/keepCities'
 import { required } from 'helpers/form/validators'
@@ -50,19 +50,25 @@ class PlaceFormFields extends Component {
     }
 
     const {
-      formValues,
+      marker,
       userLocation
     } = this.props
-
-    const {
-      marker
-    } = formValues || {}
 
     const hasMarker = Array.isArray(marker) && marker.length === 2
     let latitude = hasMarker ? marker[0] : userLocation.lat
     let longitude = hasMarker ? marker[1] : userLocation.lng
 
     return [latitude, longitude]
+  }
+
+  setRef(name, node) {
+    if (!node) {
+      return
+    }
+
+    const {setRef} = this.props
+    this[name] = node
+    typeof setRef === 'function' && setRef(name, node)
   }
 
   handleBoundsChange = ({center, zoom, bounds, initial}) => {
@@ -121,7 +127,7 @@ class PlaceFormFields extends Component {
           type="text"
           breakpoints={breakpoints}
           label={t('form:place.name')}
-          ref={node => this.titleInput = node}
+          ref={node => this.setRef('titleInput', node)}
           withRef
           validate={[required({msg: t('errors:required')})]}
         />
@@ -135,7 +141,7 @@ class PlaceFormFields extends Component {
           disabled={readOnly}
           placeholder={t('geosuggest_placeholder')}
           skipSuggest={keepCities}
-          ref={node => this.cityInput = node}
+          ref={node => this.setRef('cityInput', node)}
           withRef
           validate={[required({msg: t('errors:required')})]}
           onSuggestSelect={this.handleSuggestSelect}
@@ -198,5 +204,6 @@ class PlaceFormFields extends Component {
 }
 
 export default compose(
-  scriptLoader('https://maps.googleapis.com/maps/api/js?key=AIzaSyCZbB5gENry_UJNvwtOStrRqTt7sTi0E9k&libraries=places')
+  scriptLoader('https://maps.googleapis.com/maps/api/js?key=AIzaSyCZbB5gENry_UJNvwtOStrRqTt7sTi0E9k&libraries=places'),
+  formValues('marker')
 )(PlaceFormFields)

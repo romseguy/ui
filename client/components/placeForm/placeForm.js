@@ -1,6 +1,6 @@
 import React from 'react'
 import { compose, pure, withHandlers } from 'recompose'
-import { reduxForm } from 'redux-form'
+import { formValues, reduxForm } from 'redux-form'
 
 import { Form as UIForm } from 'components/layout'
 
@@ -19,65 +19,90 @@ const handlers = {
     } = props
 
     handleSubmit(event, values => onSubmit(values))
-  },
-
-  onViewClick: props => event => {
-    const {
-      formValues,
-      onViewClick
-    } = props
-
-    typeof onViewClick === 'function' && onViewClick(formValues)
   }
 }
 
-function PlaceForm(props) {
-  const {
-    hasServerErrors,
-    isLoading,
-    isScriptLoading,
-    showFields,
-    showSelectFields,
-    showSelector,
-    ...rest
-  } = props
+class PlaceForm extends React.Component {
+  render() {
+    const {
+      action,
+      disconnectedPlaces,
+      hasServerErrors,
+      isEdit,
+      isLoading,
+      isScriptLoading,
+      ...rest
+    } = this.props
 
+    let showFields = false
+    const showSelectFields = !isLoading && action === 'select'
+    let showSelector = false
 
-  return (
-    <PlaceFormLayout fluid>
-      <PlaceFormHeader
-        {...rest}
-      />
+    if (action === 'create') {
+      showFields = true
+      showSelector = true
+    }
+    else if (action === 'select') {
+      showFields = false
+      showSelector = true
+    }
+    else {
+      if (isEdit) {
+        showSelector = false
+        showFields = true
+      } else {
+        if (isLoading) {
+          showSelector = true
+        } else if (isScriptLoading) {
+          showFields = true
+        }
+        else {
+          if (disconnectedPlaces) {
+            showSelector = true
+          } else {
+            showFields = true
+          }
+        }
+      }
+    }
 
-      <UIForm
-        error={hasServerErrors}
-        loading={isLoading || isScriptLoading}
-      >
-        {showSelector && (
-          <PlaceFormSelector
-            {...rest}
-          />
-        )}
+    return (
+      <PlaceFormLayout fluid>
+        <PlaceFormHeader
+          {...rest}
+        />
 
-        {showSelectFields && (
-          <PlaceFormSelectFields
-            {...rest}
-            hasServerErrors={hasServerErrors}
-          />
-        )}
+        <UIForm
+          error={hasServerErrors}
+          loading={isLoading || isScriptLoading}
+        >
+          {showSelector && (
+            <PlaceFormSelector
+              {...rest}
+            />
+          )}
 
-        {showFields && (
-          <PlaceFormFields
-            {...rest}
-            hasServerErrors={hasServerErrors}
-            isLoading={isLoading}
-            isScriptLoading={isScriptLoading}
-            readOnly={false}
-          />
-        )}
-      </UIForm>
-    </PlaceFormLayout>
-  )
+          {showSelectFields && (
+            <PlaceFormSelectFields
+              {...rest}
+              disconnectedPlaces={disconnectedPlaces}
+              hasServerErrors={hasServerErrors}
+            />
+          )}
+
+          {showFields && (
+            <PlaceFormFields
+              {...rest}
+              hasServerErrors={hasServerErrors}
+              isLoading={isLoading}
+              isScriptLoading={isScriptLoading}
+              readOnly={false}
+            />
+          )}
+        </UIForm>
+      </PlaceFormLayout>
+    )
+  }
 }
 
 export default compose(
@@ -85,6 +110,6 @@ export default compose(
     form: 'PlaceForm',
     enableReinitialize: true
   }),
-  withHandlers(handlers),
-  pure
+  formValues('action'),
+  withHandlers(handlers)
 )(PlaceForm)
