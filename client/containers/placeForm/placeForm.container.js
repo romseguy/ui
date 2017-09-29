@@ -128,6 +128,7 @@ export const handlers = {
       }
 
       setNodes(nodes)
+      meRoute()
     }
     else if (formValues.action === 'select') {
       let {place} = await query({

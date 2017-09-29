@@ -62,7 +62,7 @@ const handlers = {
   },
 
   onDetailsClick: props => node => {
-    alert('todo')
+    alert('todo: my profile details panel')
     // todo: CanvasManager.displaySidePanel=true
   },
 
@@ -165,15 +165,9 @@ class MeContainer extends Component {
       ...props
     } = this.props
 
-    const detailsLabel = t('canvas:buttons.details', {
-      prefix: t('prefixes.profile'),
-      type: t('my_profile')
-    })
-
     return React.createElement(control, {
       ...props,
       currentMode,
-      detailsLabel,
       readOnly: currentMode !== modeTypes.EDIT,
       t
     })

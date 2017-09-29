@@ -1,5 +1,4 @@
 import React from 'react'
-import getLang from 'helpers/getLang'
 import Icon from 'components/icon'
 import { Accordion, List, Segment } from 'components/layout'
 import AboutEn from './aboutEn'
@@ -9,9 +8,9 @@ function About(props) {
   const {currentLang, height} = props
 
   if (currentLang === 'en') {
-      return (
-        <AboutEn {...props}/>
-      )
+    return (
+      <AboutEn {...props}/>
+    )
   }
 
   return (
@@ -27,8 +26,11 @@ function About(props) {
 
       <List celled>
         <List.Item>
-          <p><Icon name="pointing right"/><strong>Par une demande de connexion à un lieu ajouté par une autre personne.</strong></p>
-           Une fois votre demande acceptée par le créateur du lieu ou l'un de ses gardiens, vous disposez du
+          <p>
+            <Icon name="pointing right"/>
+            <strong>Par une demande de connexion à un lieu ajouté par une autre personne.</strong>
+          </p>
+          Une fois votre demande acceptée par le créateur du lieu ou l'un de ses gardiens, vous disposez du
           perroquet de ce lieu pour envoyer un message (toutes les 24 heures) aux personnes :
 
           <List bulleted>
@@ -38,19 +40,22 @@ function About(props) {
         </List.Item>
 
         <List.Item>
-          <p><Icon name="pointing right"/><strong>Par une demande d'ajout d'un lieu dont vous êtes propriétaire ou gardien.</strong></p>
-           Une fois votre demande acceptée par Pairroquet, vous pouvez :
+          <p>
+            <Icon name="pointing right"/>
+            <strong>Par une demande d'ajout d'un lieu dont vous êtes propriétaire ou gardien.</strong>
+          </p>
+          Une fois votre demande acceptée par Pairroquet, vous pouvez :
 
           <List bulleted>
             <List.Item>
-              Accepter ou refuser les nouvelles demandes de connexion ;
+              Utiliser le perroquet du lieu ;
             </List.Item>
             <List.Item>
               Attribuer des rôles aux gens connectés au lieu. En particulier, les personnes pouvant voter : <strong>l'unanimité
               est requise</strong> pour qu'un perroquet puisse délivrer son message ;
             </List.Item>
             <List.Item>
-              Utiliser le perroquet du lieu.
+              Accepter ou refuser les nouvelles demandes de connexion.
             </List.Item>
           </List>
         </List.Item>

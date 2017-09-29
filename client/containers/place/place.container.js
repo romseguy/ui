@@ -45,6 +45,11 @@ const handlers = {
     // todo: delete place_place relation if deletedNode.type === LOCATION
   },
 
+  onDetailsClick: props => node => {
+    alert('todo: place details panel')
+    // todo: CanvasManager.displaySidePanel=true
+  },
+
   onEditSelectedNode: props => node => {
     handlers.setEditRoute(props)(node)
   },

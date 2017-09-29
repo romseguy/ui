@@ -32,13 +32,9 @@ class UserDataContainer extends Component {
       ...props
     } = this.props
 
-    const type = `${t(`prefixes.person`)} ${t(`canvas:entities.person.label`)} ${routePayload.username}`
-    const detailsLabel = t('canvas:buttons.details', {type})
-    
     return React.createElement(control, {
       ...props,
       currentMode,
-      detailsLabel,
       modes: modes.map(mode => {
         if (mode.key === modeTypes.EDIT) {
           return {...mode, disabled: true}

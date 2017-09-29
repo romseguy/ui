@@ -50,7 +50,7 @@ function Toolbar(props) {
     t,
     toolboxes,
     onDeleteClick, deleteDisabled = false,
-    onDetailsClick, detailsDisabled = false, detailsLabel,
+    onDetailsClick, detailsDisabled = false,
     onEditClick, editDisabled = false,
     onModeClick,
     onZoomInClick, zoomInDisabled = false,
@@ -146,10 +146,8 @@ function Toolbar(props) {
         paddingRight: 0
       }}>
         <Button
-          content={detailsLabel}
           disabled={detailsDisabled}
-          icon="chevron left"
-          labelPosition='left'
+          icon="caret left"
           title={t('canvas:buttons.details_show')}
           onClick={onDetailsClick}
         />

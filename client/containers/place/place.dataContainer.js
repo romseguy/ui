@@ -34,13 +34,9 @@ class PlaceDataContainer extends React.Component {
       ...rest
     } = this.props
 
-    const type = `${t(`prefixes.place`)} ${t(`canvas:entities.place.label`)} ${routePayload.placeTitle}`
-    const detailsLabel = t('canvas:buttons.details', {type})
-
     return React.createElement(control, {
       ...rest,
       currentMode,
-      detailsLabel,
       modes: modes.map(mode => {
         if (mode.key === modeTypes.EDIT) {
           return {...mode, disabled: !mine}

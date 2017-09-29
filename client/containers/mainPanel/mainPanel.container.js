@@ -72,6 +72,12 @@ class MainPanelContainer extends Component {
     window.addEventListener('resize', this.handleResize)
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.currentLang !== nextProps.currentLang) {
+      this.setState(p => ({toolboxes: createToolboxes(p.currentMode, this.setToolboxIsOpen, nextProps.t)}))
+    }
+  }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
   }
