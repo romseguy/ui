@@ -1,16 +1,18 @@
 import { BINARY_COLOR_BLUE_30, BINARY_COLOR_BLUE_50 } from 'binary-ui-styles'
+import PropTypes from 'prop-types'
 import React from 'react'
 import { translate } from 'react-i18next'
-import { compose, pure } from 'recompose'
+import { connect } from 'react-redux'
+import { compose, getContext, pure, withHandlers } from 'recompose'
 import styled from 'styled-components'
 
 import sizeTypes from 'lib/maps/sizeTypes'
 
-import { routerActions } from 'core/router'
+import { settingsActions, getLang } from 'core/settings'
 
 import { FooterLink, FooterGrid } from 'components/footer'
 import Icon from 'components/icon'
-import { NoPadCol as Col } from 'components/layout'
+import { Dropdown, NoPadCol as Col } from 'components/layout'
 
 
 const Parrot = styled(Icon)`
@@ -26,24 +28,41 @@ border-color: ${BINARY_COLOR_BLUE_50};
 }
 `
 
+const handlers = {
+  onLangChange: props => (event, data) => {
+    props.i18n.changeLanguage(data.value)
+    props.setLang(data.value)
+  }
+}
 
-function FooterContainer({t}) {
+function FooterContainer(props) {
+  const {
+    currentLang,
+    t,
+    onLangChange
+  } = props
 // todo resize handler
   const isMobile = window.currentBreakpoint === sizeTypes.MOBILE
 
   return (
     <FooterGrid>
       <Col tablet={13}>
-        <Parrot
-          height={14}
-          name="parrot"
-          width={14}
+        <Dropdown
+          defaultValue={currentLang}
+          inline
+          options={[{
+            key: 'fr',
+            text: 'French',
+            value: 'fr'
+          }, {
+            key: 'en',
+            text: 'English',
+            value: 'en'
+          }]}
+          pointing="top"
+          upward
+          onChange={onLangChange}
         />
-        {' '}
-
-        <FooterLink to={routerActions.aboutRoute()}>
-          {t('about')}
-        </FooterLink>
       </Col>
       <Col
         tablet={3}
@@ -55,7 +74,22 @@ function FooterContainer({t}) {
   )
 }
 
+const mapStateToProps = state => {
+  const currentLang = getLang(state)
+
+  return {
+    currentLang
+  }
+}
+
+const mapDispatchToProps = {
+  setLang: settingsActions.setLang
+}
+
 export default compose(
   translate(),
+  getContext({i18n: PropTypes.object}),
+  connect(mapStateToProps, mapDispatchToProps),
+  withHandlers(handlers),
   pure
 )(FooterContainer)

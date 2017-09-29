@@ -31,27 +31,27 @@ function AboutEn(props) {
         </List.Item>
 
         <List.Item as="li">
-          Add your own place or a place you know to Pearrot. In addition to the access to the place's parrot, you will be granted access to:
+          Add your own place or a place you know to Pearrot. In addition to the access to the place's parrot, you will
+          be granted access to the place's management features so you can:
 
           <List bulleted>
             <List.Item>
-              the place's management features:
-              <List>
-                <List.Item>
-                  Connections management ;
-                </List.Item>
-                <List.Item>
-                  Parrots management.
-                </List.Item>
-              </List>
+              accept new connection requests ;
+            </List.Item>
+            <List.Item>
+              manage the roles (e.g guardian) of people connected to the place ;
+            </List.Item>
+            <List.Item>
+              add your vote to the other guardians' votes so new parrots can be sent if every guardian agreed.
             </List.Item>
           </List>
         </List.Item>
       </List>
 
-      <h1>What's more?</h1>
+      <h1>What else?</h1>
 
-      <p>A parrot delivers a message without allowing the recipient to write back. While this is a nice way not to be disturbed, you can decide you need an answer by sending a pigeon instead of a parrot!</p>
+      <p>A parrot delivers a message without allowing the recipient to write back. While this is a nice way not to be
+        disturbed, you can decide you need an answer by sending a pigeon instead of a parrot!</p>
 
       <p>Stay tuned for more...</p>
 

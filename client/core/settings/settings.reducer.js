@@ -1,11 +1,13 @@
-import { settingsActions } from './settings.actions'
 import { set, setIn, getIn, updateIn } from 'zaphod/compat'
+import getLang from 'helpers/getLang'
+import { settingsActions } from './settings.actions'
 
 
 export const settingsState = {
   i18n: {
     initialized: false
   },
+  lang: getLang({short: true}),
   offlineMode: false,
   title: null,
   user: {
@@ -32,6 +34,9 @@ export function settingsReducer(state = settingsState, {payload, type}) {
 
     case settingsActions.SET_CITY:
       return setIn(state, ['user', 'location', 'city'], payload.city)
+
+    case settingsActions.SET_LANG:
+      return set(state, 'lang', payload.lang)
 
     case settingsActions.SET_LOCATION:
       const location = getIn(state, ['user', 'location'])

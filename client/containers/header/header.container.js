@@ -268,6 +268,7 @@ class HeaderContainer extends Component {
             <HeaderDropdown
               className="right"
               pointing={true}
+              inline
             >
               <HeaderDropdown.Menu>
                 <HeaderDropdown.Item

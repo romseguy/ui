@@ -1,11 +1,8 @@
-import getLang from 'helpers/getLang'
-import { settingsActions } from 'core/settings'
+import { settingsActions, getLang } from 'core/settings'
 
 
 const i18nOptions = {
   fallbackLng: 'en',
-
-  lng: getLang(),
 
   whitelist: ['en', 'fr'],
 
@@ -40,6 +37,8 @@ const i18nOptions = {
 }
 
 export default function initializeI18n(i18n, store) {
+  i18nOptions.lng = getLang(store.getState())
+
   i18n.init(i18nOptions, function i18nInitialized() {
     store.dispatch(settingsActions.i18nInitialized())
   })

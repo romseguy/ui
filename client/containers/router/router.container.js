@@ -7,6 +7,7 @@ import { NOT_FOUND } from 'redux-first-router'
 import debug from 'helpers/debug'
 
 import { routerActions, getPayload, getPrevRouteType, getRouteType, routes } from 'core/router'
+import { getLang } from 'core/settings'
 
 import MainPanelContainer from 'containers/mainPanel'
 import PlaceFormContainer from 'containers/placeForm'
@@ -121,8 +122,10 @@ const mapStateToProps = (state) => {
   const routeType = getRouteType(state)
   const routePayload = getPayload(state)
   const currentRoute = routes[routeType]
+  const currentLang = getLang(state)
 
   return {
+    currentLang,
     currentRoute,
     prevRoute,
     prevRouteType,

@@ -1,58 +1,56 @@
 import React from 'react'
 import getLang from 'helpers/getLang'
+import Icon from 'components/icon'
 import { Accordion, List, Segment } from 'components/layout'
 import AboutEn from './aboutEn'
 
 
 function About(props) {
-  if (!['fr-BE', 'fr-CA', 'fr-FR', 'fr-LU', 'fr-MC', 'fr-CH'].includes(getLang())) {
-    return (
-      <AboutEn {...props}/>
-    )
-  }
+  const {currentLang, height} = props
 
-  const {height} = props
+  if (currentLang === 'en') {
+      return (
+        <AboutEn {...props}/>
+      )
+  }
 
   return (
     <Segment padded="very" style={{minHeight: height - 40, margin: '20px'}}>
       <h1>À quoi sert Pairroquet ?</h1>
 
-      <p>Pairroquet vous permet de contribuer facilement à l'économie du don, en envoyant propositions et demandes de service <strong>par l'intermédiaire des lieux auxquels vous êtes connecté</strong>.</p>
+      <p>Pairroquet vous permet de contribuer facilement à l'économie du don, en envoyant propositions et demandes de
+        service <strong>par l'intermédiaire des lieux auxquels vous êtes connecté</strong>.</p>
 
       <h1>Comment ?</h1>
 
-      <p>Avec votre compte Pairroquet, vous pouvez :</p>
+      <p>En créant un compte Pairroquet, vous pouvez contribuer :</p>
 
-      <List as="ol">
-        <List.Item as="li">
-          Vous connecter à un lieu que vous connaissez et qui a été ajouté à Pairroquet. Vous aurez alors accès :
+      <List celled>
+        <List.Item>
+          <p><Icon name="pointing right"/><strong>Par une demande de connexion à un lieu ajouté par une autre personne.</strong></p>
+           Une fois votre demande acceptée par le créateur du lieu ou l'un de ses gardiens, vous disposez du
+          perroquet de ce lieu pour envoyer un message (toutes les 24 heures) aux personnes :
 
           <List bulleted>
-            <List.Item>
-              au perroquet du lieu, vous permettant d'envoyer propositions et demandes de service :
-              <List>
-                <List.Item>aux lieux situés dans un rayon de Xkm autour du lieu ;</List.Item>
-                <List.Item>aux lieux appartenant aux villes de votre choix.</List.Item>
-              </List>
-            </List.Item>
+            <List.Item>connectées à ce même lieu ;</List.Item>
+            <List.Item>connectées aux lieux appartenant aux villes de votre choix.</List.Item>
           </List>
         </List.Item>
 
-        <List.Item as="li">
-          Ajouter votre lieu ou un lieu que vous connaissez à Pairroquet. En plus d'avoir accès au perroquet du lieu,
-          vous aurez accès :
+        <List.Item>
+          <p><Icon name="pointing right"/><strong>Par une demande d'ajout d'un lieu dont vous êtes propriétaire ou gardien.</strong></p>
+           Une fois votre demande acceptée par Pairroquet, vous pouvez :
 
           <List bulleted>
             <List.Item>
-              aux fonctionnalités d'administration du lieu :
-              <List>
-                <List.Item>
-                  contrôle des demandes de connexion ;
-                </List.Item>
-                <List.Item>
-                  contrôle des perroquets.
-                </List.Item>
-              </List>
+              Accepter ou refuser les nouvelles demandes de connexion ;
+            </List.Item>
+            <List.Item>
+              Attribuer des rôles aux gens connectés au lieu. En particulier, les personnes pouvant voter : <strong>l'unanimité
+              est requise</strong> pour qu'un perroquet puisse délivrer son message ;
+            </List.Item>
+            <List.Item>
+              Utiliser le perroquet du lieu.
             </List.Item>
           </List>
         </List.Item>
@@ -60,13 +58,15 @@ function About(props) {
 
       <h1>Quoi de plus ?</h1>
 
-      <p>Un perroquet délivre un message sans proposer au destinataire de répondre. Bien que ce soit une bonne façon de ne pas être dérangé, vous pouvez décider d'avoir besoin d'une réponse en envoyant un pigeon à la place d'un perroquet!</p>
+      <p>Un perroquet délivre un message sans proposer au destinataire de répondre. Bien que ce soit une bonne façon de
+        ne pas être dérangé, vous pouvez décider d'avoir besoin d'une réponse en envoyant un pigeon à la place d'un
+        perroquet!</p>
 
       <p>Et bien plus à venir...</p>
 
       {/*
-       <List as="ol">
-       <List.Item as="li">
+       <List>
+       <List.Item>
        Envoyer une demande de connexion aux lieux que vous connaissez et qui ont été ajouté à Pairroquet. Si votre demande de connexion est acceptée par le propriétaire du lieu, vous aurez accès :
 
        <List bulleted>
@@ -82,7 +82,7 @@ function About(props) {
        </List>
        </List.Item>
 
-       <List.Item as="li">
+       <List.Item>
        Ajouter votre lieu ou un lieu que vous connaissez à Pairroquet. Si le lieu est accepté par Pairroquet, vous aurez accès :
 
        <List bulleted>
