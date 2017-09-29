@@ -20,8 +20,8 @@ import { settingsActions, getCity, getDepartment, getTitle, getUserLocation } fr
 import placeQuery from 'graphql/queries/place.query.graphql'
 import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
 
-import Icon, { TextIcon } from 'components/icon'
-import { Dropdown, Grid, NoPadCol as Col } from 'components/layout'
+import Icon from 'components/icon'
+import { Grid, NoPadCol as Col } from 'components/layout'
 import { HeaderDropdown, HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
 
 
@@ -279,13 +279,13 @@ class HeaderContainer extends Component {
               className="right"
               pointing={true}
             >
-              <Dropdown.Menu>
-                <Dropdown.Item
+              <HeaderDropdown.Menu>
+                <HeaderDropdown.Item
                   content={<HeaderLinkRaw>{t('header:logout')}</HeaderLinkRaw>}
                   onClick={e => routes.logoutRoute()}
                 >
-                </Dropdown.Item>
-              </Dropdown.Menu>
+                </HeaderDropdown.Item>
+              </HeaderDropdown.Menu>
             </HeaderDropdown>
           ) : (
             <HeaderLink to={routerActions.authRoute()}>{t('header:login')}</HeaderLink>

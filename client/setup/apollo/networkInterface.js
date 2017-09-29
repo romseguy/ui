@@ -2,12 +2,13 @@ import { createApolloFetch } from 'apollo-fetch'
 import { print } from 'graphql/language/printer'
 
 import debug from 'helpers/debug'
+import getLang from 'helpers/getLang'
 
 import { authMiddleware } from './auth'
 import { errorAfterware } from './error'
 
 
-const uri = `${process.env.REACT_APP_GRAPHQL_URL}?locale=fr`
+const uri = `${process.env.REACT_APP_GRAPHQL_URL}?locale=${getLang()}`
 
 const apolloFetch = createApolloFetch({uri})
   .use(authMiddleware)

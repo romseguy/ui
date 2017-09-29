@@ -2,7 +2,6 @@ import { applyMiddleware, combineReducers, createStore, compose } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 import { devToolsOptions } from './devTools'
-import configureLoggerMiddleware from './logger'
 import configureRouter from './router'
 import configureSagaMiddleware from './saga'
 
@@ -26,6 +25,7 @@ export default function configureStore(reducer, routes, saga, client, i18n) {
     composeEnhancers = composeWithDevTools(devToolsOptions)
 
     // logger
+    const configureLoggerMiddleware = require('./logger').default
     middlewares.push(configureLoggerMiddleware())
   }
 

@@ -4,10 +4,15 @@ import styled from 'styled-components'
 import { Dropdown } from 'components/layout'
 
 
-export default styled(Dropdown)`
+const HeaderDropdown = styled(Dropdown)`
 color: ${BINARY_COLOR_BLUE_30};
 
 :hover {
   color: ${BINARY_COLOR_BLUE_50}
 }
 `
+
+HeaderDropdown.Menu = Dropdown.Menu
+HeaderDropdown.Item = Dropdown.Item
+
+export default HeaderDropdown

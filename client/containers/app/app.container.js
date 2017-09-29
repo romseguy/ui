@@ -14,7 +14,7 @@ import Helmet from 'containers/helmet'
 import Modals from 'containers/modal'
 import Router from 'containers/router'
 
-import { Layout } from 'components/layout'
+import Layout from 'components/layout'
 
 
 function App(props) {
