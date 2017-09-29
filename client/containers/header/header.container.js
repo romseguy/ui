@@ -26,12 +26,6 @@ import { HeaderDropdown, HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } fr
 
 
 const handlers = {
-  onConnectIconClick: props => event => {
-    alert('todo')
-    // todo: route /me/place/:name/connect
-    // todo: check wheter user is connected to the place already and display unlinkify icon -> confirm modal -> delete userplace
-  },
-
   onLocationIconClick: props => async event => {
     const {
       client,
@@ -157,8 +151,6 @@ class HeaderContainer extends Component {
     const monadIcon = <Icon name="monad" height={16} width={16}/>
     const placeIcon = <Icon name="place" height={16} width={16}/>
 
-    let connectIcon = null
-    let connectIconTitle = t('header:connect.title.place')
     let entityIcon = null
     let entityIconTitle = ''
     let locationIcon = <Icon name="location arrow"/>
@@ -191,7 +183,6 @@ class HeaderContainer extends Component {
         routerActions.PLACE_VIEW,
         routerActions.PLACE_SYMBOLS_ADD
       ].includes(routeType)) {
-      connectIcon = <Icon name="linkify"/>
       entityIcon = placeIcon
       entityIconTitle = t('header:entityIcon.title.place') + ` ${routePayload.placeTitle}`
       locationIconTitle = t('header:location.title.place')
@@ -239,8 +230,6 @@ class HeaderContainer extends Component {
             >
               <HeaderTitle
                 {...rest}
-                connectIcon={connectIcon}
-                connectIconTitle={connectIconTitle}
                 entityIcon={entityIcon}
                 entityIconTitle={entityIconTitle}
                 locationIcon={locationIcon}
@@ -260,6 +249,7 @@ class HeaderContainer extends Component {
         >
           {currentUser && (
             <HeaderLink
+              title={t('header:my_profile_go')}
               to={routerActions.meRoute()}
               style={{marginRight: '5px'}}
             >
@@ -270,7 +260,7 @@ class HeaderContainer extends Component {
           <HeaderLink to={routerActions.aboutRoute()} style={{marginRight: 0}}>
             <Icon
               name="question circle"
-              title={t('header:about')}
+              title={t('header:help')}
             />
           </HeaderLink>
 

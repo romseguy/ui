@@ -5,4 +5,5 @@ import { Grid } from 'components/layout'
 
 
 export default styled(Grid)`
+padding-left: 5px !important;
 `

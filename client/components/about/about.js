@@ -1,15 +1,23 @@
 import React from 'react'
-import { TextIcon } from 'components/icon'
+import getLang from 'helpers/getLang'
 import { Accordion, List, Segment } from 'components/layout'
+import AboutEn from './aboutEn'
 
 
-function About({height}) {
+function About(props) {
+  if (!['fr-BE', 'fr-CA', 'fr-FR', 'fr-LU', 'fr-MC', 'fr-CH'].includes(getLang())) {
+    return (
+      <AboutEn {...props}/>
+    )
+  }
+
+  const {height} = props
+
   return (
     <Segment padded="very" style={{minHeight: height - 40, margin: '20px'}}>
       <h1>À quoi sert Pairroquet ?</h1>
 
-      <p>Pairroquet vous permet de contribuer facilement à l'économie du don et du troc, en envoyant propositions et
-        demandes de service <strong>par l'intermédiaire des lieux auxquels vous contribuez</strong>.</p>
+      <p>Pairroquet vous permet de contribuer facilement à l'économie du don, en envoyant propositions et demandes de service <strong>par l'intermédiaire des lieux auxquels vous êtes connecté</strong>.</p>
 
       <h1>Comment ?</h1>
 
@@ -31,14 +39,15 @@ function About({height}) {
         </List.Item>
 
         <List.Item as="li">
-          Ajouter votre lieu ou un lieu que vous connaissez à Pairroquet. En plus d'avoir accès au perroquet du lieu, vous aurez accès :
+          Ajouter votre lieu ou un lieu que vous connaissez à Pairroquet. En plus d'avoir accès au perroquet du lieu,
+          vous aurez accès :
 
           <List bulleted>
             <List.Item>
               aux fonctionnalités d'administration du lieu :
               <List>
                 <List.Item>
-                  contrôle des demandes de connexion  ;
+                  contrôle des demandes de connexion ;
                 </List.Item>
                 <List.Item>
                   contrôle des perroquets.
@@ -48,6 +57,12 @@ function About({height}) {
           </List>
         </List.Item>
       </List>
+
+      <h1>Quoi de plus ?</h1>
+
+      <p>Un perroquet délivre un message sans proposer au destinataire de répondre. Bien que ce soit une bonne façon de ne pas être dérangé, vous pouvez décider d'avoir besoin d'une réponse en envoyant un pigeon à la place d'un perroquet!</p>
+
+      <p>Et bien plus à venir...</p>
 
       {/*
        <List as="ol">

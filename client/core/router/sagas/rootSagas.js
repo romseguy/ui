@@ -38,7 +38,7 @@ function* setNodesFromPlacesSaga(client) {
   const {places} = yield call(query, {
     client,
     query: placesQuery
-    }, {
+  }, {
     from: '/',
     cache: true
   })
@@ -151,9 +151,7 @@ export function* placeSymbolsAddSaga(payload, settings) {
   const placeTitle = decodeURIComponent(payload.placeTitle)
   const prefix = `form:symbol.${payload.symbolType.toLowerCase()}`
   const title = i18n.t(
-    `${prefix}.header.add`,
-    {
-      symbolType: i18n.t(`${prefix}.label`),
+    `${prefix}.header.add`, {
       placeTitle
     }
   )

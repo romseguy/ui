@@ -37,7 +37,7 @@ function Tutorial({currentUser, routes, t}) {
     <ToolboxButton
       active={false}
       iconName="eye"
-      label={t('canvas:entities.label') + 's'}
+      label={t('canvas:entities.label_plural')}
       title={t('canvas:entities.add')}
       toggle={true}
     />

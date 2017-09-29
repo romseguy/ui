@@ -165,8 +165,10 @@ class MeContainer extends Component {
       ...props
     } = this.props
 
-    const type = `${t('prefixes.profile')} ${t('my_profile')}`
-    const detailsLabel = t('canvas:buttons.details', {type: type.toLowerCase()})
+    const detailsLabel = t('canvas:buttons.details', {
+      prefix: t('prefixes.profile'),
+      type: t('my_profile')
+    })
 
     return React.createElement(control, {
       ...props,

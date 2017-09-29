@@ -1,8 +1,11 @@
+import getLang from 'helpers/getLang'
 import { settingsActions } from 'core/settings'
 
 
 const i18nOptions = {
   fallbackLng: 'en',
+
+  lng: getLang(),
 
   whitelist: ['en', 'fr'],
 

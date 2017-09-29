@@ -12,7 +12,7 @@ export function createToolboxes(currentMode, setToolboxIsOpen, t) {
       active: false,
       disabled: currentMode !== modeTypes.EDIT,
       iconName: 'eye',
-      label: t('canvas:entities.label') + 's',
+      label: t('canvas:entities.label_plural'),
       title: t('canvas:entities.add'),
       toggle: true,
       onClick: () => setToolboxIsOpen('entities')

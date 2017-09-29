@@ -1,3 +1,5 @@
 export default function getLang() {
-  return navigator.language || navigator.userLanguage
+  let lang = navigator.language || navigator.userLanguage
+
+  return lang
 }

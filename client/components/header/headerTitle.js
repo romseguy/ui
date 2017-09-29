@@ -1,3 +1,4 @@
+import { BINARY_COLOR_BLUE_30, BINARY_COLOR_BLUE_50 } from 'binary-ui-styles'
 import React from 'react'
 
 import { HeaderLinkRaw, HeaderLink } from './'
@@ -6,8 +7,6 @@ import { HeaderLinkRaw, HeaderLink } from './'
 function HeaderTitle(props) {
   const {
     children,
-    connectIcon,
-    connectIconTitle,
     entityIcon,
     entityIconTitle,
     title,
@@ -15,8 +14,7 @@ function HeaderTitle(props) {
     locationIconTitle,
     onEntityIconClick,
     onLocationIconClick,
-    onTitleClick,
-    onConnectIconClick
+    onTitleClick
   } = props
 
   return (
@@ -25,7 +23,7 @@ function HeaderTitle(props) {
         <HeaderLinkRaw
           title={entityIconTitle}
           onClick={onEntityIconClick}
-          style={{borderBottom: '1px dashed black', cursor: 'help', padding: '2px'}}
+          style={{borderBottom: `1px dashed ${BINARY_COLOR_BLUE_50}`, cursor: 'help', padding: '2px'}}
         >
           {entityIcon}
         </HeaderLinkRaw>
@@ -61,15 +59,6 @@ function HeaderTitle(props) {
           onClick={onLocationIconClick}
         >
           {locationIcon}
-        </HeaderLinkRaw>
-      )}
-
-      {connectIcon && onConnectIconClick && (
-        <HeaderLinkRaw
-          title={connectIconTitle}
-          onClick={onConnectIconClick}
-        >
-          {connectIcon}
         </HeaderLinkRaw>
       )}
     </div>
