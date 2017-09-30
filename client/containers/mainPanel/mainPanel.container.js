@@ -14,7 +14,6 @@ import entityTypes from 'lib/maps/entityTypes'
 import { canvasActions, getCanvasNodes, getCanvasNodesLoading, getSelectedNodeIds } from 'core/canvas'
 import { mapActions, getMapCenter, getMapNodes, getMapNodesLoading } from 'core/map'
 import { routerActions, routes } from 'core/router'
-import { getUserLocation } from 'core/settings'
 
 import Icon from 'components/icon'
 import { Loader } from 'components/layout'
@@ -74,7 +73,7 @@ class MainPanelContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.currentLang !== nextProps.currentLang) {
-      this.setState(p => ({toolboxes: createToolboxes(p.currentMode, this.setToolboxIsOpen, nextProps.t)}))
+      this.setState(p => ({toolboxes: createToolboxes(p.currentMode, this.setToolboxIsOpen, t)}))
     }
   }
 
@@ -322,10 +321,8 @@ class MainPanelContainer extends Component {
 }
 
 const mapStateToProps = (state, {routeType}) => {
-  const userLocation = getUserLocation(state)
-
   const props = {
-    loaded: userLocation.lat !== null && userLocation.lng !== null
+    loaded: true
   }
 
   // control is a map

@@ -21,7 +21,7 @@ import SidePanel from 'components/sidePanel'
 
 
 class RouterContainer extends React.Component {
-  state = {
+  state = {
     isLoading: false
   }
 
@@ -47,12 +47,14 @@ class RouterContainer extends React.Component {
       currentUser,
       prevRouteType,
       prevRoute = {},
-      routeType,
       t
     } = this.props
 
+    let {routeType} = this.props
+
     const props = {...this.props, ...this.state}
 
+    // Special cases
     if (routeType === NOT_FOUND) {
       return (
         <MainPanelContainer
@@ -61,23 +63,21 @@ class RouterContainer extends React.Component {
         />
       )
     }
-
-    if (routeType !== routerActions.AUTH && !currentUser && currentRoute.requiresAuth !== false) {
-      return <Loader indeterminate/>
+    else if (routeType === routerActions.AUTH) {
+      if (prevRoute.requiresAuth === false) {
+        routeType = prevRouteType
+      } else {
+        routeType = routerActions.ROOT
+      }
     }
-
-    if (routeType === routerActions.AUTH) {
-      return (
-        <MainPanelContainer
-          {...props}
-          routeType={prevRoute.requiresAuth === false ? prevRouteType : routerActions.ROOT}
-        />
-      )
+    else if (currentRoute.requiresAuth !== false && !currentUser) {
+      return <Loader indeterminate/>
     }
     else if (routeType === routerActions.LOGOUT) {
       return null
     }
 
+    // Standalone
     let control = null
 
     if (routeType === routerActions.ABOUT) {
@@ -87,6 +87,7 @@ class RouterContainer extends React.Component {
       control = <Tutorial {...props} routes={routerActions}/>
     }
 
+    // MainPanel
     let sidePanelEl = null
 
     if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
