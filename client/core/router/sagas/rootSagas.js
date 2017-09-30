@@ -76,12 +76,14 @@ export function* aboutSaga(payload, settings) {
 }
 
 export function* authSaga(payload, settings) {
-  const {currentUser, prevRoute} = settings
+  const {currentUser, i18n, prevRoute} = settings
 
   if (currentUser) {
     yield put(routerActions.rootRoute())
     return
   }
+
+  yield call(setTitleSaga, () => i18n.t('form:auth.title'), {i18n: true})
 
   const onCloseChannel = channel()
 
@@ -110,8 +112,6 @@ export function* authSaga(payload, settings) {
       }
     }
   })
-
-  yield call(setDepartmentTitleSaga)
 }
 
 export function* logoutSaga(payload, settings) {

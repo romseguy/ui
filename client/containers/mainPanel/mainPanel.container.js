@@ -73,7 +73,7 @@ class MainPanelContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.currentLang !== nextProps.currentLang) {
-      this.setState(p => ({toolboxes: createToolboxes(p.currentMode, this.setToolboxIsOpen, t)}))
+      this.setState(p => ({toolboxes: createToolboxes(p.currentMode, this.setToolboxIsOpen, nextProps.t)}))
     }
   }
 

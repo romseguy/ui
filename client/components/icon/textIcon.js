@@ -17,6 +17,7 @@ function TextIcon(props) {
   return (
     <Icon
       height={height}
+      style={{display: 'inline'}}
       width={width}
       {...props}
     />

@@ -1,6 +1,6 @@
 import React from 'react'
-import Icon from 'components/icon'
-import { Accordion, List, Segment } from 'components/layout'
+import { TextIcon } from 'components/icon'
+import { Accordion, List, Message, Segment } from 'components/layout'
 
 function AboutEn(props) {
   const {height} = props
@@ -9,18 +9,18 @@ function AboutEn(props) {
     <Segment padded="very" style={{minHeight: height - 40, margin: '20px'}}>
       <h1>What's the point of Pearrot?</h1>
 
-      <p>Pearrot allows you to contribute easily to the gift economy by sending service offers and demands <strong>through
-        the places you are connected with</strong>.</p>
+      <p>Pearrot allows you to contribute easily to the gift economy by sending service offers and demands <strong><em>through
+        the places you are connected with</em></strong>.</p>
 
       <h1>How?</h1>
 
-      <p>By creating a Pearrot account, you can contribute:</p>
+      <p>Thanks to a Pearrot account, you can contribute:</p>
 
       <List celled>
         <List.Item>
           <p>
-            <Icon name="pointing right"/>
-            <strong>With a request for connecting to a place added by someone else.</strong>
+            <TextIcon name="pointing right"/>
+            <span style={{color: 'green'}}><strong>By connecting to a place added by someone else.</strong></span>
           </p>
           Once your request is approved by the place's creator or one of its guardians, you can use the place's parrot
           to send a message (every 24 hours) to the people:
@@ -33,18 +33,20 @@ function AboutEn(props) {
 
         <List.Item>
           <p>
-            <Icon name="pointing right"/>
-            <strong>With a request for adding either your own place or a place you are a guardian of.</strong>
+            <TextIcon name="pointing right"/>
+            <span style={{color: 'green'}}><strong>By adding either a place you own, or a place you know the owner agrees to become a part of the Pearrot network.</strong></span>
           </p>
           Once your request is approved by Pearrot, you can:
 
           <List bulleted>
             <List.Item>
-              Use the place's parrot ;
+              Use the place's parrot to send messages (read above) ;
             </List.Item>
             <List.Item>
-              Assign roles to people connected to the place. Specifically, those who can vote: <strong>unanimity is
-              required</strong> for a parrot to deliver its message ;
+              Assign roles to people connecting to the place.<br/>
+              <Message positive style={{marginBottom: '1rem'}}>
+                <TextIcon name="lightbulb"/>Specifically, people who can vote, in other words people who are most active. This role is important because the place's parrot cannot deliver a message until the <strong>unanimity</strong> of voting people is reached ;
+              </Message>
             </List.Item>
             <List.Item>
               Accept or reject new connection requests.
