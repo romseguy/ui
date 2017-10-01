@@ -1,5 +1,5 @@
 // Welcome to the app entry point, first we import styling!
-import 'assets/scss/main.scss'
+import 'lib/assets/scss/main.scss'
 
 // react
 import React from 'react'
@@ -12,7 +12,7 @@ import reducers from 'core/core.reducers'
 
 // redux-first-router
 import configureRouter from 'setup/redux/router'
-import { routes } from 'core/router'
+import routes from './routes'
 
 // redux-saga
 import configureSagaMiddleware from 'setup/redux/saga'

@@ -1,12 +1,12 @@
 import { delay } from 'redux-saga'
 import { call, getContext, put, race } from 'redux-saga/effects'
 
-import debug from 'helpers/debug'
-import getCurrentPosition from 'helpers/getCurrentPosition'
+import debug from 'lib/helpers/debug'
+import getCurrentPosition from 'lib/helpers/getCurrentPosition'
 import geo from 'lib/api/geo'
 import CustomError from 'lib/classes/customError'
-import { geolocationErrorTypes } from 'lib/maps/errorTypes'
-import { toggleErrorModalSaga } from 'lib/sagas'
+import { geolocationErrorTypes } from 'lib/constants/errorTypes'
+import { toggleErrorModalSaga } from 'core/shared/sagas'
 
 import { settingsActions } from '../'
 import setDefaultLocationSaga from './setDefaultLocation.saga'

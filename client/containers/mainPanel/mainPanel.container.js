@@ -3,20 +3,22 @@ import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 import { actions as tooltipActions } from 'redux-tooltip'
 
-import bindActionCreators from 'helpers/bindActionCreators'
-import debug from 'helpers/debug'
-import { getCanvasNodeAnchorTooltipName } from 'helpers/tooltips'
-import { createModes, createToolboxes } from 'lib/factories'
-import modeTypes from 'lib/maps/modeTypes'
-import sizeTypes from 'lib/maps/sizeTypes'
-import entityTypes from 'lib/maps/entityTypes'
+import bindActionCreators from 'lib/helpers/bindActionCreators'
+import debug from 'lib/helpers/debug'
+import { getCanvasNodeAnchorTooltipName } from 'lib/helpers/tooltips'
+import modeTypes from 'lib/constants/modeTypes'
+import sizeTypes from 'lib/constants/sizeTypes'
+import entityTypes from 'lib/constants/entityTypes'
 
 import { canvasActions, getCanvasNodes, getCanvasNodesLoading, getSelectedNodeIds } from 'core/canvas'
 import { mapActions, getMapCenter, getMapNodes, getMapNodesLoading } from 'core/map'
-import { routerActions, routes } from 'core/router'
+import { routerActions } from 'core/router'
 
-import Icon from 'components/icon'
-import { Loader } from 'components/layout'
+import Icon from 'lib/ui/components/icon'
+import { Loader } from 'lib/ui/components/layout'
+
+import createModes from './createModes'
+import createToolboxes from './createToolboxes'
 
 
 class MainPanelContainer extends Component {
@@ -248,6 +250,7 @@ class MainPanelContainer extends Component {
   render() {
     const {
       control,
+      currentRoute,
       error,
       isLoading,
       loaded
@@ -287,8 +290,6 @@ class MainPanelContainer extends Component {
         height: mapHeight
       })
     }
-
-    const currentRoute = routes[this.props.routeType]
 
     if (this.props.routeType === routerActions.ROOT) {
       return React.createElement(currentRoute.container, {

@@ -1,16 +1,16 @@
 import { channel } from 'redux-saga'
 import { all, call, fork, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { mutate } from 'helpers/apollo'
-import entityTypes from 'lib/maps/entityTypes'
-import modalTypes from 'lib/maps/modalTypes'
-import { toggleDeleteNodeConfirmSaga } from 'lib/sagas'
+import { mutate } from 'lib/helpers/apollo'
+import entityTypes from 'lib/constants/entityTypes'
+import modalTypes from 'lib/constants/modalTypes'
+import { toggleDeleteNodeConfirmSaga } from 'core/shared/sagas'
 
 import { canvasActions } from 'core/canvas'
 import { modalActions } from 'core/modal'
 
-import deletePlaceMutation from 'graphql/mutations/deletePlace.mutation.graphql'
-import deleteUserPlaceMutation from 'graphql/mutations/deleteUserPlace.mutation.graphql'
+import deletePlaceMutation from 'lib/graphql/mutations/deletePlace.mutation.graphql'
+import deleteUserPlaceMutation from 'lib/graphql/mutations/deleteUserPlace.mutation.graphql'
 
 
 function* deleteServerNodeSaga({payload}) {

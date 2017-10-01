@@ -1,11 +1,12 @@
 import { NOT_FOUND } from 'redux-first-router'
 import { call, fork, getContext, put, select, spawn, take } from 'redux-saga/effects'
 import { delay } from 'redux-saga'
+import routes from 'routes'
 
-import isLocationAction from 'helpers/isLocationAction'
+import isLocationAction from 'lib/helpers/isLocationAction'
 
-import { getCurrentUser } from 'core/me'
-import { getPrevRouteType, routes } from 'core/router'
+import getCurrentUserSaga from 'core/shared/sagas/getCurrentUser.saga'
+import { getPrevRouteType } from 'core/router'
 import { getOfflineMode } from 'core/settings'
 
 import { routerActions } from './router.actions'
@@ -24,7 +25,7 @@ function* locationChangedSaga({type: routeType, payload, meta}) {
     return
   }
 
-  const currentUser = yield select(getCurrentUser)
+  const currentUser = yield call(getCurrentUserSaga)
 
   if (currentRoute.requiresAuth !== false) {
     if (!currentUser) {

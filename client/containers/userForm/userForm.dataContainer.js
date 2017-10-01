@@ -5,15 +5,15 @@ import { connect } from 'react-redux'
 import { change } from 'redux-form'
 import { compose, pure, withHandlers } from 'recompose'
 
-import roleTypes from 'lib/maps/roleTypes'
+import roleTypes from 'lib/constants/roleTypes'
 import { getTitle, getUserLocation } from 'core/settings'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 
-import createUserMutation from 'graphql/mutations/createUser.mutation.graphql'
-import createUserUserMutation from 'graphql/mutations/createUserUser.mutation.graphql'
+import createUserMutation from 'lib/graphql/mutations/createUser.mutation.graphql'
+import createUserUserMutation from 'lib/graphql/mutations/createUserUser.mutation.graphql'
 
-import { Container } from 'components/layout'
-import UserForm, { UserFormHeader } from 'components/userForm'
+import { Container } from 'lib/ui/components/layout'
+import UserForm, { UserFormHeader } from 'lib/ui/components/userForm'
 
 import userFormQuery from './user.form.query.graphql'
 

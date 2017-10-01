@@ -5,14 +5,14 @@ import { connect } from 'react-redux'
 import { change } from 'redux-form'
 import { compose, pure, withHandlers } from 'recompose'
 
-import roleTypes from 'lib/maps/roleTypes'
+import roleTypes from 'lib/constants/roleTypes'
 
 import { canvasActions, getCanvasNodes, getCanvasNodesLoading } from 'core/canvas'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { getTitle, getUserLocation } from 'core/settings'
 
-import { Container } from 'components/layout'
-import SymbolForm, { SymbolFormHeader } from 'components/symbolForm'
+import { Container } from 'lib/ui/components/layout'
+import SymbolForm, { SymbolFormHeader } from 'lib/ui/components/symbolForm'
 
 import SymbolFormDataContainer from './symbolForm.dataContainer'
 

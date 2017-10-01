@@ -1,5 +1,5 @@
 import config from 'config'
-import debug from 'helpers/debug'
+import debug from 'lib/helpers/debug'
 
 
 const i18nOptions = {

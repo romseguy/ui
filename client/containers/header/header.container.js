@@ -6,23 +6,23 @@ import { compose, getContext, pure, withHandlers } from 'recompose'
 import { change } from 'redux-form'
 import { connect } from 'react-redux'
 
-import { query } from 'helpers/apollo'
+import { query } from 'lib/helpers/apollo'
 import geo from 'lib/api/geo'
 import { getGeocodedLocation, getGeocodedDepartment } from 'lib/api/geo'
-import modalTypes from 'lib/maps/modalTypes'
-import sizeTypes from 'lib/maps/sizeTypes'
+import modalTypes from 'lib/constants/modalTypes'
+import sizeTypes from 'lib/constants/sizeTypes'
 
 import { mapActions } from 'core/map'
 import { modalActions } from 'core/modal'
 import { routerActions, getPayload, getRouteType } from 'core/router'
 import { settingsActions, getCity, getDepartment, getTitle, getUserLocation } from 'core/settings'
 
-import placeQuery from 'graphql/queries/place.query.graphql'
-import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
+import placeQuery from 'lib/graphql/queries/place.query.graphql'
+import logoutMutation from 'lib/graphql/mutations/logout.mutation.graphql'
 
-import Icon from 'components/icon'
-import { Grid, NoPadCol as Col } from 'components/layout'
-import { HeaderDropdown, HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'components/header'
+import Icon from 'lib/ui/components/icon'
+import { Grid, NoPadCol as Col } from 'lib/ui/components/layout'
+import { HeaderDropdown, HeaderGrid, HeaderLink, HeaderLinkRaw, HeaderTitle } from 'lib/ui/components/header'
 
 
 const handlers = {

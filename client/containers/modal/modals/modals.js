@@ -1,8 +1,8 @@
 import React from 'react'
-import modalTypes from 'lib/maps/modalTypes'
+import modalTypes from 'lib/constants/modalTypes'
 import AuthFormContainer from 'containers/authForm'
-import { Button, Header, Icon, Modal } from 'components/layout'
-import SetLocationForm from 'components/setLocationForm'
+import { Button, Header, Icon, Modal } from 'lib/ui/components/layout'
+import SetLocationForm from 'lib/ui/components/setLocationForm'
 
 
 export default {

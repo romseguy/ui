@@ -3,8 +3,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose, getContext, pure } from 'recompose'
 
-import bindActionCreators from 'helpers/bindActionCreators'
-import { watchQuery } from 'helpers/apollo'
+import bindActionCreators from 'lib/helpers/bindActionCreators'
+import { watchQuery } from 'lib/helpers/apollo'
 
 import { meActions, getCurrentUser } from 'core/me'
 import { routerActions } from 'core/router'
@@ -15,9 +15,9 @@ import Helmet from 'containers/helmet'
 import Modals from 'containers/modal'
 import Router from 'containers/router'
 
-import Layout from 'components/layout'
+import Layout from 'lib/ui/components/layout'
 
-import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
+import currentUserQuery from 'lib/graphql/queries/currentUser.query.graphql'
 
 
 class App extends Component {

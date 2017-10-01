@@ -1,5 +1,5 @@
-import debug from 'helpers/debug'
-import getCurrentBreakpoint from 'helpers/getCurrentBreakpoint'
+import debug from 'lib/helpers/debug'
+import getCurrentBreakpoint from 'lib/helpers/getCurrentBreakpoint'
 
 
 export default function initializeWindow(window) {

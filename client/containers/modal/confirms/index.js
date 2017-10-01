@@ -1,6 +1,6 @@
 import React from 'react'
-import modalTypes from 'lib/maps/modalTypes'
-import { Confirm } from 'components/layout'
+import modalTypes from 'lib/constants/modalTypes'
+import { Confirm } from 'lib/ui/components/layout'
 
 
 export default {

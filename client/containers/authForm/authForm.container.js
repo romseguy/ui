@@ -5,19 +5,19 @@ import { getFormSyncErrors } from 'redux-form'
 import { connect } from 'react-redux'
 import { compose, pure, withHandlers, withState } from 'recompose'
 
-import { formatErrorMessage } from 'helpers/apollo'
-import { authStepsTypes, authTypes } from 'lib/maps/auth'
-import modalTypes from 'lib/maps/modalTypes'
+import { formatErrorMessage } from 'lib/helpers/apollo'
+import { authStepsTypes, authTypes } from 'lib/constants/auth'
+import modalTypes from 'lib/constants/modalTypes'
 
 import { modalActions } from 'core/modal'
 import { routerActions } from 'core/router'
 
-import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
-import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
-import loginMutation from 'graphql/mutations/login.mutation.graphql'
-import registerMutation from 'graphql/mutations/register.mutation.graphql'
+import currentUserQuery from 'lib/graphql/queries/currentUser.query.graphql'
+import myPlacesQuery from 'lib/graphql/queries/myPlaces.query.graphql'
+import loginMutation from 'lib/graphql/mutations/login.mutation.graphql'
+import registerMutation from 'lib/graphql/mutations/register.mutation.graphql'
 
-import AuthForm from 'components/authForm'
+import AuthForm from 'lib/ui/components/authForm'
 
 
 function getServerErrors(error) {

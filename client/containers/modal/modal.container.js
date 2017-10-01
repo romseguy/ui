@@ -1,16 +1,16 @@
-import 'assets/scss/modal.scss'
+import 'lib/assets/scss/modal.scss'
 
 import React from 'react'
 import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 
-import debug from 'helpers/debug'
-import withModal from 'lib/decorators/withModal'
-
 import { modalActions, getModals } from 'core/modal'
 
-import { Icon } from 'components/layout'
+import debug from 'lib/helpers/debug'
+import withModal from 'lib/ui/helpers/decorators/withModal'
+import { Icon } from 'lib/ui/components/layout'
+
 import modalComponents from './modals'
 import confirmComponents from './confirms'
 

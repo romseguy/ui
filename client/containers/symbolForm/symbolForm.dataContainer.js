@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { compose, pure, withState } from 'recompose'
-import roleTypes from 'lib/maps/roleTypes'
+import roleTypes from 'lib/constants/roleTypes'
 import { routerActions } from 'core/router'
-import SymbolForm from 'components/symbolForm'
-import myPlaceQuery from 'graphql/queries/myPlace.query.graphql'
+import SymbolForm from 'lib/ui/components/symbolForm'
+import myPlaceQuery from 'lib/graphql/queries/myPlace.query.graphql'
 
 
 class SymbolFormDataContainer extends Component {

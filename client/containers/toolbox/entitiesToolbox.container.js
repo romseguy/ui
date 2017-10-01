@@ -5,10 +5,9 @@ import { compose, pure } from 'recompose'
 
 import { routerActions, getRouteType } from 'core/router'
 
-import entityTypes from 'lib/maps/entityTypes'
-import { toolboxEntities } from 'lib/factories'
-
-import EntitiesToolbox from 'components/entitiesToolbox'
+import entityTypes from 'lib/constants/entityTypes'
+import EntitiesToolbox from 'lib/ui/components/entitiesToolbox'
+import toolboxEntities from './toolboxEntities'
 
 
 function EntitiesToolboxContainer(props) {

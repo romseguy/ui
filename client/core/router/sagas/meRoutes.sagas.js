@@ -6,10 +6,10 @@ import { call, put, select } from 'redux-saga/effects'
 import { canvasActions } from 'core/canvas'
 import { routerActions } from 'core/router'
 
-import { query } from 'helpers/apollo'
-import { userPlaceToNode } from 'lib/factories'
+import { query } from 'lib/helpers/apollo'
+import { userPlaceToNode } from 'lib/transformers'
 
-import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
+import myPlacesQuery from 'lib/graphql/queries/myPlaces.query.graphql'
 
 import { setTitleSaga } from './helpers'
 

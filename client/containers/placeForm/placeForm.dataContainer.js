@@ -2,15 +2,15 @@ import React, { Component } from 'react'
 import { graphql } from 'react-apollo'
 import { compose, pure } from 'recompose'
 
-import debug from 'helpers/debug'
+import debug from 'lib/helpers/debug'
 
 import { routerActions } from 'core/router'
 
-import PlaceForm from 'components/placeForm'
+import PlaceForm from 'lib/ui/components/placeForm'
 
-import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
-import placeQuery from 'graphql/queries/place.query.graphql'
-import placesQuery from 'graphql/queries/places.query.graphql'
+import myPlacesQuery from 'lib/graphql/queries/myPlaces.query.graphql'
+import placeQuery from 'lib/graphql/queries/place.query.graphql'
+import placesQuery from 'lib/graphql/queries/places.query.graphql'
 
 
 class PlaceFormDataContainer extends Component {

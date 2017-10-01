@@ -6,13 +6,13 @@ import { connect } from 'react-redux'
 import { compose, getContext, pure, withHandlers } from 'recompose'
 import styled from 'styled-components'
 
-import sizeTypes from 'lib/maps/sizeTypes'
+import sizeTypes from 'lib/constants/sizeTypes'
 
 import { settingsActions, getLang } from 'core/settings'
 
-import { FooterLink, FooterGrid } from 'components/footer'
-import Icon from 'components/icon'
-import { Dropdown, NoPadCol as Col } from 'components/layout'
+import { FooterLink, FooterGrid } from 'lib/ui/components/footer'
+import Icon from 'lib/ui/components/icon'
+import { Dropdown, NoPadCol as Col } from 'lib/ui/components/layout'
 
 
 const Parrot = styled(Icon)`

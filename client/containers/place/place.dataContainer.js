@@ -1,10 +1,10 @@
 import React from 'react'
 import { graphql } from 'react-apollo'
 import { compose, pure, withHandlers } from 'recompose'
-import debug from 'helpers/debug'
-import modeTypes from 'lib/maps/modeTypes'
-import roleTypes from 'lib/maps/roleTypes'
-import myPlaceQuery from 'graphql/queries/myPlace.query.graphql'
+import debug from 'lib/helpers/debug'
+import modeTypes from 'lib/constants/modeTypes'
+import roleTypes from 'lib/constants/roleTypes'
+import myPlaceQuery from 'lib/graphql/queries/myPlace.query.graphql'
 
 
 class PlaceDataContainer extends React.Component {

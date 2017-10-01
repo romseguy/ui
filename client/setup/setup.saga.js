@@ -1,6 +1,6 @@
 import { all, call, fork } from 'redux-saga/effects'
 
-import makeRestartable from 'helpers/makeRestartable'
+import makeRestartable from 'lib/helpers/makeRestartable'
 
 import sagas from 'core/core.sagas'
 import initializeUserLocationSaga from 'core/settings/sagas/initializeUserLocation.saga'

@@ -3,8 +3,8 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { compose, pure, withHandlers } from 'recompose'
 
-import entityTypes from 'lib/maps/entityTypes'
-import modeTypes from 'lib/maps/modeTypes'
+import entityTypes from 'lib/constants/entityTypes'
+import modeTypes from 'lib/constants/modeTypes'
 
 import UserDataContainer from './user.dataContainer'
 

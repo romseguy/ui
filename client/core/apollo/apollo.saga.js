@@ -1,8 +1,8 @@
 import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
-import { getResponseData } from 'helpers/apollo'
-import debug from 'helpers/debug'
-import { toggleErrorModalSaga } from 'lib/sagas'
+import { getResponseData } from 'lib/helpers/apollo'
+import debug from 'lib/helpers/debug'
+import { toggleErrorModalSaga } from 'core/shared/sagas'
 
 import { settingsActions } from 'core/settings'
 
@@ -11,12 +11,14 @@ function* mutationErrorSaga({error}) {
   debug('mutationErrorSaga.error', JSON.parse(JSON.stringify(error)))
   const i18n = yield getContext('i18n')
 
-  yield call(toggleErrorModalSaga, {
-    modalComponentProps: {
-      title: i18n.t('errors:modal.unknown.title'),
-      errors: [i18n.t('errors:modal.unknown.content')]
-    }
-  })
+  if (!error.message) {
+    yield call(toggleErrorModalSaga, {
+      modalComponentProps: {
+        title: i18n.t('errors:modal.unknown.title'),
+        errors: [i18n.t('errors:modal.unknown.content')]
+      }
+    })
+  }
 }
 
 function* mutationResultSaga(payload) {

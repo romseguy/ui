@@ -3,11 +3,10 @@ import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure } from 'recompose'
 
-import { getRouteType, routes } from 'core/router'
-
-import { toolboxSymbols } from 'lib/factories'
-
-import SymbolsToolbox from 'components/symbolsToolbox'
+import routes from 'routes'
+import { getRouteType } from 'core/router'
+import SymbolsToolbox from 'lib/ui/components/symbolsToolbox'
+import toolboxSymbols from './toolboxSymbols'
 
 
 function SymbolsToolboxContainer(props) {

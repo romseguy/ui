@@ -1,5 +1,5 @@
 import { set, setIn, getIn, updateIn } from 'zaphod/compat'
-import getLang from 'helpers/getLang'
+import getLang from 'lib/helpers/getLang'
 import { settingsActions } from './settings.actions'
 
 

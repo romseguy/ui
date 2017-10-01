@@ -6,10 +6,10 @@
 import { channel } from 'redux-saga'
 import { call, fork, put, select, take } from 'redux-saga/effects'
 
-import { toggleAuthModalSaga } from 'lib/sagas'
+import { toggleAuthModalSaga } from 'core/shared/sagas'
 
-import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
-import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
+import currentUserQuery from 'lib/graphql/queries/currentUser.query.graphql'
+import logoutMutation from 'lib/graphql/mutations/logout.mutation.graphql'
 
 import { routerActions } from '../'
 import {

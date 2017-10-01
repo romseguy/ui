@@ -1,4 +1,4 @@
-import debug from 'helpers/debug'
+import debug from 'lib/helpers/debug'
 
 
 function apiResultIsValid(res, from) {

@@ -3,10 +3,9 @@ import { translate } from 'react-i18next'
 import { connect } from 'react-redux'
 import { compose, pure, withState } from 'recompose'
 import { NOT_FOUND } from 'redux-first-router'
+import routes from 'routes'
 
-import debug from 'helpers/debug'
-
-import { routerActions, getPayload, getPrevRouteType, getRouteType, routes } from 'core/router'
+import { routerActions, getPayload, getPrevRouteType, getRouteType } from 'core/router'
 import { getLang } from 'core/settings'
 
 import MainPanelContainer from 'containers/mainPanel'
@@ -14,10 +13,10 @@ import PlaceFormContainer from 'containers/placeForm'
 import SymbolFormContainer from 'containers/symbolForm'
 import UserFormContainer from 'containers/userForm'
 
-import About from 'components/about'
-import Tutorial from 'components/tutorial'
-import { Loader } from 'components/layout'
-import SidePanel from 'components/sidePanel'
+import About from 'lib/ui/components/about'
+import Tutorial from 'lib/ui/components/tutorial'
+import { Loader } from 'lib/ui/components/layout'
+import SidePanel from 'lib/ui/components/sidePanel'
 
 
 class RouterContainer extends React.Component {
@@ -109,6 +108,7 @@ class RouterContainer extends React.Component {
         <MainPanelContainer
           {...props}
           control={control}
+          currentRoute={routes[routeType]}
           routeType={routeType}
         />
         {sidePanelEl && <SidePanel>{sidePanelEl}</SidePanel>}

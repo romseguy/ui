@@ -1,14 +1,14 @@
 import { call, fork, put, select, take } from 'redux-saga/effects'
 
-import { query } from 'helpers/apollo'
-import { personToNode, placeToNode } from 'lib/factories'
+import { query } from 'lib/helpers/apollo'
+import { personToNode, placeToNode } from 'lib/transformers'
 
 import { canvasActions } from 'core/canvas'
 import { mapActions } from 'core/map'
 
-import placeQuery from 'graphql/queries/place.query.graphql'
-import placesQuery from 'graphql/queries/places.query.graphql'
-import userQuery from 'graphql/queries/user.query.graphql'
+import placeQuery from 'lib/graphql/queries/place.query.graphql'
+import placesQuery from 'lib/graphql/queries/places.query.graphql'
+import userQuery from 'lib/graphql/queries/user.query.graphql'
 
 
 export function* setNodesFromPlaceSaga(client, placeTitle) {

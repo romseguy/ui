@@ -3,14 +3,14 @@ import { graphql } from 'react-apollo'
 import { connect } from 'react-redux'
 import { compose, pure, withHandlers } from 'recompose'
 
-import entityTypes from 'lib/maps/entityTypes'
-import modeTypes from 'lib/maps/modeTypes'
-import symbolTypes from 'lib/maps/symbolTypes'
+import entityTypes from 'lib/constants/entityTypes'
+import modeTypes from 'lib/constants/modeTypes'
+import symbolTypes from 'lib/constants/symbolTypes'
 
 import { routerActions } from 'core/router'
 
-import updateUserPlacesMutation from 'graphql/mutations/updateUserPlaces.mutation.graphql'
-// todo: import updateUserUsersMutation from 'graphql/mutations/updateUserUsersMutation.graphql'
+import updateUserPlacesMutation from 'lib/graphql/mutations/updateUserPlaces.mutation.graphql'
+// todo: import updateUserUsersMutation from 'lib/graphql/mutations/updateUserUsersMutation.graphql'
 
 
 const handlers = {

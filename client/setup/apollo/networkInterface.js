@@ -1,8 +1,8 @@
 import { createApolloFetch } from 'apollo-fetch'
 import { print } from 'graphql/language/printer'
 
-import debug from 'helpers/debug'
-import getLang from 'helpers/getLang'
+import debug from 'lib/helpers/debug'
+import getLang from 'lib/helpers/getLang'
 
 import { authMiddleware } from './auth'
 import { errorAfterware } from './error'
