@@ -1,7 +1,7 @@
 import { call, fork, put, select, take } from 'redux-saga/effects'
 
 import { query } from 'lib/helpers/apollo'
-import { personToNode, placeToNode } from 'lib/transformers'
+import { personToNode, placeToNode, userPlaceToNode } from 'lib/transformers'
 
 import { canvasActions } from 'core/canvas'
 import { mapActions } from 'core/map'
@@ -41,7 +41,7 @@ export function* setNodesFromPlacesSaga(client) {
 export function* setNodesFromUserSaga(client, username) {
   yield put(canvasActions.setNodesLoading(true))
 
-  const {user} = yield call(query, client, {
+  const {myPlaces} = yield call(query, client, {
     query: userQuery,
     variables: {username}
   }, {
@@ -49,6 +49,6 @@ export function* setNodesFromUserSaga(client, username) {
     from: 'setNodesFromUserSaga'
   })
 
-  yield put(canvasActions.setNodes(user.places.map((place, nodeId) => placeToNode(nodeId, place))))
+  yield put(canvasActions.setNodes(myPlaces.map((myPlace, nodeId) => userPlaceToNode(nodeId, myPlace))))
   yield put(canvasActions.setNodesLoading(false))
 }

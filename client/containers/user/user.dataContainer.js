@@ -10,12 +10,12 @@ class UserDataContainer extends Component {
   componentWillReceiveProps(nextProps) {
     const {
       isLoading,
-      user,
+      myPlaces,
       routes
     } = nextProps
 
     if (!isLoading) {
-      if (!user) {
+      if (!myPlaces) {
         debug('user 404')
         routes.notFoundRoute()
       }
@@ -27,7 +27,6 @@ class UserDataContainer extends Component {
       control,
       currentMode,
       modes,
-      routePayload,
       t,
       ...props
     } = this.props
@@ -59,7 +58,7 @@ const userQueryConfig = {
   props({data, ownProps}) {
     const {
       loading,
-      user
+      myPlaces
     } = data
 
     const {
@@ -70,8 +69,8 @@ const userQueryConfig = {
       isLoading: isLoading || loading
     }
 
-    if (!loading && user) {
-      props.user = user
+    if (!loading && myPlaces) {
+      props.myPlaces = myPlaces
     }
 
     return props

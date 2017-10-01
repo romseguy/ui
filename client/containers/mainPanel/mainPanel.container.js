@@ -5,7 +5,7 @@ import { actions as tooltipActions } from 'redux-tooltip'
 
 import bindActionCreators from 'lib/helpers/bindActionCreators'
 import debug from 'lib/helpers/debug'
-import { getCanvasNodeAnchorTooltipName } from 'lib/helpers/tooltips'
+import { getCanvasNodeAnchorTooltipName } from 'lib/ui/helpers/tooltips'
 import modeTypes from 'lib/constants/modeTypes'
 import sizeTypes from 'lib/constants/sizeTypes'
 import entityTypes from 'lib/constants/entityTypes'

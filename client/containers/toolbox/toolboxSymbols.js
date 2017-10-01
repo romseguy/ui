@@ -1,4 +1,4 @@
-import { getSymbolsTooboxTooltipName } from 'lib/helpers/tooltips'
+import { getSymbolsTooboxTooltipName } from 'lib/ui/helpers/tooltips'
 
 import symbolTypes from 'lib/constants/symbolTypes'
 

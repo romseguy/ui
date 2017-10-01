@@ -1,4 +1,4 @@
-import { getEntitiesTooboxTooltipName } from 'lib/helpers/tooltips'
+import { getEntitiesTooboxTooltipName } from 'lib/ui/helpers/tooltips'
 
 import entityTypes from 'lib/constants/entityTypes'
 

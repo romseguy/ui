@@ -1,11 +1,7 @@
-#import '../fragments/place.fragment.graphql'
-#import "../fragments/user.fragment.graphql"
+#import "../fragments/userPlace.fragment.graphql"
 
 query user($username: String) {
-  user(username: $username) {
-    ...UserDetails
-    places {
-      ...PlaceDetails
-    }
+  myPlaces(username: $username) {
+    ...UserPlaceDetails
   }
 }
