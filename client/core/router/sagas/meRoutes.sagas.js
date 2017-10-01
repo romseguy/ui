@@ -1,3 +1,6 @@
+/**
+ * routes sagas for /me level only!
+ */
 import { call, put, select } from 'redux-saga/effects'
 
 import { canvasActions } from 'core/canvas'
@@ -5,14 +8,15 @@ import { routerActions } from 'core/router'
 
 import { query } from 'helpers/apollo'
 import { userPlaceToNode } from 'lib/factories'
-import { setTitleSaga } from 'lib/sagas'
 
 import myPlacesQuery from 'graphql/queries/myPlaces.query.graphql'
+
+import { setTitleSaga } from './helpers'
 
 
 function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
   yield put(canvasActions.setNodesLoading(true))
-  const {myPlaces} = yield call(query, {client, query: myPlacesQuery}, {from: '/me'})
+  const {myPlaces} = yield call(query, client, {query: myPlacesQuery}, {from: '/me'})
 
   let nodes = myPlaces.map((userPlace, nodeId) => userPlaceToNode(nodeId, userPlace))
 
@@ -24,7 +28,7 @@ function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
   yield put(canvasActions.setNodesLoading(false))
 }
 
-export function* meSaga(payload, settings) {
+export function* meRouteSaga(payload, settings) {
   const {client, i18n, onEnter, prevRoute} = settings
 
   if (onEnter || ![
@@ -34,10 +38,10 @@ export function* meSaga(payload, settings) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
 
-  yield call(setTitleSaga, i18n.t('my_profile'), {i18n: true})
+  yield call(setTitleSaga, i18n => i18n.t('my_profile'))
 }
 
-export function* mePlaceEditSaga(payload, settings) {
+export function* mePlaceEditRouteSaga(payload, settings) {
   const {client, i18n, onEnter, prevRoute} = settings
   const {placeTitle} = payload
 
@@ -48,10 +52,10 @@ export function* mePlaceEditSaga(payload, settings) {
     yield call(setNodesFromMyPlacesSaga, client, placeTitle)
   }
 
-  yield call(setTitleSaga, `${i18n.t('form:place.title_edit')} ${placeTitle}`, {i18n: true})
+  yield call(setTitleSaga, i18n => `${i18n.t('form:place.title_edit')} ${placeTitle}`)
 }
 
-export function* mePlacesAddSaga(payload, settings) {
+export function* mePlacesAddRouteSaga(payload, settings) {
   const {client, i18n, onEnter, prevRoute} = settings
 
   if (onEnter || ![
@@ -60,10 +64,10 @@ export function* mePlacesAddSaga(payload, settings) {
     yield call(setNodesFromMyPlacesSaga, client)
   }
 
-  yield call(setTitleSaga, i18n.t('form:place.title_add'), {i18n: true})
+  yield call(setTitleSaga, i18n => i18n.t('form:place.title_add'))
 }
 
-export function* meSymbolsAddSaga(payload, settings) {
+export function* meSymbolsAddRouteSaga(payload, settings) {
   const {name: symbolType} = payload
   const {currentRoute} = settings
 

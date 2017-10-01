@@ -1,0 +1,93 @@
+/**
+ * routes sagas for / level only!
+ *
+ * e.g saga for /place/:name belongs to placeRoutesSagas.js
+ */
+import { channel } from 'redux-saga'
+import { call, fork, put, select, take } from 'redux-saga/effects'
+
+import { toggleAuthModalSaga } from 'lib/sagas'
+
+import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
+import logoutMutation from 'graphql/mutations/logout.mutation.graphql'
+
+import { routerActions } from '../'
+import {
+  setLocationTitleSaga,
+  setNodesFromPlacesSaga,
+  setTitleSaga
+} from './helpers'
+
+
+export function* rootRouteSaga(payload, settings) {
+  const {client, onEnter, prevRoute} = settings
+
+  if (![routerActions.AUTH].includes(prevRoute.type)) {
+    yield call(setNodesFromPlacesSaga, client)
+  }
+
+  yield call(setLocationTitleSaga)
+}
+
+export function* aboutRouteSaga(payload, settings) {
+  const {i18n} = settings
+  yield call(setTitleSaga, i18n => i18n.t('about'))
+}
+
+export function* authRouteSaga(payload, settings) {
+  const {currentUser, prevRoute} = settings
+
+  if (currentUser) {
+    yield put(routerActions.rootRoute())
+    return
+  }
+
+  yield call(setTitleSaga, i18n => i18n.t('form:auth.title'))
+
+  const onCloseChannel = channel()
+
+  yield call(toggleAuthModalSaga, {
+    modalProps: {
+      onClose: () => {
+        onCloseChannel.put({})
+      }
+    }
+  })
+
+  yield fork(function*() {
+    yield take(onCloseChannel)
+
+    onCloseChannel.close()
+
+    yield call(toggleAuthModalSaga)
+
+    if (prevRoute.type === '') {
+      yield put(routerActions.rootRoute())
+    } else {
+      if (prevRoute.requiresAuth !== false) {
+        yield put(routerActions.rootRoute())
+      } else {
+        yield put({type: prevRoute.type})
+      }
+    }
+  })
+}
+
+export function* logoutRouteSaga(payload, settings) {
+  const {currentUser, client} = settings
+
+  if (currentUser) {
+    yield call([client, client.mutate], {
+      mutation: logoutMutation,
+      refetchQueries: [{
+        query: currentUserQuery
+      }]
+    })
+  }
+
+  yield put(routerActions.rootRoute())
+}
+
+export function* notFoundRouteSaga() {
+  yield call(setLocationTitleSaga)
+}

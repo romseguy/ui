@@ -4,22 +4,6 @@ import { NOT_FOUND } from 'redux-first-router'
 import symbolTypes from 'lib/maps/symbolTypes'
 
 import { routerActions } from 'core/router'
-import {
-  notFoundSaga,
-  rootSaga,
-  aboutSaga,
-  authSaga,
-  logoutSaga,
-  // auth required
-  meSaga,
-  mePlacesAddSaga,
-  mePlaceEditSaga,
-  meSymbolsAddSaga,
-  placeSymbolsAddSaga,
-  placeSymbolEditSaga,
-  placeViewSaga,
-  userViewSaga,
-} from 'core/router/sagas'
 
 import MeContainer from 'containers/me'
 import PlaceContainer from 'containers/place'
@@ -29,24 +13,49 @@ import UserContainer from 'containers/user'
 import { CanvasManager } from 'components/canvas'
 import { MapManager } from 'components/map'
 
+import {
+  notFoundRouteSaga,
+  rootRouteSaga,
+  aboutRouteSaga,
+  authRouteSaga,
+  logoutRouteSaga,
+} from './sagas/rootRoutes.sagas'
+
+import {
+  placeSymbolsAddRouteSaga,
+  placeSymbolEditRouteSaga,
+  placeViewRouteSaga
+} from './sagas/placeRoutes.sagas'
+
+import {
+  meRouteSaga,
+  mePlacesAddRouteSaga,
+  mePlaceEditRouteSaga,
+  meSymbolsAddRouteSaga,
+} from './sagas/meRoutes.sagas'
+
+import {
+  userViewRouteSaga
+} from './sagas/userRoutes.sagas'
+
 
 export default {
   [NOT_FOUND]: {
     path: '/not-found',
-    saga: notFoundSaga
+    saga: notFoundRouteSaga
   },
 
   [routerActions.ROOT]: {
     container: PlacesContainer,
     control: MapManager,
     path: '/',
-    saga: rootSaga,
+    saga: rootRouteSaga,
     requiresAuth: false
   },
 
   [routerActions.ABOUT]: {
     path: '/about',
-    saga: aboutSaga,
+    saga: aboutRouteSaga,
     requiresAuth: false
   },
 
@@ -57,13 +66,13 @@ export default {
 
   [routerActions.AUTH]: {
     path: '/auth',
-    saga: authSaga,
+    saga: authRouteSaga,
     requiresAuth: false
   },
 
   [routerActions.LOGOUT]: {
     path: '/logout',
-    saga: logoutSaga,
+    saga: logoutRouteSaga,
     requiresAuth: false
   },
 
@@ -74,7 +83,7 @@ export default {
     container: PlaceContainer,
     control: CanvasManager,
     path: '/place/:placeTitle',
-    saga: placeViewSaga
+    saga: placeViewRouteSaga
   },
   [routerActions.PLACE_SYMBOLS_ADD]: {
     allowedSymbolTypes: [
@@ -83,41 +92,41 @@ export default {
     container: PlaceContainer,
     control: CanvasManager,
     path: '/place/:placeTitle/symbols/add/:symbolType',
-    saga: placeSymbolsAddSaga
+    saga: placeSymbolsAddRouteSaga
   },
   [routerActions.PLACE_SYMBOL_EDIT]: {
     allowedSymbolTypes: [
       symbolTypes.PARROT
     ],
     path: '/place/:placeTitle/symbols/add/:symbolType',
-    saga: placeSymbolEditSaga
+    saga: placeSymbolEditRouteSaga
   },
 
   [routerActions.USER_VIEW]: {
     container: UserContainer,
     control: CanvasManager,
     path: '/user/:username',
-    saga: userViewSaga
+    saga: userViewRouteSaga
   },
 
   [routerActions.ME]: {
     container: MeContainer,
     control: CanvasManager,
     path: '/me',
-    saga: meSaga
+    saga: meRouteSaga
   },
 
   [routerActions.ME_PLACES_ADD]: {
     container: MeContainer,
     control: CanvasManager,
     path: '/me/places/add',
-    saga: mePlacesAddSaga
+    saga: mePlacesAddRouteSaga
   },
   [routerActions.ME_PLACE_EDIT]: {
     container: MeContainer,
     control: CanvasManager,
     path: '/me/place/:placeTitle/edit',
-    saga: mePlaceEditSaga
+    saga: mePlaceEditRouteSaga
   },
 
   [routerActions.ME_SYMBOLS_ADD]: {
@@ -125,7 +134,7 @@ export default {
     control: CanvasManager,
     allowedSymbolTypes: [],
     path: '/me/symbols/:name/add',
-    saga: meSymbolsAddSaga
+    saga: meSymbolsAddRouteSaga
   },
   [routerActions.ME_SYMBOL_VIEW]: {
     path: '/me/symbol/:name',

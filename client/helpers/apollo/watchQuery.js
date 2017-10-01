@@ -1,32 +1,39 @@
+import config from 'config'
+import { noop } from 'lodash'
 import debug from 'helpers/debug'
 
 
-export default function watchQuery({channel, client, query, variables}) {
-  const queryObservable = client.watchQuery({query, variables})
+export default function watchQuery(client, {query, variables}, {from = '', onError, onNext}) {
+  let log = noop
 
-  const querySubscription = queryObservable.subscribe({
-    next: results => {
-      debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} next`, results.data)
+  if (config.debug.apollo.watchQuery) {
+    const operationName = query.definitions[0].name.value
 
-      channel.put({
-        type: 'QUERY_OK',
-        payload: {
-          results
-        }
-      })
-    },
-    error: error => {
-      if (!window.offlineMode) {
-        debug(`[GRAPHQL] watchQuery ${query.definitions[0].name.value} error`, error)
+    log = ({error, results} = {}) => {
+      if (error) {
+        debug(`[GRAPHQL] ${from && `[${from}]`} was watching query [${operationName}] and got error`, error)
       }
-
-      channel.put({
-        type: 'QUERY_NOK',
-        payload: error,
-        error: true
-      })
+      else if (results) {
+        debug(`[GRAPHQL] ${from && `[${from}]`} was watching query [${operationName}] and got results`, results)
+      }
+      else {
+        debug(`[GRAPHQL] ${from && `[${from}]`} is watching query [${operationName}]`)
+      }
     }
-  })
+  }
 
-  return querySubscription
+  log()
+
+  client
+    .watchQuery({query, variables})
+    .subscribe({
+      error: error => {
+        log({error})
+        onError(error)
+      },
+      next: results => {
+        log({results})
+        onNext(results.data)
+      }
+    })
 }

@@ -1,10 +1,23 @@
 import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/effects'
 
 import { getResponseData } from 'helpers/apollo'
+import debug from 'helpers/debug'
 import { toggleErrorModalSaga } from 'lib/sagas'
 
 import { settingsActions } from 'core/settings'
 
+
+function* mutationErrorSaga({error}) {
+  debug('mutationErrorSaga.error', JSON.parse(JSON.stringify(error)))
+  const i18n = yield getContext('i18n')
+
+  yield call(toggleErrorModalSaga, {
+    modalComponentProps: {
+      title: i18n.t('errors:modal.unknown.title'),
+      errors: [i18n.t('errors:modal.unknown.content')]
+    }
+  })
+}
 
 function* mutationResultSaga(payload) {
   const {operationName, result} = payload
@@ -46,6 +59,7 @@ function* startupSaga() {
 export function* apolloSaga() {
   yield all([
     call(startupSaga),
+    takeEvery('APOLLO_MUTATION_ERROR', mutationErrorSaga),
     takeEvery('APOLLO_MUTATION_RESULT', mutationResultSaga)
   ])
 }

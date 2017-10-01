@@ -1,14 +1,15 @@
+import config from 'config'
 import { noop } from 'lodash'
 import debug from 'helpers/debug'
 
 
-async function query({client, query, variables}, {cache, from} = {}) {
+async function query(client, {query, variables}, {cache, from = ''} = {}) {
   let log = noop
 
-  if (process.env.NODE_ENV === 'development') {
+  if (config.debug.apollo.query) {
     const operationName = query.definitions[0].name.value
     log = cache => debug(
-      `[GRAPHQL] ${from ? `${from} ` : ''}ran \`${operationName}\` query against ${cache ? 'cache' : 'network'}`
+      `[GRAPHQL] ${from && `[${from}]`} ran [${operationName}] query against ${cache ? 'cache' : 'network'}`
     )
   }
 

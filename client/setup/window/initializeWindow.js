@@ -2,12 +2,11 @@ import debug from 'helpers/debug'
 import getCurrentBreakpoint from 'helpers/getCurrentBreakpoint'
 
 
-export default function configureWindow(window) {
+export default function initializeWindow(window) {
   if (!window) {
     return
   }
 
-  window.debug = true
   window.offlineMode = false
 
   window.currentBreakpoint = getCurrentBreakpoint(window.innerWidth)

@@ -3,7 +3,7 @@ import { call, put, take, select } from 'redux-saga/effects'
 import { settingsActions, getCity, getDepartment } from 'core/settings'
 
 
-export default function* setDepartmentTitleSaga() {
+export default function* setLocationTitleSaga() {
   let city = yield select(getCity)
 
   if (city) {

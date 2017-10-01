@@ -1,3 +1,4 @@
+import config from 'config'
 import { noop } from 'lodash'
 import debug from 'helpers/debug'
 
@@ -5,7 +6,7 @@ import debug from 'helpers/debug'
 async function mutate(client, {mutation, refetchQueries, variables}, {from} = {}) {
   let log = noop
 
-  if (process.env.NODE_ENV === 'development') {
+  if (config.debug.apollo.mutate) {
     const operationName = mutation.definitions[0].name.value
     log = data => debug(
       `[GRAPHQL] ${from ? `${from} ` : ''}ran \`${operationName}\` mutation`,

@@ -42,8 +42,7 @@ const handlers = {
       typeof onLocationIconClick === 'function' && onLocationIconClick()
     }
     else if ([routerActions.PLACE_VIEW].includes(routeType) && routePayload.placeTitle) {
-      const {place} = await query({
-        client,
+      const {place} = await query(client, {
         query: placeQuery,
         variables: {title: routePayload.placeTitle}
       }, {

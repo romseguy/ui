@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { compose, getContext, pure } from 'recompose'
 
 import bindActionCreators from 'helpers/bindActionCreators'
+import { watchQuery } from 'helpers/apollo'
 
-import { getCurrentUser } from 'core/me'
+import { meActions, getCurrentUser } from 'core/me'
 import { routerActions } from 'core/router'
 
 import Footer from 'containers/footer'
@@ -16,30 +17,42 @@ import Router from 'containers/router'
 
 import Layout from 'components/layout'
 
+import currentUserQuery from 'graphql/queries/currentUser.query.graphql'
 
-function App(props) {
-  const {
-    ...rest
-  } = props
 
-  return (
-    <div>
-      <Helmet/>
+class App extends Component {
+  componentDidMount() {
+    watchQuery(this.props.client, {query: currentUserQuery}, {
+      from: 'App.componentDidMount',
+      onError: error => error,
+      onNext: data => this.props.setCurrentUser(data.currentUser)
+    })
+  }
 
-      <Layout
-        header={
-          <Header {...rest}/>
-        }
-        footer={
-          <Footer/>
-        }
-      >
-        <Router {...rest}/>
-      </Layout>
+  render() {
+    const {
+      ...rest
+    } = this.props
 
-      <Modals/>
-    </div>
-  )
+    return (
+      <div>
+        <Helmet/>
+
+        <Layout
+          header={
+            <Header {...rest}/>
+          }
+          footer={
+            <Footer/>
+          }
+        >
+          <Router {...rest}/>
+        </Layout>
+
+        <Modals/>
+      </div>
+    )
+  }
 }
 
 const mapStateToProps = state => {
@@ -50,7 +63,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    routes: bindActionCreators(routerActions, dispatch)
+    routes: bindActionCreators(routerActions, dispatch),
+    setCurrentUser: bindActionCreators(meActions.setCurrentUser, dispatch)
   }
 }
 

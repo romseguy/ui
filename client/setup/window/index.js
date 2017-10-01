@@ -1,1 +1,1 @@
-export default from './configureWindow'
+export default from './initializeWindow'

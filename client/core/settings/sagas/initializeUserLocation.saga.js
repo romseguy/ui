@@ -8,16 +8,11 @@ import CustomError from 'lib/classes/customError'
 import { geolocationErrorTypes } from 'lib/maps/errorTypes'
 import { toggleErrorModalSaga } from 'lib/sagas'
 
-import { settingsActions } from './settings.actions'
+import { settingsActions } from '../'
+import setDefaultLocationSaga from './setDefaultLocation.saga'
 
 
-function* setDefaultLocationSaga() {
-  yield put(settingsActions.setLocation(48.8566, 2.3522))
-  yield put(settingsActions.setDepartment(false))
-  yield put(settingsActions.setCity(false))
-}
-
-export function* settingsSaga() {
+export default function* initializeUserLocationSaga() {
   const i18n = yield getContext('i18n')
 
   try {

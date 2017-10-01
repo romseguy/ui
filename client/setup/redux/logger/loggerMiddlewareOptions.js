@@ -1,11 +1,11 @@
 import { canvasActions } from 'core/canvas'
+import { settingsActions } from 'core/settings'
 
 
 export default {
   collapsed: true,
 
   predicate: (getState, {type}) => {
-    return false
     if (type && typeof type.startsWith === 'function') {
       if (type.startsWith('@@redux-form')) {
         return false

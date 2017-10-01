@@ -131,8 +131,7 @@ export const handlers = {
       meRoute()
     }
     else if (formValues.action === 'select') {
-      let {place} = await query({
-        client,
+      let {place} = await query(client, {
         query: placeQuery,
         variables: {title: formValues.selectedPlaceTitle},
       }, {

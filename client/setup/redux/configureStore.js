@@ -1,51 +1,46 @@
-import { applyMiddleware, combineReducers, createStore, compose } from 'redux'
+import config from 'config'
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
-import { devToolsOptions } from './devTools'
-import configureRouter from './router'
-import configureSagaMiddleware from './saga'
 
+export default function configureStore(params) {
+  const {
+    client,
+    reducers,
+    router,
+    sagaMiddleware
+  } = params
 
-export default function configureStore(reducer, routes, saga, client, i18n) {
   let composeEnhancers = compose
 
-  // router
-  const router = configureRouter(routes)
-
   // middlewares
-  const sagaMiddleware = configureSagaMiddleware(client, i18n)
   const middlewares = [
-    router.middleware,
     sagaMiddleware,
+    router.middleware,
     client.middleware()
   ];
 
-  if (process.env.NODE_ENV === 'development' && window.debug) {
-    // devTools
+  // dev tools
+  if (config.debug.devTools) {
+    const devToolsOptions = require('./devTools').devToolsOptions
     composeEnhancers = composeWithDevTools(devToolsOptions)
+  }
 
-    // logger
+  if (config.debug.logger) {
     const configureLoggerMiddleware = require('./logger').default
     middlewares.push(configureLoggerMiddleware())
   }
 
-  // reducers
-  const reducers = {
-    ...reducer,
+  // enhancer
+  const enhancer = composeEnhancers(router.enhancer, applyMiddleware(...middlewares))
+
+  // reducer
+  const reducer = combineReducers({
+    ...reducers,
     apollo: client.reducer(),
-    location: router.reducer,
-  }
+    location: router.reducer
+  })
 
-  const store = createStore(
-    combineReducers(reducers),
-    composeEnhancers(
-      router.enhancer,
-      applyMiddleware(...middlewares)
-    )
-  )
-
-  sagaMiddleware.run(saga)
-  router.initialDispatch()
-
-  return store
+  // store
+  return createStore(reducer, enhancer)
 }

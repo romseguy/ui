@@ -1,30 +1,22 @@
-import { settingsActions, getLang } from 'core/settings'
+import config from 'config'
+import debug from 'helpers/debug'
 
 
 const i18nOptions = {
-  fallbackLng: 'en',
-
-  whitelist: ['en', 'fr'],
-
-  react: {
-    wait: true, // globally set to wait for loaded translations in translate hoc
-    // exposeNamespace: true // exposes namespace on data-i18next-options to be used in eg. locize-editor
-  },
-
-  // have a common namespace used around the full app
-  ns: ['common', 'canvas', 'errors', 'form', 'header', 'map'],
-  defaultNS: 'common',
-
   backend: {
     loadPath: `${process.env.REACT_APP_LOCALES_URL}/{{lng}}/{{ns}}.json`,
     crossDomain: true
   },
 
-  debug: window.log && process.env.NODE_ENV === 'development',
+  cache: {
+    enabled: false
+  },
 
-  // cache: {
-  //   enabled: true
-  // },
+  debug: config.debug.i18n,
+
+  defaultNS: 'common',
+
+  fallbackLng: 'en',
 
   interpolation: {
     escapeValue: false, // not needed for react!!
@@ -33,13 +25,26 @@ const i18nOptions = {
       if (format === 'uppercase') return value.toUpperCase()
       return value
     }
-  }
+  },
+
+  ns: ['common', 'canvas', 'errors', 'form', 'header', 'map'],
+
+  react: {
+    wait: true, // globally set to wait for loaded translations in translate hoc
+    exposeNamespace: false // exposes namespace on data-i18next-options to be used in eg. localize-editor
+  },
+
+  whitelist: ['en', 'fr']
 }
 
-export default function initializeI18n(i18n, store) {
-  i18nOptions.lng = getLang(store.getState())
+export default function initializeI18n({currentLang, i18n, onInit}) {
+  debug('current language is', currentLang)
+
+  if (currentLang) {
+    i18nOptions.lng = currentLang
+  }
 
   i18n.init(i18nOptions, function i18nInitialized() {
-    store.dispatch(settingsActions.i18nInitialized())
+    typeof onInit === 'function' && onInit()
   })
 }

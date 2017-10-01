@@ -1,5 +1,8 @@
+import config from 'config'
+
+
 export default function debug (...args) {
-  if (process.env.NODE_ENV === 'development' && window.debug) {
+  if (config.debug.debug) {
     console.info(...args)
   }
 }
