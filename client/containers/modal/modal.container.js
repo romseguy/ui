@@ -11,7 +11,7 @@ import debug from 'lib/helpers/debug'
 import withModal from 'lib/ui/helpers/decorators/withModal'
 import { Icon } from 'lib/ui/components/layout'
 
-import modalComponents from './modals'
+import modalComponents from 'lib/modals'
 import confirmComponents from './confirms'
 
 

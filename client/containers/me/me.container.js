@@ -178,6 +178,8 @@ const mapStateToProps = state => {
   return {}
 }
 
+const mapDispatchToProps = {}
+
 const updateUserPlacesMutationConfig = {
   props({ownProps, mutate}) {
     return {
@@ -225,7 +227,7 @@ const updateUserPlacesMutationConfig = {
  */
 
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   graphql(updateUserPlacesMutation, updateUserPlacesMutationConfig),
   // todo: graphql(updateUserUsersMutation, updateUserUsersMutationConfig)
   withHandlers(handlers),

@@ -6,10 +6,25 @@ import { personToNode, placeToNode, userPlaceToNode } from 'lib/transformers'
 import { canvasActions } from 'core/canvas'
 import { mapActions } from 'core/map'
 
+import myPlacesQuery from 'lib/graphql/queries/myPlaces.query.graphql'
 import placeQuery from 'lib/graphql/queries/place.query.graphql'
 import placesQuery from 'lib/graphql/queries/places.query.graphql'
 import userQuery from 'lib/graphql/queries/user.query.graphql'
 
+
+export function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
+  yield put(canvasActions.setNodesLoading(true))
+  const {myPlaces} = yield call(query, client, {query: myPlacesQuery}, {from: '/me'})
+
+  let nodes = myPlaces.map((userPlace, nodeId) => userPlaceToNode(nodeId, userPlace))
+
+  if (selectedPlaceTitle) {
+    nodes = nodes.map(node => node.name === selectedPlaceTitle ? {...node, selected: true} : node)
+  }
+
+  yield put(canvasActions.setNodes(nodes))
+  yield put(canvasActions.setNodesLoading(false))
+}
 
 export function* setNodesFromPlaceSaga(client, placeTitle) {
   yield put(canvasActions.setNodesLoading(true))

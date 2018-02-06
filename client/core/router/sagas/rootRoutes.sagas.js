@@ -1,12 +1,7 @@
-/**
- * routes sagas for / level only!
- *
- * e.g saga for /place/:name belongs to placeRoutesSagas.js
- */
 import { channel } from 'redux-saga'
 import { call, fork, put, select, take } from 'redux-saga/effects'
 
-import { toggleAuthModalSaga } from 'core/shared/sagas'
+import { toggleAuthModalSaga } from 'lib/modals'
 
 import currentUserQuery from 'lib/graphql/queries/currentUser.query.graphql'
 import logoutMutation from 'lib/graphql/mutations/logout.mutation.graphql'
@@ -18,6 +13,8 @@ import {
   setTitleSaga
 } from './helpers'
 
+
+// routes sagas for / level only!
 
 export function* rootRouteSaga(payload, settings) {
   const {client, onEnter, prevRoute} = settings
@@ -54,7 +51,7 @@ export function* authRouteSaga(payload, settings) {
     }
   })
 
-  yield fork(function*() {
+  yield fork(function* onAuthModalClose() {
     yield take(onCloseChannel)
 
     onCloseChannel.close()

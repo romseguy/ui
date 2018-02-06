@@ -1,5 +1,5 @@
 import {put} from 'redux-saga/effects'
-import { settingsActions } from '../'
+import { settingsActions } from 'core/settings'
 
 
 export default function* setDefaultLocationSaga() {

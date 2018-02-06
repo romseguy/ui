@@ -51,13 +51,16 @@ class RouterContainer extends React.Component {
 
     let {routeType} = this.props
 
-    const props = {...this.props, ...this.state}
+    const routeProps = {...this.props, ...this.state}
 
-    // Special cases
-    if (routeType === NOT_FOUND) {
+    // exit cases
+    if (routeType === routerActions.LOGOUT) {
+      return null
+    }
+    else if (routeType === NOT_FOUND) {
       return (
         <MainPanelContainer
-          {...props}
+          {...routeProps}
           error={t('not_found')}
         />
       )
@@ -72,41 +75,39 @@ class RouterContainer extends React.Component {
     else if (currentRoute.requiresAuth !== false && !currentUser) {
       return <Loader indeterminate/>
     }
-    else if (routeType === routerActions.LOGOUT) {
-      return null
-    }
 
-    // Standalone
+    // standalone
     let control = null
 
     if (routeType === routerActions.ABOUT) {
       control = About
     }
     else if (routeType === routerActions.TUTORIAL) {
-      control = <Tutorial {...props} routes={routerActions}/>
+      control = <Tutorial {...routeProps} routes={routerActions}/>
     }
 
-    // MainPanel
+    // optional SidePanel
     let sidePanelEl = null
 
     if ([routerActions.ME_PLACES_ADD, routerActions.ME_PLACE_EDIT].includes(routeType)) {
-      sidePanelEl = <PlaceFormContainer {...props} routeType={routeType}/>
+      sidePanelEl = <PlaceFormContainer {...routeProps} routeType={routeType}/>
     }
     else if ([
         routerActions.ME_SYMBOLS_ADD,
         routerActions.ME_SYMBOL_EDIT,
         routerActions.PLACE_SYMBOLS_ADD
       ].includes(routeType)) {
-      sidePanelEl = <SymbolFormContainer {...props}/>
+      sidePanelEl = <SymbolFormContainer {...routeProps}/>
     }
     else if ([routerActions.ME_USERS_ADD, routerActions.ME_USER_EDIT].includes(routeType)) {
-      sidePanelEl = <UserFormContainer {...props}/>
+      sidePanelEl = <UserFormContainer {...routeProps}/>
     }
 
+    // MainPanel
     return (
       <div>
         <MainPanelContainer
-          {...props}
+          {...routeProps}
           control={control}
           currentRoute={routes[routeType]}
           routeType={routeType}

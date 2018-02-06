@@ -5,7 +5,7 @@ import routes from 'routes'
 
 import isLocationAction from 'lib/helpers/isLocationAction'
 
-import getCurrentUserSaga from 'core/shared/sagas/getCurrentUser.saga'
+import getCurrentUserSaga from 'lib/sagas/getCurrentUser.saga'
 import { getPrevRouteType } from 'core/router'
 import { getOfflineMode } from 'core/settings'
 

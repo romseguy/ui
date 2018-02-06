@@ -1,6 +1,6 @@
 import { call, put, take } from 'redux-saga/effects'
 import { settingsActions } from 'core/settings'
-import { toggleErrorModalSaga } from 'core/shared/sagas'
+import { toggleErrorModalSaga } from 'lib/modals'
 
 
 export default function* checkOfflineSaga() {

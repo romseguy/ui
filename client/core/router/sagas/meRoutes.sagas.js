@@ -1,32 +1,11 @@
-/**
- * routes sagas for /me level only!
- */
 import { call, put, select } from 'redux-saga/effects'
 
-import { canvasActions } from 'core/canvas'
 import { routerActions } from 'core/router'
 
-import { query } from 'lib/helpers/apollo'
-import { userPlaceToNode } from 'lib/transformers'
-
-import myPlacesQuery from 'lib/graphql/queries/myPlaces.query.graphql'
-
-import { setTitleSaga } from './helpers'
+import { setNodesFromMyPlacesSaga, setTitleSaga } from './helpers'
 
 
-function* setNodesFromMyPlacesSaga(client, selectedPlaceTitle) {
-  yield put(canvasActions.setNodesLoading(true))
-  const {myPlaces} = yield call(query, client, {query: myPlacesQuery}, {from: '/me'})
-
-  let nodes = myPlaces.map((userPlace, nodeId) => userPlaceToNode(nodeId, userPlace))
-
-  if (selectedPlaceTitle) {
-    nodes = nodes.map(node => node.name === selectedPlaceTitle ? {...node, selected: true} : node)
-  }
-
-  yield put(canvasActions.setNodes(nodes))
-  yield put(canvasActions.setNodesLoading(false))
-}
+// routes sagas for /me level only!
 
 export function* meRouteSaga(payload, settings) {
   const {client, i18n, onEnter, prevRoute} = settings

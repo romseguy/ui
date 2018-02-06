@@ -4,6 +4,15 @@ import AuthFormContainer from 'containers/authForm'
 import { Button, Header, Icon, Modal } from 'lib/ui/components/layout'
 import SetLocationForm from 'lib/ui/components/setLocationForm'
 
+import toggleAuthModalSaga from './toggleAuthModal.saga'
+import toggleDeleteNodeConfirmSaga from './toggleDeleteNodeConfirm.saga'
+import toggleErrorModalSaga from './toggleErrorModal.saga'
+
+export {
+  toggleAuthModalSaga,
+  toggleDeleteNodeConfirmSaga,
+  toggleErrorModalSaga
+}
 
 export default {
   [modalTypes.AUTH]: function AuthModal({modalProps}) {

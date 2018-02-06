@@ -6,9 +6,9 @@ import getCurrentPosition from 'lib/helpers/getCurrentPosition'
 import geo from 'lib/api/geo'
 import CustomError from 'lib/classes/customError'
 import { geolocationErrorTypes } from 'lib/constants/errorTypes'
-import { toggleErrorModalSaga } from 'core/shared/sagas'
+import { toggleErrorModalSaga } from 'lib/modals'
 
-import { settingsActions } from '../'
+import { settingsActions } from 'core/settings'
 import setDefaultLocationSaga from './setDefaultLocation.saga'
 
 

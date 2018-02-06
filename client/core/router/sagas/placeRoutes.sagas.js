@@ -1,6 +1,3 @@
-/**
- * routes sagas for /place level only!
- */
 import { call, fork, put, select, take } from 'redux-saga/effects'
 
 import { routerActions } from '../'
@@ -9,6 +6,8 @@ import {
   setTitleSaga
 } from './helpers'
 
+
+// routes sagas for /place level only!
 
 export function* placeViewRouteSaga(payload, settings) {
   const {} = payload

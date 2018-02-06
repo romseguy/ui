@@ -4,7 +4,7 @@ import { all, call, fork, getContext, put, select, take, takeEvery } from 'redux
 import { mutate } from 'lib/helpers/apollo'
 import entityTypes from 'lib/constants/entityTypes'
 import modalTypes from 'lib/constants/modalTypes'
-import { toggleDeleteNodeConfirmSaga } from 'core/shared/sagas'
+import { toggleDeleteNodeConfirmSaga } from 'lib/modals'
 
 import { canvasActions } from 'core/canvas'
 import { modalActions } from 'core/modal'

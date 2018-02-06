@@ -1,6 +1,6 @@
 import { call } from 'redux-saga/effects'
 import modalTypes from 'lib/constants/modalTypes'
-import { toggleModalSaga } from 'core/shared/sagas'
+import { toggleModalSaga } from 'lib/sagas'
 
 
 const defaultModalProps = {

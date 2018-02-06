@@ -2,7 +2,7 @@ import { all, call, getContext, put, select, take, takeEvery } from 'redux-saga/
 
 import { getResponseData } from 'lib/helpers/apollo'
 import debug from 'lib/helpers/debug'
-import { toggleErrorModalSaga } from 'core/shared/sagas'
+import { toggleErrorModalSaga } from 'lib/modals'
 
 
 function* mutationErrorSaga({error}) {

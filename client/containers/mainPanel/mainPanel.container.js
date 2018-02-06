@@ -14,13 +14,21 @@ import { canvasActions, getCanvasNodes, getCanvasNodesLoading, getSelectedNodeId
 import { mapActions, getMapCenter, getMapNodes, getMapNodesLoading } from 'core/map'
 import { routerActions } from 'core/router'
 
+import { CanvasManager } from 'lib/ui/components/canvas'
 import Icon from 'lib/ui/components/icon'
 import { Loader } from 'lib/ui/components/layout'
+import { MapManager } from 'lib/ui/components/map'
 
 import createModes from './createModes'
 import createToolboxes from './createToolboxes'
 
 
+/**
+ * - handle window resize
+ * - handle loading state
+ * - render current route control (MapManager, CanvasManager, ...) with appropriate props
+ * - render props control
+ */
 class MainPanelContainer extends Component {
   static getDimensions = function getDimensions(window) {
     const {
@@ -284,15 +292,17 @@ class MainPanelContainer extends Component {
       )
     }
 
+    let controlEl = null
+
     if (control) {
-      return React.createElement(control, {
+      controlEl = React.createElement(control, {
         ...this.props,
         height: mapHeight
       })
     }
 
-    if (this.props.routeType === routerActions.ROOT) {
-      return React.createElement(currentRoute.container, {
+    if (currentRoute.control === MapManager) {
+      controlEl = React.createElement(currentRoute.container, {
         ...this.props,
         ...this.state,
         control: currentRoute.control,
@@ -301,33 +311,34 @@ class MainPanelContainer extends Component {
         onNodeAnchorClick: this.handleNodeAnchorClick,
         onNodeHeaderClick: this.handleNodeHeaderClick,
       })
+    } else if (currentRoute.control === CanvasManager) {
+      controlEl = React.createElement(currentRoute.container, {
+        ...this.props,
+        ...this.state,
+        control: currentRoute.control,
+        toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
+        onCanvasClick: this.handleCanvasClick,
+        onDeleteSelectedNode: this.handleDeleteSelectedNode,
+        onModeChange: this.handleModeChange,
+        onNodeAnchorClick: this.handleNodeAnchorClick,
+        onNodeAnchorMouseOver: this.handleNodeAnchorMouseOver,
+        onNodeAnchorMouseOut: this.handleNodeAnchorMouseOut,
+        onNodeDragEnd: this.handleNodeDragEnd,
+        onNodeHeaderClick: this.handleNodeHeaderClick,
+        onToolboxItemDrop: this.handleToolboxItemDrop,
+      })
     }
 
-    return React.createElement(currentRoute.container, {
-      ...this.props,
-      ...this.state,
-      control: currentRoute.control,
-      toggleNodeAnchorTooltip: this.toggleNodeAnchorTooltip,
-      onCanvasClick: this.handleCanvasClick,
-      onDeleteSelectedNode: this.handleDeleteSelectedNode,
-      onModeChange: this.handleModeChange,
-      onNodeAnchorClick: this.handleNodeAnchorClick,
-      onNodeAnchorMouseOver: this.handleNodeAnchorMouseOver,
-      onNodeAnchorMouseOut: this.handleNodeAnchorMouseOut,
-      onNodeDragEnd: this.handleNodeDragEnd,
-      onNodeHeaderClick: this.handleNodeHeaderClick,
-      onToolboxItemDrop: this.handleToolboxItemDrop,
-    })
+    return controlEl
   }
 }
 
-const mapStateToProps = (state, {routeType}) => {
+const mapStateToProps = (state, {currentRoute, routeType}) => {
   const props = {
     loaded: true
   }
 
-  // control is a map
-  if ([routerActions.ROOT].includes(routeType)) {
+  if (currentRoute.control === MapManager) {
     const center = getMapCenter(state)
     const nodes = getMapNodes(state)
     const nodesLoading = getMapNodesLoading(state)
@@ -342,8 +353,7 @@ const mapStateToProps = (state, {routeType}) => {
       props.center = center
     }
   }
-  // control is a canvas
-  else {
+  else if (currentRoute.control === CanvasManager) {
     const nodes = getCanvasNodes(state)
     const nodesLoading = getCanvasNodesLoading(state)
     const selectedNodeIds = getSelectedNodeIds(state)
